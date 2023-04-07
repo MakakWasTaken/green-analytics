@@ -1,3 +1,57 @@
 {
-  "extends": "next/core-web-vitals"
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "prettier",
+    "standard",
+    "next/core-web-vitals",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["import", "prettier", "@typescript-eslint", "prefer-arrow"],
+  "ignorePatterns": ["*.js", "dist", "node_modules", "build"],
+  "parserOptions": {
+    "requireConfigFile": false
+  },
+  "parser": "@typescript-eslint/parser",
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+      }
+    }
+  },
+  "rules": {
+    "prettier/prettier": ["error"],
+    "comma-dangle": "off",
+    "indent": "off",
+
+    "react/display-name": "off",
+
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "function",
+        "format": ["camelCase"]
+      },
+      {
+        "selector": "interface",
+        "format": ["PascalCase"]
+      }
+    ],
+
+    "prefer-arrow/prefer-arrow-functions": [
+      "warn",
+      {
+        "disallowPrototype": true,
+        "singleReturnOnly": false,
+        "classPropertiesAllowed": false
+      }
+    ]
+  }
 }
