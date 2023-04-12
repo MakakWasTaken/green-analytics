@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const method = req.method
+
     const session = await getSession(req, res)
 
     const userId = session?.user.sid
@@ -18,19 +19,17 @@ export const handle = withApiAuthRequired(
         if (!user) {
           // If the user is not found, create it with the current session
           const sessionUser = session.user
-          const newTeam = await prisma.team.create({
-            data: {
-              name: sessionUser.name,
-              updatedAt: new Date(),
-            },
-          })
 
           const newUser = await prisma.user.create({
             data: {
               id: userId,
               name: sessionUser.name,
               email: sessionUser.email,
-              teamId: newTeam.id,
+              teams: {
+                create: {
+                  name: sessionUser.name,
+                },
+              },
             },
           })
           res.json(newUser)
@@ -54,7 +53,8 @@ export const handle = withApiAuthRequired(
         res.status(405).json({ ok: false, message: 'Method Not Allowed' })
       }
     } else {
-      res.status(401).json({ ok: false, message: 'Unauthorized' })
+      // If the user is not logged in, return null. This means that we can use this endpoint as proof of sign in
+      res.json(null)
     }
   },
 )

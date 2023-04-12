@@ -5,38 +5,54 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  directUrl    = env("DIRECT_URL")
   relationMode = "prisma"
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  team      Team     @relation(fields: [teamId], references: [id])
-  teamId    String
-
-  @@index([teamId], name: "teamId")
+  picture   String?
+  // A user can be part of multiple teams
+  teams     Team[]     @relation("Team")
+  roles     TeamRole[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Team {
-  id        String      @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
+  user      User[]     @relation("Team")
+  websites  Websites[]
+  roles     TeamRole[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  User      User[]
-  Websites  Websites[]
+}
+
+// Define the TeamRole model, which represents the many-to-many relationship
+// between users and teams
+model TeamRole {
+  id     String @id @default(uuid())
+  role   String
+  user   User   @relation(fields: [userId], references: [id])
+  team   Team   @relation(fields: [teamId], references: [id])
+  userId String
+  teamId String
+
+  @@unique([userId, teamId]) // Ensure that each user can only have one role per team
+  @@index([teamId])
 }
 
 model Websites {
-  id        String      @id @default(uuid())
-  name      String
+  id     String @id @default(uuid())
+  name   String
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  team      Team     @relation(fields: [teamId], references: [id])
-  teamId    String
 
   @@index([teamId], name: "teamId")
 }

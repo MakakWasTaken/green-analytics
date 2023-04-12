@@ -8,6 +8,8 @@ export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const method = req.method
 
+    const teamId = req.query.id as string
+
     if (method === 'GET') {
       const session = await getSession(req, res)
 
@@ -15,14 +17,28 @@ export const handle = withApiAuthRequired(
       const user = await prisma.user.findUnique({
         where: { id: session?.user.sid },
         select: {
-          teamId: true,
+          teams: {
+            where: {
+              id: teamId,
+            },
+          },
         },
       })
-      const teamId = user?.teamId
+
+      const team = user?.teams?.[0]
+
+      if (!team) {
+        res.status(404).json({ ok: false, message: 'Team not found' })
+        return
+      }
 
       const members = await prisma.user.findMany({
         where: {
-          teamId,
+          teams: {
+            some: {
+              id: team.id,
+            },
+          },
         },
       })
 

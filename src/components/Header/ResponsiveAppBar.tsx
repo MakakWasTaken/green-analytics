@@ -1,3 +1,4 @@
+import { useUser } from '@auth0/nextjs-auth0/client'
 import MenuIcon from '@mui/icons-material/Menu'
 import Avatar from '@mui/joy/Avatar'
 import Box from '@mui/joy/Box'
@@ -19,20 +20,23 @@ interface Page {
 }
 
 const ResponsiveAppBar: FC = () => {
+  const { user } = useUser()
+
   const pages: Page[] = [
-    { label: 'Products', href: '/products' },
+    { label: 'Home', href: '/' },
+    { label: 'Features', href: '/features' },
     { label: 'Pricing', href: '/pricing' },
   ]
-  const settings: Page[] = [
-    { label: 'Account', href: '/user' },
-    { label: 'Dashboard', href: '/dashboard' },
-    {
-      label: 'Logout',
-      func: () => {
-        // TODO: logout
-      },
-    },
-  ]
+  const settings: Page[] = user
+    ? [
+        { label: 'Account', href: '/account' },
+        { label: 'Dashboard', href: '/dashboard' },
+        {
+          label: 'Logout',
+          href: '/api/auth/logout',
+        },
+      ]
+    : [{ label: 'Get Started', href: '/api/auth/login' }]
 
   const router = useRouter()
 
@@ -79,6 +83,7 @@ const ResponsiveAppBar: FC = () => {
         display: 'flex',
         flexDirection: 'row',
         padding: '0 1rem',
+        alignItems: 'center',
       }}
     >
       <Link
@@ -137,7 +142,15 @@ const ResponsiveAppBar: FC = () => {
       >
         Green Analytics
       </Link>
-      <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, gap: 2 }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: { xs: 'none', md: 'flex' },
+          gap: 1,
+          justifyContent: 'flex-end',
+          marginRight: 1,
+        }}
+      >
         {pages.map((page) => (
           <Button
             key={page.label}
@@ -151,23 +164,41 @@ const ResponsiveAppBar: FC = () => {
       </Box>
 
       <Box sx={{ flexGrow: 0 }}>
-        <Tooltip title="Open settings">
-          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-          </IconButton>
-        </Tooltip>
-        <Menu
-          id="user-menu"
-          anchorEl={anchorElUser}
-          open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
-        >
-          {settings.map((setting) => (
-            <MenuItem key={setting.label} onClick={() => onPageClick(setting)}>
-              <Typography textAlign="center">{setting.label}</Typography>
-            </MenuItem>
-          ))}
-        </Menu>
+        {user ? (
+          <>
+            <Tooltip title="Open settings">
+              <IconButton
+                onClick={handleOpenUserMenu}
+                sx={{ p: 0, borderRadius: '50vh' }}
+              >
+                <Avatar alt={user.name || ''} src={user.picture || ''} />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              id="user-menu"
+              anchorEl={anchorElUser}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem
+                  key={setting.label}
+                  onClick={() => onPageClick(setting)}
+                >
+                  <Typography textAlign="center">{setting.label}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </>
+        ) : (
+          <Button
+            variant="solid"
+            onClick={() => onPageClick(settings[0])}
+            sx={{ my: 2, display: 'block' }}
+          >
+            {settings[0].label}
+          </Button>
+        )}
       </Box>
     </Box>
   )

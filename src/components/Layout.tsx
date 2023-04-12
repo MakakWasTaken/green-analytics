@@ -20,6 +20,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
           <Box
             sx={{
               marginTop: '75px', // Header height
+              height: 'calc(100vh - 75px)', // Header height
             }}
           >
             {children}
