@@ -10,20 +10,19 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   email     String   @unique
-  password  String
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   team      Team     @relation(fields: [teamId], references: [id])
-  teamId    Int
+  teamId    String
 
   @@index([teamId], name: "teamId")
 }
 
 model Team {
-  id        Int        @id @default(autoincrement())
+  id        String      @id @default(uuid())
   name      String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -32,12 +31,12 @@ model Team {
 }
 
 model Websites {
-  id        Int      @id @default(autoincrement())
+  id        String      @id @default(uuid())
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   team      Team     @relation(fields: [teamId], references: [id])
-  teamId    Int
+  teamId    String
 
   @@index([teamId], name: "teamId")
 }

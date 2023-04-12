@@ -1,10 +1,10 @@
-import { useUser } from '@auth0/nextjs-auth0/client'
 import Link from '@components/Link'
 import { Box, CircularProgress, Container, Typography } from '@mui/joy'
-import { Suspense } from 'react'
+import { FC, Suspense } from 'react'
+import useSWR from 'swr'
 
-export const Home = () => {
-  const { user, error, isLoading } = useUser()
+export const Home: FC = () => {
+  const { data: user, isLoading } = useSWR('/database/user/own')
 
   return (
     <Container maxWidth="lg">
@@ -19,13 +19,12 @@ export const Home = () => {
               alignItems: 'center',
             }}
           >
-            {error && (
-              <Typography level="h1">Error: {error.message}</Typography>
-            )}
-            {!user && (
+            {!user ? (
               <Link href="/api/auth/login" color="neutral">
                 Login
               </Link>
+            ) : (
+              <Typography level="h3">Welcome {user.name}</Typography>
             )}
           </Box>
         )}
