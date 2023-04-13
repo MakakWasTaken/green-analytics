@@ -10,20 +10,20 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession(req, res)
 
   if (method === 'GET') {
-    const user = await prisma.user.findUnique({
-      where: { id: session?.user.sid },
-      select: {
-        teams: {
-          select: {
-            id: true,
-            name: true,
+    const teams = await prisma.team.findMany({
+      where: {
+        users: {
+          some: {
+            id: session?.user.sid,
           },
         },
       },
     })
 
-    res.json(user?.teams)
+    res.json(teams)
   } else {
     res.status(405).json({ ok: false, message: 'Method Not Allowed' })
   }
 }
+
+export default handle

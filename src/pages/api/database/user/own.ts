@@ -26,10 +26,38 @@ export const handle = withApiAuthRequired(
               name: sessionUser.name,
               email: sessionUser.email,
               teams: {
-                create: {
-                  name: sessionUser.name,
+                create: [
+                  {
+                    name: sessionUser.name,
+                  },
+                ],
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              teams: {
+                select: {
+                  id: true,
+                  name: true,
                 },
               },
+            },
+          })
+          await prisma.teamRole.create({
+            data: {
+              team: {
+                connect: {
+                  id: newUser.teams[0].id,
+                },
+              },
+              user: {
+                connect: {
+                  id: newUser.id,
+                },
+              },
+              role: 'OWNER',
             },
           })
           res.json(newUser)

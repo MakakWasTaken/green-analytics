@@ -24,7 +24,7 @@ model User {
 model Team {
   id        String     @id @default(uuid())
   name      String
-  user      User[]     @relation("Team")
+  users      User[]     @relation("Team")
   websites  Websites[]
   roles     TeamRole[]
   createdAt DateTime   @default(now())

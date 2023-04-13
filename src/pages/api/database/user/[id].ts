@@ -17,14 +17,23 @@ export const handle = withApiAuthRequired(
     const user = await prisma.user.findUnique({
       where: { id: session?.user.sid },
       select: {
-        teamId: true,
+        teams: true,
       },
     })
-    const teamId = user?.teamId
+    const teams = user?.teams
 
-    if (teamId !== undefined) {
+    if (teams !== undefined) {
       const user = await prisma.user.findFirst({
-        where: { id: userId, teamId },
+        where: {
+          id: userId,
+          teams: {
+            some: {
+              id: {
+                in: teams.map((team) => team.id),
+              },
+            },
+          },
+        },
       })
       res.json(user)
     } else {
