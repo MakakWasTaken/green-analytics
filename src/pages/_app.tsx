@@ -1,6 +1,7 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { Layout } from '@src/components/Layout'
+import { TeamProvider } from '@src/contexts/TeamContext'
 import { api } from '@src/utils/network'
 import { AppProps } from 'next/app'
 import { ToastContainer, toast } from 'react-toastify'
@@ -19,25 +20,27 @@ export const GAApp = (props: GAAppProps) => {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
 
   return (
-    <CacheProvider value={emotionCache}>
-      <SWRConfig
-        value={{
-          errorRetryCount: 1, // only retry once, then throw error
-          fetcher: (resource, init) =>
-            api.get(resource, init).then((res) => res.data),
-          onErrorRetry: (error) => {
-            toast.error(error.message)
-          },
-        }}
-      >
-        <UserProvider>
-          <Layout>
-            <Component {...pageProps} />
-            <ToastContainer />
-          </Layout>
-        </UserProvider>
-      </SWRConfig>
-    </CacheProvider>
+    <SWRConfig
+      value={{
+        errorRetryCount: 1, // only retry once, then throw error
+        fetcher: (resource, init) =>
+          api.get(resource, init).then((res) => res.data),
+        onErrorRetry: (error) => {
+          toast.error(error.response?.data?.message || error.message || error)
+        },
+      }}
+    >
+      <UserProvider>
+        <TeamProvider>
+          <CacheProvider value={emotionCache}>
+            <Layout>
+              <Component {...pageProps} />
+              <ToastContainer />
+            </Layout>
+          </CacheProvider>
+        </TeamProvider>
+      </UserProvider>
+    </SWRConfig>
   )
 }
 

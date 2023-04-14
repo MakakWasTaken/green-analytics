@@ -78,7 +78,8 @@ const ResponsiveAppBar: FC = () => {
         top: 0,
         left: 0,
         zIndex: 1000,
-        backgroundColor: (theme) => theme.palette.background.surface,
+        backdropFilter: 'blur(5px)',
+        backgroundColor: (theme) => theme.palette.background.level1,
         color: (theme) => theme.palette.text.primary,
         display: 'flex',
         flexDirection: 'row',
@@ -92,7 +93,6 @@ const ResponsiveAppBar: FC = () => {
         sx={{
           mr: 2,
           display: { xs: 'none', md: 'flex' },
-          fontFamily: 'monospace',
           fontWeight: 700,
           letterSpacing: '.3rem',
           color: 'inherit',

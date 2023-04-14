@@ -1,9 +1,6 @@
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import {
   Box,
-  CircularProgress,
-  Option,
-  Select,
   Tab,
   TabList,
   TabPanel,
@@ -13,9 +10,10 @@ import {
 } from '@mui/joy'
 import { Team, User } from '@prisma/client'
 import AccountBox from '@src/components/Account/AccountBox'
-import { AccountInput } from '@src/components/Account/AccountInput'
+import TeamHeader from '@src/components/TeamHeader'
+import { TeamContext } from '@src/contexts/TeamContext'
 import { api } from '@src/utils/network'
-import { Suspense, useState } from 'react'
+import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
 enum Page {
@@ -47,32 +45,31 @@ const pageInfo: PageInfo[] = [
 const UserPage = withPageAuthRequired(
   () => {
     const { user: authUser } = useUser()
-    const { data: user } = useSWR<User>('/database/user/own')
+    const { selectedTeam, setSelectedTeam } = useContext(TeamContext)
+    const { data: user, mutate: setUser } = useSWR<User>('/database/user/own')
 
     const [index, setIndex] = useState(Page.General)
-    const [selectedTeam, setSelectedTeam] = useState<Pick<
-      Team,
-      'id' | 'name'
-    > | null>(null)
 
-    const { data: allTeams } = useSWR<Pick<Team, 'id' | 'name'>[]>(
-      index === Page.Team ? '/database/team/getAll' : null,
-    )
-    // Only load team info if on team page
-    const { data: teamInfo } = useSWR<Team>(
-      index === Page.Team && selectedTeam
-        ? `/database/team/${selectedTeam.id}/info`
-        : null,
-    )
+    const updateUser = async (value: User) => {
+      const user = await api.put<User>('/database/user/own', value)
+      setUser(user.data)
+    }
 
-    const updateUserField = async (field: keyof User, value: string) => {
-      await api.put('/database/user/own', {
-        [field]: value,
-      })
+    const updateTeam = async (value: Team) => {
+      if (!selectedTeam) {
+        console.error('No team selected')
+        return
+      }
+      const team = await api.put<Team>(
+        `/database/team/${selectedTeam.id}/info`,
+        value,
+      )
+      setSelectedTeam(team.data)
     }
 
     return (
       <Box sx={{ margin: 8 }}>
+        <TeamHeader />
         <Box sx={{ alignItems: 'center', display: 'flex' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -102,7 +99,10 @@ const UserPage = withPageAuthRequired(
           <Tabs
             value={index}
             onChange={(_, value) => setIndex(value as number)}
-            sx={{ '--Tabs-gap': '0px' }}
+            sx={{
+              '--Tabs-gap': '0px',
+              backgroundColor: (theme) => theme.palette.background.body,
+            }}
           >
             <TabList
               variant="plain"
@@ -145,45 +145,22 @@ const UserPage = withPageAuthRequired(
             <TabPanel value={Page.General}>
               <AccountBox
                 label="Personal Information"
-                inputs={[
-                  <AccountInput
-                    key="Name"
-                    label="Name"
-                    value={user?.name || ''}
-                    onChange={(e) => updateUserField('name', e.target.value)}
-                  />,
-                  <AccountInput
-                    key="Email"
-                    label="Email"
-                    disabled
-                    value={user?.email || ''}
-                  />,
+                object={user}
+                cells={[
+                  { field: 'name', label: 'Name' },
+                  { field: 'email', label: 'Email', disabled: true },
                 ]}
+                onSave={updateUser}
               />
             </TabPanel>
             <TabPanel value={Page.Privacy}></TabPanel>
             <TabPanel value={Page.Team}>
-              <Suspense fallback={<CircularProgress />}>
-                {selectedTeam && (
-                  <Select
-                    placeholder="Team"
-                    value={selectedTeam.id}
-                    onChange={(_, newValue) => {
-                      const team = allTeams?.find(
-                        (team) => team.id === newValue,
-                      )
-                      setSelectedTeam(team || null)
-                    }}
-                    sx={{ width: '100%' }}
-                  >
-                    {allTeams?.map((team) => (
-                      <Option key={team.id} value={team}>
-                        {team.name}
-                      </Option>
-                    ))}
-                  </Select>
-                )}
-              </Suspense>
+              <AccountBox
+                label="Team Information"
+                object={selectedTeam}
+                cells={[{ field: 'name', label: 'Name' }]}
+                onSave={updateTeam}
+              />
             </TabPanel>
           </Tabs>
         </Box>

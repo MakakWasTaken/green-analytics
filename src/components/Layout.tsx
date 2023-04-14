@@ -1,4 +1,4 @@
-import { Box, CssBaseline, CssVarsProvider, ThemeProvider } from '@mui/joy'
+import { Box, CssBaseline, CssVarsProvider } from '@mui/joy'
 import theme from '@src/styles/theme'
 import { Public_Sans as PublicSans } from 'next/font/google'
 import { FC, PropsWithChildren } from 'react'
@@ -12,22 +12,20 @@ const publicSans = PublicSans({
 
 export const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssVarsProvider>
-        <main className={publicSans.className}>
-          <CssBaseline />
-          <Header />
-          <Box
-            sx={{
-              marginTop: '75px', // Header height
-              height: 'calc(100vh - 75px)', // Header height
-            }}
-          >
-            {children}
-          </Box>
-          <Footer />
-        </main>
-      </CssVarsProvider>
-    </ThemeProvider>
+    <CssVarsProvider theme={theme} defaultMode="system">
+      <main className={publicSans.className}>
+        <CssBaseline />
+        <Header />
+        <Box
+          sx={{
+            marginTop: '75px', // Header height
+            height: 'calc(100vh - 75px)', // Header height
+          }}
+        >
+          {children}
+        </Box>
+        <Footer />
+      </main>
+    </CssVarsProvider>
   )
 }

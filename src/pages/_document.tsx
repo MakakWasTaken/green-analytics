@@ -27,7 +27,7 @@ export const GADocument = ({ emotionStyleTags }: GADocumentProps) => {
         {emotionStyleTags}
       </Head>
       <body>
-        {getInitColorSchemeScript()}
+        {getInitColorSchemeScript({ defaultMode: 'system' })}
         <Main />
         <NextScript />
       </body>
