@@ -79,7 +79,7 @@ const ResponsiveAppBar: FC = () => {
         left: 0,
         zIndex: 1000,
         backdropFilter: 'blur(5px)',
-        backgroundColor: (theme) => theme.palette.background.level1,
+        backgroundColor: 'rgba(0,0,0,0.05)',
         color: (theme) => theme.palette.text.primary,
         display: 'flex',
         flexDirection: 'row',

@@ -1,5 +1,7 @@
+import { Box } from '@mui/joy'
+
 const Footer = () => {
-  return <div>Footer</div>
+  return <Box sx={{ width: '100%' }}>Footer</Box>
 }
 
 export default Footer

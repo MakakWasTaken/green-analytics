@@ -15,6 +15,7 @@ const TeamHeader: FC = () => {
         display: 'flex',
         justifyContent: 'flex-end',
         paddingBottom: 2,
+        paddingTop: 2,
         marginBottom: 2,
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
       }}

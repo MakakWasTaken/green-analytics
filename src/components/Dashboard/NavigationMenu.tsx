@@ -1,4 +1,4 @@
-import { Box, List, ListItemButton, useColorScheme } from '@mui/joy'
+import { Box, List, ListItemButton } from '@mui/joy'
 import { useRouter } from 'next/router'
 
 interface Page {
@@ -20,12 +20,8 @@ const pages: Page[] = [
 const NavigationMenu = () => {
   const router = useRouter()
 
-  const { mode, systemMode } = useColorScheme()
-  console.log(mode) // "system"
-  console.log(systemMode)
-
   return (
-    <Box sx={{ width: '200px' }}>
+    <Box sx={{ minWidth: '200px', marginRight: { xs: 0, md: 4 } }}>
       {/* Navigation Menu */}
       <List
         orientation="vertical"
