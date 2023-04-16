@@ -1,12 +1,17 @@
-import { Box, Typography } from '@mui/joy'
+import { Box, Button, Typography } from '@mui/joy'
 import { FC, PropsWithChildren } from 'react'
 
 interface AccountBoxInterface {
   label: string
+  actionButton?: {
+    label: string
+    onClick: () => void
+  }
 }
 
 const AccountBox: FC<PropsWithChildren<AccountBoxInterface>> = ({
   label,
+  actionButton,
   children,
 }) => {
   return (
@@ -25,14 +30,20 @@ const AccountBox: FC<PropsWithChildren<AccountBoxInterface>> = ({
           border: (theme) => `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Typography
-          sx={{
-            fontSize: { xs: '1rem', md: '1.5rem' },
-            fontWeight: 'bold',
-          }}
-        >
-          {label}
-        </Typography>
+        <Box sx={{ display: 'flex', mb: 2 }}>
+          <Typography
+            sx={{
+              fontSize: { xs: '1rem', md: '1.5rem' },
+              fontWeight: 'bold',
+            }}
+          >
+            {label}
+          </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          {actionButton && (
+            <Button onClick={actionButton.onClick}>{actionButton.label}</Button>
+          )}
+        </Box>
         {children}
       </Box>
     </Box>
