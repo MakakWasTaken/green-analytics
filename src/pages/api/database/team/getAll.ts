@@ -10,11 +10,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession(req, res)
 
   if (method === 'GET') {
+    // Find all teams where we are a user
     const teams = await prisma.team.findMany({
       where: {
         users: {
           some: {
-            id: session?.user.sid,
+            id: session?.user.sub,
           },
         },
       },

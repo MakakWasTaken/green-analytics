@@ -36,7 +36,7 @@ const ResponsiveAppBar: FC = () => {
           href: '/api/auth/logout',
         },
       ]
-    : [{ label: 'Get Started', href: '/api/auth/login' }]
+    : [{ label: 'Get Started', href: '/dashboard' }]
 
   const router = useRouter()
 
@@ -128,7 +128,7 @@ const ResponsiveAppBar: FC = () => {
       </Box>
       <Link
         level="h5"
-        href=""
+        href="/"
         sx={{
           mr: 2,
           display: { xs: 'flex', md: 'none' },

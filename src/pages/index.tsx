@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Typography } from '@mui/joy'
+import { Box, CircularProgress, Typography } from '@mui/joy'
 import Link from '@src/components/Link'
 import Image from 'next/image'
 import { FC, Suspense } from 'react'
@@ -41,7 +41,7 @@ export const Home: FC = () => {
             The tool allows you to do basis analytics on your website and
             provides you with a score based on the SWD principles.
           </Typography>
-          <Button
+          <Link
             sx={{
               marginTop: '1rem',
               fontSize: { xs: '1rem', md: '1.25rem' },
@@ -54,7 +54,7 @@ export const Home: FC = () => {
             href="/dashboard" // Dashboard will redirect to login, if not logged in
           >
             Get Started
-          </Button>
+          </Link>
         </Box>
         <Box
           sx={{

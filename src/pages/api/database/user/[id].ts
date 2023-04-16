@@ -15,7 +15,7 @@ export const handle = withApiAuthRequired(
 
     // Get own teamId, because we only allow the user to fetch members of their own team
     const user = await prisma.user.findUnique({
-      where: { id: session?.user.sid },
+      where: { id: session?.user.sub },
       select: {
         teams: true,
       },

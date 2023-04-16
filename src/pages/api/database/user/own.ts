@@ -8,11 +8,11 @@ export const handle = withApiAuthRequired(
 
     const session = await getSession(req, res)
 
-    const userId = session?.user.sid
+    const userId = session?.user.sub
 
     if (userId) {
       if (method === 'GET') {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
           where: { id: userId },
         })
 

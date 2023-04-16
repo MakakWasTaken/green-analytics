@@ -12,7 +12,7 @@ export const handle = withApiAuthRequired(
 
     const session = await getSession(req, res)
     const team = await prisma.team.findFirst({
-      where: { id: teamId, users: { some: { id: session?.user.sid } } },
+      where: { id: teamId, users: { some: { id: session?.user.sub } } },
       include: {
         users: true,
         roles: true,
@@ -33,7 +33,7 @@ export const handle = withApiAuthRequired(
       const teamRole = await prisma.teamRole.findFirst({
         where: {
           teamId,
-          userId: session?.user.sid,
+          userId: session?.user.sub,
           role: 'OWNER',
         },
       })

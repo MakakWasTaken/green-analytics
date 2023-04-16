@@ -15,7 +15,7 @@ model User {
   name      String?
   picture   String?
   // A user can be part of multiple teams
-  teams     Team[]     @relation("Team")
+  teams     Team[]     @relation("TeamUser")
   roles     TeamRole[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -24,8 +24,8 @@ model User {
 model Team {
   id        String     @id @default(uuid())
   name      String
-  users      User[]     @relation("Team")
-  websites  Websites[]
+  users     User[]     @relation("TeamUser")
+  websites  Website[]
   roles     TeamRole[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -45,14 +45,66 @@ model TeamRole {
   @@index([teamId])
 }
 
-model Websites {
-  id     String @id @default(uuid())
-  name   String
-  team   Team   @relation(fields: [teamId], references: [id])
-  teamId String
+model Website {
+  id      String   @id @default(uuid())
+  name    String
+  team    Team     @relation(fields: [teamId], references: [id])
+  teamId  String
+  events  Event[]
+  persons Person[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([teamId], name: "teamId")
+}
+
+model Person {
+  id         String     @id @default(uuid())
+  name       String
+  email      String
+  properties Property[] @relation("PersonProperty") // 1-to-many relation
+  events     Event[]    @relation("PersonEvent") // 1-to-many relation
+  website    Website    @relation(fields: [websiteId], references: [id])
+  websiteId  String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([websiteId])
+}
+
+model Event {
+  id   String @id @default(uuid())
+  name String
+  type String
+
+  properties Property[] @relation("EventProperty") // 1-to-many relation
+
+  person    Person? @relation("PersonEvent", fields: [personId], references: [id]) // 0-to-1 relation
+  personId  String?
+  website   Website @relation(fields: [websiteId], references: [id])
+  websiteId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([personId])
+  @@index([websiteId])
+}
+
+model Property {
+  id    String @id @default(uuid())
+  key   String
+  value String
+
+  event    Event   @relation("EventProperty", fields: [eventId], references: [id]) // 1-to-1 relation
+  eventId  String
+  person   Person? @relation("PersonProperty", fields: [personId], references: [id]) // 0-to-1 relation
+  personId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([personId])
 }
