@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "prettier . --write && next lint",
-    "db:update": "prisma generate --data-proxy && prisma db push"
+    "db:update": "prisma generate --data-proxy"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^2.4.0",
@@ -17,7 +17,8 @@
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",
     "@mui/joy": "^5.0.0-alpha.75",
-    "@mui/material": "npm:@mui/joy@latest",
+    "@mui/material": "^5.12.0",
+    "@mui/x-data-grid": "^6.2.0",
     "@prisma/client": "4.12.0",
     "axios": "^1.3.5",
     "chart.js": "^4.2.1",
@@ -28,9 +29,6 @@
     "react-dom": "18.2.0",
     "react-toastify": "^9.1.2",
     "swr": "^2.1.3"
-  },
-  "resolutions": {
-    "@mui/material": "npm:@mui/joy@latest"
   },
   "devDependencies": {
     "@types/luxon": "^3.3.0",

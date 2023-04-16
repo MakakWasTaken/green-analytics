@@ -1,44 +1,53 @@
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import {
   Box,
+  Button,
   Tab,
   TabList,
   TabPanel,
+  Table,
   Tabs,
   Typography,
   tabClasses,
 } from '@mui/joy'
 import { Team, User } from '@prisma/client'
 import AccountBox from '@src/components/Account/AccountBox'
+import AccountUpdateBox from '@src/components/Account/AccountUpdateBox'
+import Websites from '@src/components/Account/Panels/Websites'
 import TeamHeader from '@src/components/TeamHeader'
 import { TeamContext } from '@src/contexts/TeamContext'
 import { api } from '@src/utils/network'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
-enum Page {
+export enum AccountPage {
   General = 0,
   Privacy = 1,
-  Team = 2,
+  Websites = 2,
+  Team = 3,
 }
 
 interface PageInfo {
   title: string
-  page: Page
+  page: AccountPage
 }
 
 const pageInfo: PageInfo[] = [
   {
     title: 'General',
-    page: Page.General,
+    page: AccountPage.General,
   },
   {
     title: 'Privacy',
-    page: Page.Privacy,
+    page: AccountPage.Privacy,
+  },
+  {
+    title: 'Websites',
+    page: AccountPage.Websites,
   },
   {
     title: 'Team',
-    page: Page.Team,
+    page: AccountPage.Team,
   },
 ]
 
@@ -48,7 +57,7 @@ const UserPage = withPageAuthRequired(
     const { selectedTeam, setSelectedTeam } = useContext(TeamContext)
     const { data: user, mutate: setUser } = useSWR<User>('/database/user/own')
 
-    const [index, setIndex] = useState(Page.General)
+    const [index, setIndex] = useState(AccountPage.General)
 
     const updateUser = async (value: User) => {
       const user = await api.put<User>('/database/user/own', value)
@@ -142,8 +151,8 @@ const UserPage = withPageAuthRequired(
                 <Tab key={pageInfo.page}>{pageInfo.title}</Tab>
               ))}
             </TabList>
-            <TabPanel value={Page.General}>
-              <AccountBox
+            <TabPanel value={AccountPage.General}>
+              <AccountUpdateBox
                 label="Personal Information"
                 object={user}
                 cells={[
@@ -153,15 +162,39 @@ const UserPage = withPageAuthRequired(
                 onSave={updateUser}
               />
             </TabPanel>
-            <TabPanel value={Page.Privacy}></TabPanel>
-            <TabPanel value={Page.Team}>
-              <AccountBox
+            <TabPanel value={AccountPage.Privacy}></TabPanel>
+            <TabPanel value={AccountPage.Team}>
+              <AccountUpdateBox
                 label="Team Information"
                 object={selectedTeam}
                 cells={[{ field: 'name', label: 'Name' }]}
                 onSave={updateTeam}
               />
+              <AccountBox label="Team Members">
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th style={{ width: 'min-content' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedTeam?.users.map((user) => (
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>
+                          <Button>Change Role</Button>
+                          <Button color="danger">Remove</Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </AccountBox>
             </TabPanel>
+            <Websites />
           </Tabs>
         </Box>
       </Box>

@@ -16,6 +16,7 @@ export const handle = withApiAuthRequired(
       include: {
         users: true,
         roles: true,
+        websites: true,
       },
     })
 

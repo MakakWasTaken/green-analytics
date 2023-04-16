@@ -48,6 +48,8 @@ model TeamRole {
 model Website {
   id      String   @id @default(uuid())
   name    String
+  url     String
+  token   String   @unique
   team    Team     @relation(fields: [teamId], references: [id])
   teamId  String
   events  Event[]

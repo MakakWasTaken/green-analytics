@@ -25,6 +25,7 @@ export const handle = withApiAuthRequired(
               id: userId,
               name: sessionUser.name,
               email: sessionUser.email,
+              picture: sessionUser.picture,
               teams: {
                 create: [
                   {
