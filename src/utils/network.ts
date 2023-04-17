@@ -1,7 +1,10 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? 'https://green-analytics.vercel.app/api'
+      : 'http://localhost:3000/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
