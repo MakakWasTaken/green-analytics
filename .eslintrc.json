@@ -11,7 +11,7 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "plugins": ["import", "prettier", "@typescript-eslint", "prefer-arrow"],
-  "ignorePatterns": ["*.js", "dist", "node_modules", "build"],
+  "ignorePatterns": ["dist", "node_modules", "build"],
   "parserOptions": {
     "requireConfigFile": false
   },

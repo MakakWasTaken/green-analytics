@@ -10,6 +10,7 @@ import {
   TabPanel,
   Typography,
 } from '@mui/joy'
+import { Button as MUIButton } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 import type {} from '@mui/x-data-grid/themeAugmentation'
 import { Website } from '@prisma/client'
@@ -40,9 +41,9 @@ const Websites = () => {
       field: 'token',
       headerName: 'Setup',
       renderCell: (props) => (
-        <Button onClick={() => setViewTokenDialog(props.value)}>
+        <MUIButton onClick={() => setViewTokenDialog(props.value)}>
           View Code
-        </Button>
+        </MUIButton>
       ),
     },
     { field: 'createdAt', headerName: 'Created', hideable: true },
@@ -103,7 +104,7 @@ const Websites = () => {
         <ModalDialog>
           <ModalClose />
           <Typography level="h4">Website Setup</Typography>
-          <Typography level="h5">
+          <Typography>
             Copy and paste this code into your website header
           </Typography>
           <pre>{viewTokenDialog}</pre>

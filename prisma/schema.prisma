@@ -63,8 +63,8 @@ model Website {
 
 model Person {
   id         String     @id @default(uuid())
-  name       String
-  email      String
+  name       String?
+  email      String?
   properties Property[] @relation("PersonProperty") // 1-to-many relation
   events     Event[]    @relation("PersonEvent") // 1-to-many relation
   website    Website    @relation(fields: [websiteId], references: [id])
@@ -79,6 +79,8 @@ model Event {
   id   String @id @default(uuid())
   name String
   type String
+
+  sessionId String
 
   properties Property[] @relation("EventProperty") // 1-to-many relation
 
