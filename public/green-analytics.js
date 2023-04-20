@@ -16,6 +16,15 @@ const getToken = () => {
   return token
 }
 
+const getCookie = (name) => {
+  for (let cookie of document.cookie.split(';')) {
+    cookie = cookie.trim()
+    if (cookie.startsWith(name)) {
+      return cookie.split('=')[1]
+    }
+  }
+}
+
 const init = () => {
   // Check if doNotTrack is enabled, if so cancel the script
   if (navigator.doNotTrack === '1') {
@@ -25,12 +34,21 @@ const init = () => {
   const scripts = document.getElementsByTagName('script')
 
   // Get all scripts that are not green-analytics.js
-  const otherScripts = []
+  let otherScripts = []
   for (let i = 0; i < scripts.length; i++) {
-    if (!scripts[i].src.includes('green-analytics.js')) {
-      otherScripts.push(scripts[i].src)
+    if (
+      scripts[i].src.startsWith('http') &&
+      !scripts[i].src.includes('green-analytics.js')
+    ) {
+      const url = new URL(scripts[i].src)
+      otherScripts.push(url.origin)
     }
   }
+
+  // Remove duplicates from otherScripts
+  otherScripts = otherScripts.filter(
+    (value, index, self) => self.indexOf(value) === index,
+  )
 
   // Send the pageview event
   const event = {
@@ -53,37 +71,25 @@ const init = () => {
   logEvent(event)
 }
 
-// Intercept all fetches
-const { fetch: originalFetch } = window
-
-window.fetch = async (...args) => {
-  const [resource, config] = args
-  // request interceptor here
-  const response = await originalFetch(resource, config)
-
-  // Log the request if it is not a request to the green-analytics server
-  if (!resource.includes('green-analytics.com')) {
-    const event = {
-      name: resource,
-      type: 'request',
-      website: {
-        url: window.location.origin,
-      },
-      properties: {
-        method: config.method,
-        status: response.status,
-        url: resource,
-
-        // size: Add the size of the response
-        // duration: Add the duration of the request
-      },
+const getSessionId = () => {
+  let sessionId
+  if (navigator.cookieEnabled) {
+    sessionId = getCookie('green-analytics-session-id')
+  }
+  if (!sessionId) {
+    // Check if the person is already set
+    sessionId = sessionStorage.getItem('green-analytics-session-id')
+    if (!sessionId) {
+      sessionId = Math.random().toString(36).substring(2, 15)
+      if (navigator.cookieEnabled) {
+        document.cookie = `green-analytics-session-id=${sessionId}`
+      } else {
+        sessionStorage.setItem('green-analytics-session-id', sessionId)
+      }
     }
-
-    // Might need to consider batching the requests (To decrease emissions)
-    logEvent(event)
   }
 
-  return response
+  return sessionId
 }
 
 const setPerson = (person) => {
@@ -100,16 +106,16 @@ const setPerson = (person) => {
   }
 
   // Store the person id in the sessionStorage to make identifying easier
-  sessionStorage.setItem('green-analytics-person-id', person.id)
-
-  let sessionId = sessionStorage.getItem('green-analytics-session-id')
-  if (!sessionId) {
-    sessionId = Math.random().toString(36).substring(2, 15)
-    sessionStorage.setItem('green-analytics-session-id', sessionId)
+  if (navigator.cookieEnabled) {
+    document.cookie = `green-analytics-person-id=${person.id}`
+  } else {
+    sessionStorage.setItem('green-analytics-person-id', person.id)
   }
 
+  const sessionId = getSessionId()
+
   // Send the person to the server
-  fetch('https://green-analytics.com/api/database/events/setPerson', {
+  fetch('/api/database/events/setPerson', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -128,22 +134,26 @@ const logEvent = (event) => {
 
   const token = getToken()
 
-  let sessionId = sessionStorage.getItem('green-analytics-session-id')
-  if (!sessionId) {
-    sessionId = Math.random().toString(36).substring(2, 15)
-    sessionStorage.setItem('green-analytics-session-id', sessionId)
+  const sessionId = getSessionId()
+  let personId
+  if (navigator.cookieEnabled) {
+    personId = getCookie('green-analytics-person-id')
+  }
+  if (!personId) {
+    // If a person id is set sent it with the request
+    personId = sessionStorage.getItem('green-analytics-person-id')
   }
 
   // Send the event to the server
-  fetch('https://green-analytics.com/api/database/events/logEvent', {
+  fetch('/api/database/events/logEvent', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
 
       // Add the token to the header
-      API_KEY: token,
+      API_TOKEN: token,
     },
-    body: JSON.stringify({ event, sessionId }),
+    body: JSON.stringify({ event, sessionId, personId }),
   })
 }
 

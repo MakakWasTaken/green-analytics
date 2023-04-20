@@ -19,6 +19,7 @@ import { TeamContext } from '@src/contexts/TeamContext'
 import { AccountPage } from '@src/pages/account'
 import { api } from '@src/utils/network'
 import { useContext, useState } from 'react'
+import SyntaxHighlighter from 'react-syntax-highlighter'
 import { toast } from 'react-toastify'
 import useSWR from 'swr'
 import AccountBox from '../AccountBox'
@@ -105,9 +106,16 @@ const Websites = () => {
           <ModalClose />
           <Typography level="h4">Website Setup</Typography>
           <Typography>
-            Copy and paste this code into your website header
+            Copy and paste this code into your website header. It should be the
+            first thing in the <code>&lt;head&gt;</code> tag.
           </Typography>
-          <pre>{viewTokenDialog}</pre>
+          <SyntaxHighlighter language="html">
+            {`<script
+  async
+  src="https://green-analytics.vercel.app/green-analytics.js"
+  data-token="${viewTokenDialog}"
+/>`}
+          </SyntaxHighlighter>
         </ModalDialog>
       </Modal>
       <AccountBox

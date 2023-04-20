@@ -24,6 +24,11 @@ export const GADocument = ({ emotionStyleTags }: GADocumentProps) => {
         <meta name="theme-color" content={theme.palette.primary.mainChannel} />
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="emotion-insertion-point" content="" />
+        <script
+          async
+          src="http://localhost:3000/green-analytics.js"
+          data-token="b3cdaa7c-ca1b-4641-b01f-dace971b7850"
+        />
         {emotionStyleTags}
       </Head>
       <body>
