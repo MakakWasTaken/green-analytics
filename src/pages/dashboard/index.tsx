@@ -35,6 +35,13 @@ const Dashboard = withPageAuthRequired(
         : null,
     )
 
+    const { data: previousMonthProperties } = useSWR<Property[]>(
+      selectedWebsite
+        ? `/database/properties?websiteId=${selectedWebsite.id}&start=` +
+            DateTime.now().minus({ months: 1 }).toISODate()
+        : null,
+    )
+
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
       return datetime.toFormat('ccc')
@@ -74,15 +81,15 @@ const Dashboard = withPageAuthRequired(
       return eventsByType
     }
 
-    const countEventsByProperty = (
-      events: (Event & { properties: Property[] })[],
+    const countProperties = (
+      properties: Property[],
       propertyKey: string,
     ): Map<string, number> => {
       const eventsByProperty = new Map<string, number>()
-      events.forEach((event) => {
-        const property = event.properties.find((p) => p.key === propertyKey)
-        if (property) {
-          const value = JSON.parse(property.value)
+      const filteredProperties = properties.filter((p) => p.key === propertyKey)
+      filteredProperties.forEach((filteredProperty) => {
+        if (filteredProperty) {
+          const value = JSON.parse(filteredProperty.value)
           if (eventsByProperty.has(value)) {
             eventsByProperty.set(
               value,
@@ -211,8 +218,8 @@ const Dashboard = withPageAuthRequired(
               label="Browser"
               data={{
                 labels: Array.from(
-                  countEventsByProperty(
-                    previousMonthEvents || [],
+                  countProperties(
+                    previousMonthProperties || [],
                     'browser',
                   ).keys(),
                 ),
@@ -222,8 +229,8 @@ const Dashboard = withPageAuthRequired(
                     backgroundColor: getRandomColor(5),
                     borderWidth: 0,
                     data: Array.from(
-                      countEventsByProperty(
-                        previousMonthEvents || [],
+                      countProperties(
+                        previousMonthProperties || [],
                         'browser',
                       ).values(),
                     ),
