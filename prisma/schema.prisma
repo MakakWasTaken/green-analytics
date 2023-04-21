@@ -54,11 +54,12 @@ model Website {
   teamId  String
   events  Event[]
   persons Person[]
+  properties Property[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([teamId], name: "teamId")
+  @@index([teamId])
 }
 
 model Person {
@@ -80,10 +81,6 @@ model Event {
   name String
   type String
 
-  sessionId String
-
-  properties Property[] @relation("EventProperty") // 1-to-many relation
-
   person    Person? @relation("PersonEvent", fields: [personId], references: [id]) // 0-to-1 relation
   personId  String?
   website   Website @relation(fields: [websiteId], references: [id])
@@ -101,14 +98,16 @@ model Property {
   key   String
   value String
 
-  event    Event   @relation("EventProperty", fields: [eventId], references: [id]) // 1-to-1 relation
-  eventId  String
   person   Person? @relation("PersonProperty", fields: [personId], references: [id]) // 0-to-1 relation
   personId String?
+  website   Website @relation(fields: [websiteId], references: [id])
+  websiteId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([eventId])
+  @@unique([personId, key]) // Ensure that each person can only have one property per key
+
+  @@index([websiteId])
   @@index([personId])
 }
