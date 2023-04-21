@@ -15,7 +15,7 @@ import AccountBox from '@src/components/Account/AccountBox'
 import AccountUpdateBox from '@src/components/Account/AccountUpdateBox'
 import Websites from '@src/components/Account/Panels/Websites'
 import TeamHeader from '@src/components/TeamHeader'
-import { TeamContext } from '@src/contexts/TeamContext'
+import { HeaderContext } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
@@ -54,7 +54,7 @@ const pageInfo: PageInfo[] = [
 const UserPage = withPageAuthRequired(
   () => {
     const { user: authUser } = useUser()
-    const { selectedTeam, setSelectedTeam } = useContext(TeamContext)
+    const { selectedTeam, setSelectedTeam } = useContext(HeaderContext)
     const { data: user, mutate: setUser } = useSWR<User>('/database/user/own')
 
     const [index, setIndex] = useState(AccountPage.General)

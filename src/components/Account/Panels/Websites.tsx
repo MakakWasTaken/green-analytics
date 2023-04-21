@@ -15,7 +15,7 @@ import { GridColDef } from '@mui/x-data-grid'
 import type {} from '@mui/x-data-grid/themeAugmentation'
 import { Website } from '@prisma/client'
 import MUIDataGrid from '@src/components/MUIDataGrid'
-import { TeamContext } from '@src/contexts/TeamContext'
+import { HeaderContext } from '@src/contexts/HeaderContext'
 import { AccountPage } from '@src/pages/account'
 import { api } from '@src/utils/network'
 import { useContext, useState } from 'react'
@@ -25,7 +25,7 @@ import useSWR from 'swr'
 import AccountBox from '../AccountBox'
 
 const Websites = () => {
-  const { selectedTeam } = useContext(TeamContext)
+  const { selectedTeam } = useContext(HeaderContext)
   const { data, mutate: updateMembers } = useSWR<Website[]>(
     selectedTeam ? '/database/website/getAll?teamId=' + selectedTeam.id : null,
   )

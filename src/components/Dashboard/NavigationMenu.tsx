@@ -15,6 +15,10 @@ const pages: Page[] = [
     title: 'Event Types',
     href: '/dashboard/event-types',
   },
+  {
+    title: 'Persons',
+    href: '/dashboard/persons',
+  },
 ]
 
 const NavigationMenu = () => {

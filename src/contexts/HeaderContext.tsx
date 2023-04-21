@@ -15,22 +15,29 @@ type ContextState = {
     | null
     | undefined
   setSelectedTeam: React.Dispatch<React.SetStateAction<Team | null>>
+  selectedWebsite: Website | null
+  setSelectedWebsite: React.Dispatch<React.SetStateAction<Website | null>>
 }
 
-export const TeamContext = React.createContext<ContextState>({
+export const HeaderContext = React.createContext<ContextState>({
   allTeams: [],
   selectedTeam: null,
   setSelectedTeam: () => {
     // do nothing
   },
+  selectedWebsite: null,
+  setSelectedWebsite: () => {
+    // do nothing
+  },
 })
 
-export const TeamProvider: FC<React.PropsWithChildren> = ({ children }) => {
+export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const { user } = useUser()
   const { data: allTeams } = useSWR<Team[]>(
     user ? '/database/team/getAll' : null,
   )
   const [internalSelectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null)
   const { data: selectedTeam } = useSWR<
     // eslint-disable-next-line func-call-spacing
     | (Team & {
@@ -52,14 +59,16 @@ export const TeamProvider: FC<React.PropsWithChildren> = ({ children }) => {
   }, [allTeams])
 
   return (
-    <TeamContext.Provider
+    <HeaderContext.Provider
       value={{
         allTeams,
         selectedTeam,
         setSelectedTeam,
+        selectedWebsite,
+        setSelectedWebsite,
       }}
     >
       {children}
-    </TeamContext.Provider>
+    </HeaderContext.Provider>
   )
 }

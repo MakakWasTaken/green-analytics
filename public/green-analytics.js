@@ -1,3 +1,32 @@
+/**
+ * @typedef {object} Property
+ * @property {string} key - The key of the property
+ * @property {object} value - The value of the property
+ */
+
+/**
+ * The complete Triforce, or one or more components of the Triforce.
+ * @typedef {object} Person
+ * @property {string} id - The id of the person
+ * @property {string} [name] - The name of the person
+ * @property {string} [email] - The email of the person
+ * @property {ArrayLike<Property>} [properties] - The properties of the person
+ */
+
+/**
+ * An event
+ * @typedef {object} Event
+ * @property {string} name - The name of the event
+ * @property {string} type - The type of the event
+ * @property {object} [website] - The website of the event
+ * @property {string} [website.url] - The url of the website
+ */
+
+/**
+ * Get the token from the script tag
+ *
+ * @returns {string} The token that is set on the script tag
+ */
 const getToken = () => {
   // Extract the token from the script tag
   let token = ''
@@ -25,7 +54,58 @@ const getCookie = (name) => {
   }
 }
 
-const init = () => {
+/**
+ * Helper function to extract browser from user agent
+ */
+const getBrowser = () => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  if (userAgent.match(/chrome|chromium|crios/)) {
+    return 'Chrome'
+  } else if (userAgent.match(/firefox|fxios/)) {
+    return 'Firefox'
+  } else if (userAgent.match(/safari/)) {
+    return 'Safari'
+  } else if (userAgent.match(/opr\//)) {
+    return 'Opera'
+  } else if (userAgent.match(/edg/)) {
+    return 'Edge'
+  } else {
+    return 'Other'
+  }
+}
+
+const getOS = () => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  if (userAgent.match(/windows/)) {
+    return 'Windows'
+  } else if (userAgent.match(/macintosh/)) {
+    return 'Mac'
+  } else if (userAgent.match(/linux/) || userAgent.match(/x11/)) {
+    return 'Linux'
+  } else if (userAgent.match(/iphone/)) {
+    return 'iOS'
+  } else if (userAgent.match(/android/)) {
+    return 'Android'
+  } else {
+    return 'Other'
+  }
+}
+
+const getMobile = () => {
+  const userAgent = navigator.userAgent.toLowerCase()
+  if (userAgent.match(/mobile/)) {
+    return true
+  } else {
+    return false
+  }
+}
+
+/**
+ * Initialize the analytics framework
+ *
+ * @returns {Promise<void>} A promise that resolves when the framework is initialized
+ */
+const initGA = async () => {
   // Check if doNotTrack is enabled, if so cancel the script
   if (navigator.doNotTrack === '1') {
     return
@@ -58,17 +138,16 @@ const init = () => {
     website: {
       url: window.location.origin,
     },
-    properties: {
-      referrer: document.referrer,
-      // Add available information about the person agent
-      language: navigator.language,
-      personAgent: navigator.personAgent,
-
-      urls: otherScripts,
-    },
   }
 
-  logEvent(event)
+  const properties = {
+    browser: getBrowser(),
+    os: getOS(),
+    mobile: getMobile(),
+    urls: otherScripts,
+  }
+
+  await logEvent(event, properties)
 }
 
 const getSessionId = () => {
@@ -92,7 +171,13 @@ const getSessionId = () => {
   return sessionId
 }
 
-const setPerson = (person) => {
+/**
+ * Set the person that is currently using the website
+ *
+ * @param {Person} person
+ * @returns {Promise<void>} A promise that resolves when the person is set
+ */
+const setPerson = async (person) => {
   const token = getToken()
 
   // The only required information is a id
@@ -115,7 +200,7 @@ const setPerson = (person) => {
   const sessionId = getSessionId()
 
   // Send the person to the server
-  fetch('/api/database/events/setPerson', {
+  await fetch('/api/database/events/setPerson', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -127,7 +212,14 @@ const setPerson = (person) => {
   })
 }
 
-const logEvent = (event) => {
+/**
+ * Log an event
+ *
+ * @param {Event} event The event that is being logged
+ * @param {ArrayLike<Property>} properties The properties of the user using this event
+ * @returns {Promise<void>} A promise that resolves when the event is logged
+ */
+const logEvent = async (event, properties) => {
   if (navigator.doNotTrack === '1') {
     return
   }
@@ -145,7 +237,7 @@ const logEvent = (event) => {
   }
 
   // Send the event to the server
-  fetch('/api/database/events/logEvent', {
+  await fetch('/api/database/events/logEvent', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -153,9 +245,9 @@ const logEvent = (event) => {
       // Add the token to the header
       API_TOKEN: token,
     },
-    body: JSON.stringify({ event, sessionId, personId }),
+    body: JSON.stringify({ event, properties, sessionId, personId }),
   })
 }
 
 // Path: public/green-analytics.js
-init()
+initGA()

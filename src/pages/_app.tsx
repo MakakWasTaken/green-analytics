@@ -1,7 +1,7 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { Layout } from '@src/components/Layout'
-import { TeamProvider } from '@src/contexts/TeamContext'
+import { HeaderProvider } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'
 import { AppProps } from 'next/app'
 import { ToastContainer, toast } from 'react-toastify'
@@ -31,14 +31,14 @@ export const GAApp = (props: GAAppProps) => {
       }}
     >
       <UserProvider>
-        <TeamProvider>
+        <HeaderProvider>
           <CacheProvider value={emotionCache}>
             <Layout>
               <Component {...pageProps} />
               <ToastContainer />
             </Layout>
           </CacheProvider>
-        </TeamProvider>
+        </HeaderProvider>
       </UserProvider>
     </SWRConfig>
   )

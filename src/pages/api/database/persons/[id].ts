@@ -1,0 +1,57 @@
+import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
+import prisma from '@src/lib/prisma'
+import { NextApiRequest, NextApiResponse } from 'next'
+
+const handle = withApiAuthRequired(
+  async (req: NextApiRequest, res: NextApiResponse) => {
+    const method = req.method
+
+    const session = await getSession(req, res)
+
+    if (!session) {
+      res.status(401).json({ ok: false, message: 'Unauthorized' })
+      return
+    }
+
+    if (method === 'GET') {
+      const person = await prisma.person.findFirst({
+        where: {
+          id: session?.user.sub,
+          website: {
+            team: {
+              users: {
+                some: {
+                  id: session?.user.sub,
+                },
+              },
+            },
+          },
+        },
+        include: {
+          events: {
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+          properties: {
+            distinct: 'key',
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+        },
+      })
+
+      if (!person) {
+        res.status(404).json({ ok: false, message: 'Person not found' })
+        return
+      }
+
+      res.json(person)
+    } else {
+      res.status(405).json({ ok: false, message: 'Method not allowed' })
+    }
+  },
+)
+
+export default handle

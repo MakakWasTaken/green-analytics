@@ -1,38 +1,105 @@
+/* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import { Box, Grid, Typography, useTheme } from '@mui/joy'
+import { Event, Property } from '@prisma/client'
 import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
 import LineChart from '@src/components/Dashboard/Charts/LineChart'
 import RadarChart from '@src/components/Dashboard/Charts/RadarChart'
 import GridBox from '@src/components/Dashboard/Grid/GridBox'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import TeamHeader from '@src/components/TeamHeader'
+import { HeaderContext } from '@src/contexts/HeaderContext'
 import { getRandomColor } from '@src/utils/utils'
 import { DateTime } from 'luxon'
+import { useContext } from 'react'
+import useSWR from 'swr'
 
 const Dashboard = withPageAuthRequired(
   () => {
     const theme = useTheme()
 
+    const { selectedWebsite } = useContext(HeaderContext)
+
+    const { data: previous2WeeksEvents } = useSWR<Event[]>(
+      selectedWebsite
+        ? `/database/events?websiteId=${selectedWebsite.id}&start=` +
+            DateTime.now().minus({ weeks: 2 }).toISODate()
+        : null,
+    )
+    const { data: previousMonthEvents } = useSWR<
+      (Event & { properties: Property[] })[]
+    >(
+      selectedWebsite
+        ? `/database/events?websiteId=${selectedWebsite.id}&start=` +
+            DateTime.now().minus({ months: 1 }).toISODate()
+        : null,
+    )
+
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
-      return datetime.toFormat('LLL dd')
+      return datetime.toFormat('ccc')
     })
-    // const previousWeekDays = new Array(7).fill(0).map((_, i) => {
-    //   const datetime = DateTime.now()
-    //     .startOf('week')
-    //     .minus({ weeks: 1 })
-    //     .plus({ days: i })
-    //   return datetime.toFormat('LLL dd')
-    // })
     const weekdays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
       return datetime.toFormat('ccc')
     })
     const today = DateTime.now().toFormat('LLL dd')
 
+    const extractEventsByDay = (events: Event[]) => {
+      const eventsByDay = new Array(7).fill(0)
+      events.forEach((event) => {
+        const eventDay = DateTime.fromISO(event.createdAt as any).toFormat(
+          'ccc',
+        )
+        const eventDayIndex = weekdays.indexOf(eventDay)
+        eventsByDay[eventDayIndex] += 1
+      })
+      return eventsByDay
+    }
+
+    const averageEventsByDay = extractEventsByDay(
+      previousMonthEvents || [],
+    ).map((e) => Math.round(e / 4))
+
+    const extractEventsByType = (events: Event[]) => {
+      const eventsByType = new Map<string, number>()
+      events.forEach((event) => {
+        if (eventsByType.has(event.type)) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          eventsByType.set(event.type, eventsByType.get(event.type)! + 1)
+        } else {
+          eventsByType.set(event.type, 1)
+        }
+      })
+      return eventsByType
+    }
+
+    const countEventsByProperty = (
+      events: (Event & { properties: Property[] })[],
+      propertyKey: string,
+    ): Map<string, number> => {
+      const eventsByProperty = new Map<string, number>()
+      events.forEach((event) => {
+        const property = event.properties.find((p) => p.key === propertyKey)
+        if (property) {
+          const value = JSON.parse(property.value)
+          if (eventsByProperty.has(value)) {
+            eventsByProperty.set(
+              value,
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              eventsByProperty.get(value)! + 1,
+            )
+          } else {
+            eventsByProperty.set(value, 1)
+          }
+        }
+      })
+      return eventsByProperty
+    }
+
     return (
       <Box sx={{ margin: 8 }}>
-        <TeamHeader />
+        <TeamHeader selectWebsite />
         <Box
           sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}
         >
@@ -44,7 +111,16 @@ const Dashboard = withPageAuthRequired(
           >
             <GridBox md={4} label="Page Views">
               <Box>
-                <Typography level="h1">1</Typography>
+                <Typography level="h1">
+                  {
+                    previous2WeeksEvents?.filter(
+                      (e) =>
+                        e.type === 'pageview' &&
+                        DateTime.fromISO(e.createdAt as any).weekNumber ===
+                          DateTime.now().weekNumber,
+                    ).length
+                  }
+                </Typography>
                 <Typography level="h6">This week</Typography>
               </Box>
             </GridBox>
@@ -71,7 +147,7 @@ const Dashboard = withPageAuthRequired(
                         ? 5
                         : 1,
                     pointHitRadius: 10,
-                    data: [1, 2, 3, 4, 5, 6, 7],
+                    data: averageEventsByDay,
                   },
                 ],
               }}
@@ -84,6 +160,7 @@ const Dashboard = withPageAuthRequired(
                 labels: thisWeekDays,
                 datasets: [
                   {
+                    label: 'This week',
                     normalized: true,
                     borderColor: theme.palette.primary[500],
                     backgroundColor: theme.palette.primary[500],
@@ -94,7 +171,37 @@ const Dashboard = withPageAuthRequired(
                         ? 5
                         : 1,
                     pointHitRadius: 10,
-                    data: [1, 2, 3, 4, 5],
+                    cubicInterpolationMode: 'monotone',
+                    data: extractEventsByDay(
+                      previous2WeeksEvents?.filter(
+                        (e) =>
+                          e.type === 'pageview' &&
+                          DateTime.fromISO(e.createdAt as any) >
+                            DateTime.now().minus({ week: 1 }),
+                      ) || [],
+                    ),
+                  },
+                  {
+                    label: 'Previous week',
+                    normalized: true,
+                    borderColor: theme.palette.neutral[500],
+                    backgroundColor: theme.palette.neutral[500],
+                    pointRadius: (ctx) =>
+                      ctx.chart.data.labels?.[ctx.dataIndex] === today
+                        ? 3
+                        : ctx.active
+                        ? 5
+                        : 1,
+                    pointHitRadius: 10,
+                    cubicInterpolationMode: 'monotone',
+                    data: extractEventsByDay(
+                      previous2WeeksEvents?.filter(
+                        (e) =>
+                          e.type === 'pageview' &&
+                          DateTime.fromISO(e.createdAt as any) <=
+                            DateTime.now().minus({ week: 1 }),
+                      ) || [],
+                    ),
                   },
                 ],
               }}
@@ -103,13 +210,23 @@ const Dashboard = withPageAuthRequired(
               md={4}
               label="Browser"
               data={{
-                labels: ['Chrome', 'Safari', 'Firefox', 'Edge', 'Other'],
+                labels: Array.from(
+                  countEventsByProperty(
+                    previousMonthEvents || [],
+                    'browser',
+                  ).keys(),
+                ),
                 datasets: [
                   {
                     normalized: true,
                     backgroundColor: getRandomColor(5),
                     borderWidth: 0,
-                    data: [1, 2, 3, 4, 5],
+                    data: Array.from(
+                      countEventsByProperty(
+                        previousMonthEvents || [],
+                        'browser',
+                      ).values(),
+                    ),
                   },
                 ],
               }}

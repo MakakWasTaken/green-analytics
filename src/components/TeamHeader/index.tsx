@@ -1,16 +1,19 @@
 import { Box, CircularProgress, Option, Select } from '@mui/joy'
-import { Website } from '@prisma/client'
-import { TeamContext } from '@src/contexts/TeamContext'
-import { FC, useContext, useEffect, useState } from 'react'
+import { HeaderContext } from '@src/contexts/HeaderContext'
+import { FC, useContext, useEffect } from 'react'
 
 interface TeamHeaderProps {
   selectWebsite?: boolean
 }
 
 const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
-  const { allTeams, selectedTeam, setSelectedTeam } = useContext(TeamContext)
-
-  const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null)
+  const {
+    allTeams,
+    selectedTeam,
+    setSelectedTeam,
+    selectedWebsite,
+    setSelectedWebsite,
+  } = useContext(HeaderContext)
 
   useEffect(() => {
     if (selectedTeam && selectedTeam.websites.length > 0) {
