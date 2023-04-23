@@ -142,12 +142,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const event: Event = req.body.event
 
-    const props: { key: string; value: any }[] = req.body.properties
-
-    const urls = props.find((property) => property.key === 'urls')
-    if (urls) {
-      await handleURLs(website)
-    }
+    await handleURLs(website)
 
     await prisma.event.create({
       data: {

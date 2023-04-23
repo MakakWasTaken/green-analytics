@@ -1,6 +1,7 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import CO2 from '@makakwastaken/co2/dist/src/co2'
+import { CO2 } from '@makakwastaken/co2/dist/src/co2'
 import prisma from '@src/lib/prisma'
+import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(
@@ -74,7 +75,7 @@ export const handle = withApiAuthRequired(
           })
 
           // Get number of pageviews within the past month and multiply it by the total emission and 12 to get the yearly emission.
-          const pageviews = await prisma.event.count({
+          const pageviews = await prisma.event.findMany({
             where: {
               websiteId: website.id,
               type: 'pageview',
@@ -82,12 +83,45 @@ export const handle = withApiAuthRequired(
                 gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
               },
             },
+            orderBy: {
+              createdAt: 'desc',
+            },
           })
+
+          // We hope to get one month of pageviews, but this might not be possible.
+          // So we take the difference in days between the first and last pageview, as this symbolizes the number of days we have pageviews for.
+
+          if (pageviews.length === 0) {
+            res.json({
+              domains: website.scans.length,
+              greenDomains: website.scans.filter((scan) => scan.green).length,
+              emission: 0.0, // We return 0, because it is invalid if no pageviews are present
+            })
+          }
+
+          const firstPageView = pageviews[0]
+          const lastPageView = pageviews[pageviews.length - 1]
+
+          // Difference in days between the first and last pageview
+          const differenceInDays = Math.floor(
+            (firstPageView.createdAt.getTime() -
+              lastPageView.createdAt.getTime()) /
+              (1000 * 3600 * 24),
+          )
+
+          // Get the number of days since the last month
+          const daysInMonth = Math.abs(
+            DateTime.now().minus({ months: 1 }).diffNow('days').get('days'),
+          )
+
+          // We need to upscale the amount of pageview to be a monthly amount.
+
+          const factor = daysInMonth / differenceInDays
 
           res.json({
             domains: website.scans.length,
             greenDomains: website.scans.filter((scan) => scan.green).length,
-            emission: totalEmission * pageviews * 12,
+            emission: totalEmission * pageviews.length * factor * 12,
           })
         } else if (type === 'pageview') {
           website.scans.forEach((scan) => {
@@ -110,3 +144,5 @@ export const handle = withApiAuthRequired(
     }
   },
 )
+
+export default handle

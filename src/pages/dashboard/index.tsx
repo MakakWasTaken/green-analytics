@@ -10,8 +10,9 @@ import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { getRandomColor } from '@src/utils/utils'
+import convert from 'convert'
 import { DateTime } from 'luxon'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
 const Dashboard = withPageAuthRequired(
@@ -48,7 +49,7 @@ const Dashboard = withPageAuthRequired(
       emission: number
     }>(
       selectedWebsite
-        ? `/api/website/co2?websiteId=${selectedWebsite.id}`
+        ? `/database/website/co2?websiteId=${selectedWebsite.id}`
         : null,
     )
 
@@ -114,6 +115,11 @@ const Dashboard = withPageAuthRequired(
       return eventsByProperty
     }
 
+    const emission = useMemo(
+      () => convert(co2Response?.emission || 0.0, 'gram').to('best'),
+      [co2Response?.emission],
+    )
+
     return (
       <Box sx={{ margin: 8 }}>
         <TeamHeader selectWebsite />
@@ -143,8 +149,13 @@ const Dashboard = withPageAuthRequired(
             </GridBox>
             <GridBox md={4} label="CO2 Emissions">
               <Box>
-                <Typography level="h1">1.2</Typography>
-                <Typography level="h6">kg CO2</Typography>
+                <Typography level="h1">
+                  {emission.quantity.toPrecision(2)}
+                </Typography>
+                <Typography level="h6">
+                  {emission.unit} approximate CO2 emissions
+                </Typography>
+                <Typography level="h6">this year</Typography>
               </Box>
             </GridBox>
             <RadarChart
