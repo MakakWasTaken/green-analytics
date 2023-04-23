@@ -1,8 +1,70 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Event, Property, Website } from '@prisma/client'
+import { getPageXray, hosting } from '@makakwastaken/co2'
+import { Event, Property, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+
+const handleURLs = async (website: Website & { scans: Scan[] }) => {
+  // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
+
+  // Check if any of the updatedAt dates are older than 2 weeks. In this case we need to update the script
+  const twoWeeksAgo = new Date()
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
+
+  // If the website has not been updated in two weeks. (Meaning its scans has not been updated in two weeks)
+  let rescanRequired =
+    website.updatedAt < twoWeeksAgo || website.scans.length === 0
+  website.scans.forEach((scan) => {
+    if (scan.updatedAt < twoWeeksAgo) {
+      rescanRequired = true
+    }
+  })
+
+  if (rescanRequired) {
+    console.log('Rescanning website', website.url)
+
+    // Get the scan
+    // We rescan the entire website, in case of new scripts or removed scripts
+    const xray = await getPageXray(website.url)
+
+    if (!xray) {
+      throw new Error('Could not scan website. Make sure the url is correct')
+    }
+    Object.keys(xray?.domains).forEach((domain) => {
+      console.log(domain, xray?.domains[domain].transferSize)
+    })
+
+    // Check which of the domains are green
+    const green = (await hosting.check(Object.keys(xray.domains))) as string[]
+
+    // Delete and readd all the scans (Cleanups the database)
+    await prisma.scan.deleteMany({
+      where: {
+        websiteId: website.id,
+      },
+    })
+
+    // Create the final website
+    await prisma.website.update({
+      where: {
+        id: website.id,
+      },
+      data: {
+        scans: {
+          createMany: {
+            data: Object.keys(xray?.domains).map((domain) => ({
+              domain,
+              green: green.includes(domain),
+              transferSize: xray?.domains[domain].transferSize,
+            })),
+            skipDuplicates: true,
+          },
+        },
+      },
+    })
+  }
+}
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req.method
@@ -20,12 +82,15 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Check if the website.url is localhost
   // If it is, allow it
-  let website: Website | null = null
+  let website: (Website & { scans: Scan[] }) | null = null
   if (req.body.event.website.url.startsWith('http://localhost:')) {
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
       where: {
         token,
+      },
+      include: {
+        scans: true,
       },
     })
 
@@ -46,6 +111,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       where: {
         token,
         url: req.body.event.website.url,
+      },
+      include: {
+        scans: true,
       },
     })
 
@@ -74,6 +142,13 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const event: Event = req.body.event
 
+    const props: { key: string; value: any }[] = req.body.properties
+
+    const urls = props.find((property) => property.key === 'urls')
+    if (urls) {
+      await handleURLs(website)
+    }
+
     await prisma.event.create({
       data: {
         name: event.name,
@@ -96,7 +171,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     // Create the new properties
-    console.log(req.body)
     const properties: Omit<Property, 'id' | 'createdAt' | 'updatedAt'>[] =
       Object.keys(req.body.properties).map((key) => ({
         key,
@@ -126,6 +200,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         personId: req.body.personId || req.body.sessionId,
         websiteId: website!.id,
       })),
+      skipDuplicates: true,
     })
 
     res.json({ ok: true })

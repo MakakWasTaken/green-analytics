@@ -42,6 +42,16 @@ const Dashboard = withPageAuthRequired(
         : null,
     )
 
+    const { data: co2Response } = useSWR<{
+      domains: number
+      greenDomains: number
+      emission: number
+    }>(
+      selectedWebsite
+        ? `/api/website/co2?websiteId=${selectedWebsite.id}`
+        : null,
+    )
+
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
       return datetime.toFormat('ccc')
