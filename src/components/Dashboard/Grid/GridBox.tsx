@@ -1,8 +1,18 @@
-import { Grid, GridProps, Sheet, Typography, styled } from '@mui/joy'
+import { Help } from '@mui/icons-material'
+import {
+  Box,
+  Grid,
+  GridProps,
+  Sheet,
+  Tooltip,
+  Typography,
+  styled,
+} from '@mui/joy'
 import { FC, PropsWithChildren } from 'react'
 
 export interface GridBoxProps {
   label: string
+  helpLabel?: string
   sx?: GridProps['sx']
   xs?: GridProps['xs']
   md?: GridProps['md']
@@ -21,6 +31,7 @@ const Item = styled(Sheet)(({ theme }) => ({
 
 const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
   label,
+  helpLabel,
   children,
   ...rest
 }) => {
@@ -33,9 +44,20 @@ const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
       minHeight={{ xs: 'auto', md: 300 }}
     >
       <Item>
-        <Typography level="h6" sx={{ marginBottom: 2 }}>
-          {label}
-        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Typography level="h6" sx={{ marginBottom: 2 }}>
+            {label}
+          </Typography>
+          {helpLabel && (
+            <Tooltip
+              title={
+                <span style={{ whiteSpace: 'pre-line' }}>{helpLabel}</span>
+              }
+            >
+              <Help sx={{ margin: 0.75 }} />
+            </Tooltip>
+          )}
+        </Box>
         {children}
       </Item>
     </Grid>

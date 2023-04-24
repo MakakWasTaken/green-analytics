@@ -147,7 +147,16 @@ const Dashboard = withPageAuthRequired(
                 <Typography level="h6">This week</Typography>
               </Box>
             </GridBox>
-            <GridBox md={4} label="CO2 Emissions">
+            <GridBox
+              md={4}
+              label="CO2 Emissions"
+              helpLabel={`This indicator is an estimate.
+            
+            It uses the estimations from sustainable web design guidelines to predict the yearly emissions. 
+            This indicator takes the transfer size for each resource and multiplies it by the CO2 emissions per byte transfered. 
+            This is then multiplied by the number of visitors per month.
+            `}
+            >
               <Box>
                 <Typography level="h1">
                   {emission.quantity.toPrecision(2)}
