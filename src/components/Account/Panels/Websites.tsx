@@ -1,3 +1,4 @@
+import { Delete } from '@mui/icons-material'
 import {
   Button,
   FormControl,
@@ -14,7 +15,7 @@ import {
   Typography,
 } from '@mui/joy'
 import { Button as MUIButton } from '@mui/material'
-import { GridColDef } from '@mui/x-data-grid'
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import type {} from '@mui/x-data-grid/themeAugmentation'
 import { Website } from '@prisma/client'
 import MUIDataGrid from '@src/components/MUIDataGrid'
@@ -52,6 +53,37 @@ const Websites = () => {
     },
     { field: 'createdAt', headerName: 'Created', hideable: true },
     { field: 'updatedAt', headerName: 'Updated', hideable: true },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      type: 'actions',
+      getActions: (params: any) => [
+        <GridActionsCellItem
+          icon={<Delete />}
+          key="delete"
+          showInMenu={false}
+          onClick={async () => {
+            if (
+              window.confirm(
+                'Are you sure you want to delete this item? This cannot be undone.',
+              )
+            ) {
+              try {
+                const response = await api.delete(
+                  '/database/website/' + params.id,
+                )
+                toast.success(response.data.message)
+              } catch (error: any) {
+                toast.error(
+                  error?.response?.data?.message || error?.message || error,
+                )
+              }
+            }
+          }}
+          label="Delete"
+        />,
+      ],
+    },
   ]
 
   return (
@@ -74,9 +106,19 @@ const Websites = () => {
                   toast.error('Please select a team')
                   return
                 }
+                // Get match from regex
+                const regex = /^(?:\w+?:\/\/)?([A-z.-]+).*/g
+
+                const urlMatch = regex.exec(url.value)
+
+                if (!urlMatch || !urlMatch[1]) {
+                  toast.error('Invalid URL')
+                  return
+                }
+
                 const response = await api.post<Website>('/database/website', {
                   name: name.value,
-                  url: url.value,
+                  url: urlMatch[1],
                   teamId: selectedTeam.id,
                 })
                 updateMembers((prev) =>
@@ -105,19 +147,22 @@ const Websites = () => {
         open={viewTokenDialog !== null}
         onClose={() => setViewTokenDialog(null)}
       >
-        <ModalDialog>
+        <ModalDialog
+          size="lg"
+          sx={{ overflowY: 'scroll', width: { xs: '100%', md: '500px' } }}
+        >
           <ModalClose />
           <Typography level="h4">Website Setup</Typography>
-          <Typography>
-            Copy and paste this code into your website header. It should be the
-            first thing in the <code>&lt;head&gt;</code> tag.
-          </Typography>
           <Tabs>
             <TabList>
               <Tab>HTML</Tab>
-              <Tab>JS</Tab>
+              <Tab>JavaScript</Tab>
             </TabList>
             <TabPanel value={0}>
+              <Typography>
+                Copy and paste this code into your website header. It should be
+                the first thing in the <code>&lt;head&gt;</code> tag.
+              </Typography>
               <SyntaxHighlighter language="html">
                 {`<script
   async
