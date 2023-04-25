@@ -200,7 +200,7 @@ const setPerson = async (person) => {
   const sessionId = getSessionId()
 
   // Send the person to the server
-  await fetch('/api/database/events/setPerson', {
+  await fetch('https://green-analytics.dk/api/database/events/setPerson', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ const logEvent = async (event, properties) => {
   }
 
   // Send the event to the server
-  await fetch('/api/database/events/logEvent', {
+  await fetch('https://green-analytics.dk/api/database/events/logEvent', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
