@@ -166,7 +166,7 @@ const Websites = () => {
               <SyntaxHighlighter language="html">
                 {`<script
   async
-  src="https://green-analytics.vercel.app/green-analytics.js"
+  src="https://green-analytics.dk/green-analytics.js"
   data-token="${viewTokenDialog}"
 />`}
               </SyntaxHighlighter>
