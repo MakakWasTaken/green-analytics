@@ -46,6 +46,50 @@ export const handle = withApiAuthRequired(
       })
 
       res.status(200).json({ ok: true, message: 'Website deleted' })
+    } else if (method === 'PUT') {
+      // Add update method
+
+      // Check if the website exists and the user is allowed to update it
+      // Only admins are allowed to update websites
+
+      // Get the website, to find its team
+      const website = await prisma.website.findFirst({
+        where: {
+          id: websiteId,
+          team: {
+            roles: {
+              some: {
+                userId: session?.user.sub,
+                role: {
+                  in: ['ADMIN', 'OWNER'],
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (!website) {
+        res
+          .status(403)
+          .json({ ok: false, message: 'Website not found or unauthorized' })
+        return
+      }
+
+      // Update the website
+      const { name, url } = req.body
+
+      const result = await prisma.website.update({
+        where: {
+          id: websiteId,
+        },
+        data: {
+          name,
+          url,
+        },
+      })
+
+      res.json(result)
     } else {
       res.status(405).json({ ok: false, message: 'Method not allowed' })
     }

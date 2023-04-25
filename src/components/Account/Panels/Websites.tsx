@@ -30,7 +30,7 @@ import AccountBox from '../AccountBox'
 
 const Websites = () => {
   const { selectedTeam } = useContext(HeaderContext)
-  const { data, mutate: updateMembers } = useSWR<Website[]>(
+  const { data, mutate: setData } = useSWR<Website[]>(
     selectedTeam ? '/database/website/getAll?teamId=' + selectedTeam.id : null,
   )
   const [viewTokenDialog, setViewTokenDialog] = useState<string | null>(null)
@@ -39,9 +39,9 @@ const Websites = () => {
   const [addWebsiteOpen, setAddWebsiteOpen] = useState(false)
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', hideable: true },
-    { field: 'name', headerName: 'Name', flex: 0.33 },
-    { field: 'url', headerName: 'URL', flex: 0.66 },
+    { field: 'id', headerName: 'ID' },
+    { field: 'name', headerName: 'Name', editable: true, flex: 0.33 },
+    { field: 'url', headerName: 'URL', editable: true, flex: 0.66 },
     {
       field: 'token',
       headerName: 'Setup',
@@ -51,8 +51,8 @@ const Websites = () => {
         </MUIButton>
       ),
     },
-    { field: 'createdAt', headerName: 'Created', hideable: true },
-    { field: 'updatedAt', headerName: 'Updated', hideable: true },
+    { field: 'createdAt', headerName: 'Created' },
+    { field: 'updatedAt', headerName: 'Updated' },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -86,6 +86,19 @@ const Websites = () => {
     },
   ]
 
+  const fixURL = (url: string): string => {
+    // Get match from regex
+    const regex = /^(?:\w+?:\/\/)?([A-z0-9.-]+).*/g
+
+    const urlMatch = regex.exec(url)
+
+    if (!urlMatch || !urlMatch[1]) {
+      throw new Error('Invalid URL')
+    }
+
+    return urlMatch[1]
+  }
+
   return (
     <TabPanel value={AccountPage.Websites}>
       <Modal open={addWebsiteOpen} onClose={() => setAddWebsiteOpen(false)}>
@@ -106,22 +119,13 @@ const Websites = () => {
                   toast.error('Please select a team')
                   return
                 }
-                // Get match from regex
-                const regex = /^(?:\w+?:\/\/)?([A-z.-]+).*/g
-
-                const urlMatch = regex.exec(url.value)
-
-                if (!urlMatch || !urlMatch[1]) {
-                  toast.error('Invalid URL')
-                  return
-                }
 
                 const response = await api.post<Website>('/database/website', {
                   name: name.value,
-                  url: urlMatch[1],
+                  url: fixURL(url.value),
                   teamId: selectedTeam.id,
                 })
-                updateMembers((prev) =>
+                setData((prev) =>
                   prev ? [...prev, response.data] : [response.data],
                 )
                 toast.success('Website added')
@@ -209,6 +213,28 @@ setPerson({
         <MUIDataGrid
           disableColumnMenu
           autoHeight
+          onProcessRowUpdateError={(error) => {
+            console.error(error)
+            toast.error(
+              error?.response?.data?.message || error?.message || error,
+            )
+          }}
+          processRowUpdate={async (newRow: Website, oldRow: Website) => {
+            // For this grid we only allow editing the URL
+            newRow.url = fixURL(newRow.url)
+            await api.put<Website>('/database/website/' + oldRow.id, {
+              name: newRow.name,
+              url: newRow.url,
+            })
+
+            toast.success('Website updated')
+            return newRow
+          }}
+          columnVisibilityModel={{
+            id: false,
+            createdAt: false,
+            updatedAt: false,
+          }}
           hideFooter
           rows={data ?? []}
           columns={columns}
