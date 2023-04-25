@@ -1,6 +1,7 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import { getPageXray, hosting } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
+import edgeChromium from 'chrome-aws-lambda'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(
@@ -34,7 +35,11 @@ export const handle = withApiAuthRequired(
         const { name, url } = req.body
 
         // Get first scan
-        const xray = await getPageXray(url)
+        const xray = await getPageXray(url, {
+          args: edgeChromium.args,
+          executablePath: await edgeChromium.executablePath,
+          headless: edgeChromium.headless,
+        })
 
         if (!xray) {
           res.status(500).json({

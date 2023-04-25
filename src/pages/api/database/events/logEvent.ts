@@ -2,6 +2,7 @@
 import { getPageXray, hosting } from '@makakwastaken/co2'
 import { Event, Property, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
+import edgeChromium from 'chrome-aws-lambda'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
@@ -26,7 +27,11 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 
     // Get the scan
     // We rescan the entire website, in case of new scripts or removed scripts
-    const xray = await getPageXray(website.url)
+    const xray = await getPageXray(website.url, {
+      args: edgeChromium.args,
+      executablePath: await edgeChromium.executablePath,
+      headless: edgeChromium.headless,
+    })
 
     if (!xray) {
       throw new Error('Could not scan website. Make sure the url is correct')
