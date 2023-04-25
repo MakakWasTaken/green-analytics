@@ -7,7 +7,10 @@ import {
   ModalClose,
   ModalDialog,
   Stack,
+  Tab,
+  TabList,
   TabPanel,
+  Tabs,
   Typography,
 } from '@mui/joy'
 import { Button as MUIButton } from '@mui/material'
@@ -109,13 +112,44 @@ const Websites = () => {
             Copy and paste this code into your website header. It should be the
             first thing in the <code>&lt;head&gt;</code> tag.
           </Typography>
-          <SyntaxHighlighter language="html">
-            {`<script
+          <Tabs>
+            <TabList>
+              <Tab>HTML</Tab>
+              <Tab>JS</Tab>
+            </TabList>
+            <TabPanel value={0}>
+              <SyntaxHighlighter language="html">
+                {`<script
   async
   src="https://green-analytics.vercel.app/green-analytics.js"
   data-token="${viewTokenDialog}"
 />`}
-          </SyntaxHighlighter>
+              </SyntaxHighlighter>
+            </TabPanel>
+            <TabPanel value={1}>
+              <Typography>Installation</Typography>
+              <SyntaxHighlighter language="bash">
+                {`yarn add green-analytics-react
+# or
+npm install green-analytics-react`}
+              </SyntaxHighlighter>
+              <Typography>Usage</Typography>
+              <SyntaxHighlighter language="javascript">
+                {`import { initGA, setPerson } from 'green-analytics-react'
+
+// Initializes the analytics script
+initGA('${viewTokenDialog}')
+
+// Marks the current session as belonging to a person
+setPerson({
+  id: '123',
+  name: 'John Doe',
+  email: 'john@example.com',
+})
+`}
+              </SyntaxHighlighter>
+            </TabPanel>
+          </Tabs>
         </ModalDialog>
       </Modal>
       <AccountBox

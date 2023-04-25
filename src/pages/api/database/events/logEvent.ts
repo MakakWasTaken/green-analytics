@@ -69,6 +69,8 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req.method
 
+  const origin = req.headers.host || req.headers.origin
+
   const token = req.headers.api_token as string | undefined
   if (!token) {
     res.status(403).json({ ok: false, message: 'Missing token' })
@@ -103,6 +105,13 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     const url = new URL(req.body.event.website.url)
     if (!url.origin) {
       res.status(400).json({ ok: false, message: 'Invalid website url' })
+      return
+    }
+
+    const originURL = new URL(origin || '')
+    // Check that the origin of the request matches the given url
+    if (url.origin !== originURL.origin) {
+      res.status(403).json({ ok: false, message: 'Invalid origin' })
       return
     }
 
