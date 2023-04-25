@@ -47,6 +47,15 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
+    const origin = req.headers.host || req.headers.origin
+    const originURL = new URL(origin || '')
+    // Check that the origin of the request matches the given url
+    const websiteURL = new URL(website.url)
+    if (websiteURL.origin !== originURL.origin) {
+      res.status(403).json({ ok: false, message: 'Invalid origin' })
+      return
+    }
+
     // Give a cors error if the website url does not match the origin and token
     // Prevents abuse of the API
     await NextCors(req, res, {

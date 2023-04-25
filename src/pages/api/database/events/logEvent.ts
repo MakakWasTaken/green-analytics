@@ -69,8 +69,6 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req.method
 
-  const origin = req.headers.host || req.headers.origin
-
   const token = req.headers.api_token as string | undefined
   if (!token) {
     res.status(403).json({ ok: false, message: 'Missing token' })
@@ -108,13 +106,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
-    const originURL = new URL(origin || '')
-    // Check that the origin of the request matches the given url
-    if (url.origin !== originURL.origin) {
-      res.status(403).json({ ok: false, message: 'Invalid origin' })
-      return
-    }
-
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
       where: {
@@ -128,6 +119,15 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (!website) {
       res.status(403).json({ ok: false, message: 'Website not found' })
+      return
+    }
+
+    const origin = req.headers.host || req.headers.origin
+    const originURL = new URL(origin || '')
+    // Check that the origin of the request matches the given url
+    const websiteURL = new URL(website.url)
+    if (websiteURL.origin !== originURL.origin) {
+      res.status(403).json({ ok: false, message: 'Invalid origin' })
       return
     }
 
