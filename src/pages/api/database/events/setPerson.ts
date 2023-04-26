@@ -1,4 +1,3 @@
-import { Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
@@ -13,65 +12,44 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Check if the website.url is localhost
   // If it is, allow it
-  let website: Website | null = null
   const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
-  const urlMatch = urlRegex.exec(req.body.event.website.url)
-  const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
-  if (formattedEventUrl.startsWith('localhost:')) {
-    // Get the website from the token and req.body.event.website.url
-    website = await prisma.website.findFirst({
-      where: {
-        token,
-      },
-      include: {
-        scans: true,
-      },
+  const urlMatch = urlRegex.exec(req.body.person.website.url)
+  const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.person.website.url
+  // Get the website from the token and req.body.person.website.url
+  const website = await prisma.website.findFirst({
+    where: {
+      token,
+      url: formattedEventUrl,
+    },
+  })
+
+  if (!website) {
+    res.status(403).json({ ok: false, message: 'Website not found' })
+    return
+  }
+
+  const origin = req.headers.host || req.headers.origin || ''
+  const originURL = new URL(
+    origin.startsWith('http') ? origin : 'https://' + origin,
+  )
+  // Check that the origin of the request matches the given url
+  if (website.url !== originURL.host) {
+    res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
+    return
+  }
+
+  // Give a cors error if the website url does not match the origin and token
+  // Prevents abuse of the API
+  try {
+    await NextCors(req, res, {
+      // Options
+      methods: ['POST'],
+      origin: ['https://' + website.url, 'http://localhost:3000'],
+      optionsSuccessStatus: 200,
     })
-
-    if (!website) {
-      res.status(403).json({ ok: false, message: 'Website not found' })
-      return
-    }
-  } else {
-    // Get the website from the token and req.body.event.website.url
-    website = await prisma.website.findFirst({
-      where: {
-        token,
-        url: formattedEventUrl,
-      },
-      include: {
-        scans: true,
-      },
-    })
-
-    if (!website) {
-      res.status(403).json({ ok: false, message: 'Website not found' })
-      return
-    }
-
-    const origin = req.headers.host || req.headers.origin || ''
-    const originURL = new URL(
-      origin.startsWith('http') ? origin : 'https://' + origin,
-    )
-    // Check that the origin of the request matches the given url
-    if (website.url !== originURL.host) {
-      res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
-      return
-    }
-
-    // Give a cors error if the website url does not match the origin and token
-    // Prevents abuse of the API
-    try {
-      await NextCors(req, res, {
-        // Options
-        methods: ['POST'],
-        origin: 'https://' + website.url,
-        optionsSuccessStatus: 200,
-      })
-    } catch (e) {
-      console.error(e)
-      throw e
-    }
+  } catch (e) {
+    console.error(e)
+    throw e
   }
 
   // Check if the person already exists
