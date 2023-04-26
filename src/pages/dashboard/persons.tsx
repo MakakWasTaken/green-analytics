@@ -23,10 +23,10 @@ const PersonsPage: FC = () => {
   )
 
   useEffect(() => {
-    if (data?.persons) {
+    if (data?.count) {
       setCount(data.count)
     }
-  }, [data?.persons])
+  }, [data?.count])
 
   return (
     <Box sx={{ margin: 8 }}>

@@ -42,9 +42,7 @@ export const handle = withApiAuthRequired(
           ? Number.parseInt(req.query.page as string) * 20
           : 0,
         take: 20,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: [{ email: 'desc' }, { name: 'desc' }, { createdAt: 'desc' }],
       })
       const count = await prisma.person.count({
         where: {
