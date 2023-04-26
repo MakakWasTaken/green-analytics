@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { hosting } from '@makakwastaken/co2'
-import { Event, Property, Scan, Website } from '@prisma/client'
+import { Event, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { getXray } from '@src/utils/harFetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -144,7 +144,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
           createMany: {
             data: Object.keys(event.properties).map((key) => ({
               key,
-              value: event.properties[key],
+              value: event.properties[key].toString(),
               websiteId: website.id,
             })),
           },
@@ -162,16 +162,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     // Create the new properties
-    const properties: Omit<Property, 'id' | 'createdAt' | 'updatedAt'>[] =
-      Object.keys(req.body.userProperties).map((key) => ({
-        key,
-        value: req.body.userProperties[key],
-        eventId: null,
-        websiteId: website!.id,
-        personId: req.body.personId || req.body.sessionId,
-      }))
-    // Extract all the keys from the properties
-    const keys = properties.map((property) => property.key)
+    const keys = Object.keys(req.body.userProperties)
 
     // Delete all the properties with the same key
     await prisma.property.deleteMany({
@@ -185,10 +176,11 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     // Create the new properties
+    const userProperties = req.body.userProperties
     await prisma.property.createMany({
-      data: properties.map((property) => ({
-        key: property.key,
-        value: property.value,
+      data: Object.keys(userProperties).map((property) => ({
+        key: property,
+        value: userProperties[property].toString(),
         personId: req.body.personId || req.body.sessionId,
         websiteId: website!.id,
       })),

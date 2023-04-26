@@ -87,9 +87,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Insert all properties for this person into the properties table
   // Extract all the keys in the new properties
   if (req.body.person.properties) {
-    const newPropertyKeys = req.body.person.properties.map(
-      (property: any) => property.key,
-    )
+    const newPropertyKeys = Object.keys(req.body.person.properties)
 
     // Delete all properties for this person that are in the new properties. We are going to replace them
     await prisma.property.deleteMany({
@@ -102,11 +100,13 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     // Insert all the new properties
+    const userProperties = req.body.person.properties
     await prisma.property.createMany({
-      data: req.body.person.properties.map((property: any) => ({
-        key: property.key,
-        value: property.value,
+      data: newPropertyKeys.map((property) => ({
+        key: property,
+        value: userProperties[property].toString(),
         personId: person?.id,
+        websiteId: website.id,
       })),
       skipDuplicates: true,
     })
