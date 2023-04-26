@@ -180,14 +180,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       [key: string]: number | boolean | string
     } = req.body.userProperties
 
-    console.log(
-      Object.keys(userProperties).map((property) => ({
-        key: property,
-        value: userProperties[property].toString(),
-        personId: req.body.personId || req.body.sessionId,
-        websiteId: website!.id,
-      })),
-    )
     await prisma.property.createMany({
       data: Object.keys(userProperties).map((property) => ({
         key: property,
