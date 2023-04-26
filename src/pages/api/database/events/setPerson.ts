@@ -1,6 +1,5 @@
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = req.headers.api_token as string | undefined
@@ -33,27 +32,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     origin.startsWith('http') ? origin : 'https://' + origin,
   )
   // Check that the origin of the request matches the given url
-  if (website.url !== originURL.host) {
+  if (
+    website.url !== originURL.host &&
+    originURL.host !== 'green-analytics.dk'
+  ) {
     res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
     return
-  }
-
-  // Give a cors error if the website url does not match the origin and token
-  // Prevents abuse of the API
-  try {
-    await NextCors(req, res, {
-      // Options
-      methods: ['POST'],
-      origin: [
-        'https://' + website.url,
-        'https://green-analytics.dk',
-        'http://localhost:3000',
-      ],
-      optionsSuccessStatus: 200,
-    })
-  } catch (e) {
-    console.error(e)
-    throw e
   }
 
   // Check if the person already exists

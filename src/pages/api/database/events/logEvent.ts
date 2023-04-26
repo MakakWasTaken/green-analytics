@@ -4,7 +4,6 @@ import { Event, Property, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { getXray } from '@src/utils/harFetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 
 const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
@@ -104,27 +103,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     origin.startsWith('http') ? origin : 'https://' + origin,
   )
   // Check that the origin of the request matches the given url
-  if (website.url !== originURL.host) {
+  if (
+    website.url !== originURL.host &&
+    originURL.host !== 'green-analytics.dk'
+  ) {
     res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
     return
-  }
-
-  // Give a cors error if the website url does not match the origin and token
-  // Prevents abuse of the API
-  try {
-    await NextCors(req, res, {
-      // Options
-      methods: ['POST'],
-      origin: [
-        'https://' + website.url,
-        'https://green-analytics.dk',
-        'http://localhost:3000',
-      ],
-      optionsSuccessStatus: 200,
-    })
-  } catch (e) {
-    console.error(e)
-    throw e
   }
 
   if (!website) {
