@@ -44,9 +44,6 @@ export const handle = withApiAuthRequired(
           })
           return
         }
-        Object.keys(xray).forEach((domain) => {
-          console.log(domain, xray[domain].transferSize)
-        })
 
         // Check which of the domains are green
         const green = (await hosting.check(Object.keys(xray))) as string[]

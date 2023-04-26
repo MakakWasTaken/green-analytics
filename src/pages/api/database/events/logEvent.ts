@@ -32,12 +32,9 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
     if (!xray) {
       throw new Error('Could not scan website. Make sure the url is correct')
     }
-    Object.keys(xray).forEach((domain) => {
-      console.log(domain, xray[domain].transferSize)
-    })
 
     // Check which of the domains are green
-    const green = (await hosting.check(Object.keys(xray.domains))) as string[]
+    const green = (await hosting.check(Object.keys(xray))) as string[]
 
     // Delete and readd all the scans (Cleanups the database)
     await prisma.scan.deleteMany({
@@ -129,8 +126,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
       return
     }
-
-    console.log(req.method, req.headers.origin, 'https://' + website.url)
 
     // Give a cors error if the website url does not match the origin and token
     // Prevents abuse of the API

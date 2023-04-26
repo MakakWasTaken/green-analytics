@@ -45,6 +45,5 @@ export const getXray = async (url: string) => {
     }
   })
 
-  console.log(urls)
   return urls
 }

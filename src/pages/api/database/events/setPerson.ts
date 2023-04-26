@@ -14,11 +14,17 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Check if the website.url is localhost
   // If it is, allow it
   let website: Website | null = null
-  if (req.body.person.website.url.startsWith('http://localhost:')) {
-    // Get the website from the token and req.body.person.website.url
+  const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
+  const urlMatch = urlRegex.exec(req.body.event.website.url)
+  const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
+  if (formattedEventUrl.startsWith('localhost:')) {
+    // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
       where: {
         token,
+      },
+      include: {
+        scans: true,
       },
     })
 
@@ -27,18 +33,14 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
   } else {
-    // Check if the website.url is a valid url
-    const url = new URL(req.body.person.website.url)
-    if (!url.host) {
-      res.status(400).json({ ok: false, message: 'Invalid website url' })
-      return
-    }
-
-    // Get the website from the token and req.body.person.website.url
+    // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
       where: {
         token,
-        url: url.host,
+        url: formattedEventUrl,
+      },
+      include: {
+        scans: true,
       },
     })
 
@@ -47,22 +49,29 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
-    const origin = req.headers.host || req.headers.origin
-    const originURL = new URL(origin || '')
+    const origin = req.headers.host || req.headers.origin || ''
+    const originURL = new URL(
+      origin.startsWith('http') ? origin : 'https://' + origin,
+    )
     // Check that the origin of the request matches the given url
     if (website.url !== originURL.host) {
-      res.status(403).json({ ok: false, message: 'Invalid origin' })
+      res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
       return
     }
 
     // Give a cors error if the website url does not match the origin and token
     // Prevents abuse of the API
-    await NextCors(req, res, {
-      // Options
-      methods: ['POST'],
-      origin: 'https://' + website.url,
-      optionsSuccessStatus: 200,
-    })
+    try {
+      await NextCors(req, res, {
+        // Options
+        methods: ['POST'],
+        origin: 'https://' + website.url,
+        optionsSuccessStatus: 200,
+      })
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
   }
 
   // Check if the person already exists
