@@ -1,4 +1,4 @@
-import { Delete } from '@mui/icons-material'
+import { Delete, Refresh } from '@mui/icons-material'
 import {
   Button,
   FormControl,
@@ -81,6 +81,24 @@ const Websites = () => {
             }
           }}
           label="Delete"
+        />,
+        <GridActionsCellItem
+          icon={<Refresh />}
+          key="rescan"
+          showInMenu={false}
+          onClick={async () => {
+            try {
+              const response = await api.post(
+                '/database/website/' + params.id + '/scan',
+              )
+              toast.success(response.data.message)
+            } catch (error: any) {
+              toast.error(
+                error?.response?.data?.message || error?.message || error,
+              )
+            }
+          }}
+          label="Rescan"
         />,
       ],
     },

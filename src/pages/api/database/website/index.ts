@@ -1,7 +1,6 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { hosting } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
-import { getXray } from '@src/utils/harFetcher'
+import { scanWebsite } from '@src/utils/websiteScanner'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(
@@ -34,20 +33,6 @@ export const handle = withApiAuthRequired(
         // After this it will be updated every 2nd week on logEvent (No reason to update a dead website) or it can happen manually.
         const { name, url } = req.body
 
-        // Get first scan
-        const xray = await getXray(url)
-
-        if (!xray) {
-          res.status(500).json({
-            ok: false,
-            message: 'Could not scan website. Make sure the url is correct',
-          })
-          return
-        }
-
-        // Check which of the domains are green
-        const green = (await hosting.check(Object.keys(xray))) as string[]
-
         // Create the final website
         const website = await prisma.website.create({
           data: {
@@ -58,19 +43,10 @@ export const handle = withApiAuthRequired(
                 id: req.body.teamId,
               },
             },
-            scans: {
-              createMany: {
-                data: Object.keys(xray).map((url) => ({
-                  url,
-                  green: green.includes(url),
-                  transferSize: xray[url].transferSize,
-                  contentSize: xray[url].contentSize,
-                })),
-                skipDuplicates: true,
-              },
-            },
           },
         })
+
+        await scanWebsite(website)
 
         res.json(website)
       } else {

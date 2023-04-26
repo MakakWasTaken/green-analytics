@@ -1,7 +1,6 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { hosting } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
-import { getXray } from '@src/utils/harFetcher'
+import { scanWebsite } from '@src/utils/websiteScanner'
 import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -59,7 +58,7 @@ export const handle = withApiAuthRequired(
             team: {
               roles: {
                 some: {
-                  id: session?.user.sub,
+                  userId: session?.user.sub,
                   role: {
                     in: ['ADMIN', 'OWNER'],
                   },
@@ -77,50 +76,9 @@ export const handle = withApiAuthRequired(
           return
         }
 
-        // When we get a POST request, we want to rescan the website. This is done by getting the HAR file and checking which domains are green.
-        console.log('Rescanning website', website.url)
+        await scanWebsite(website)
 
-        // Get the scan
-        // We rescan the entire website, in case of new scripts or removed scripts
-        const xray = await getXray(website.url)
-
-        if (!xray) {
-          throw new Error(
-            'Could not scan website. Make sure the url is correct',
-          )
-        }
-
-        console.log(JSON.stringify(xray))
-
-        // Check which of the domains are green
-        const green = (await hosting.check(Object.keys(xray))) as string[]
-
-        // Delete and readd all the scans (Cleanups the database)
-        await prisma.scan.deleteMany({
-          where: {
-            websiteId: website.id,
-          },
-        })
-
-        // Create the final website
-        await prisma.website.update({
-          where: {
-            id: website.id,
-          },
-          data: {
-            scans: {
-              createMany: {
-                data: Object.keys(xray).map((url) => ({
-                  url,
-                  green: green.includes(url),
-                  transferSize: xray[url].transferSize,
-                  contentSize: xray[url].contentSize,
-                })),
-                skipDuplicates: true,
-              },
-            },
-          },
-        })
+        res.json({ ok: true })
         break
       default:
         res.setHeader('Allow', ['POST'])

@@ -74,6 +74,7 @@ model Scan {
   green           Boolean
   transferSize    Float @default(0.0)
   contentSize     Float @default(0.0)
+  countryCode     String @default("DNK")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

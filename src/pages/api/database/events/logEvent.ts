@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { hosting } from '@makakwastaken/co2'
 import { Event, Scan, Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
-import { getXray } from '@src/utils/harFetcher'
+import { scanWebsite } from '@src/utils/websiteScanner'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
@@ -23,45 +22,7 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
   })
 
   if (rescanRequired) {
-    console.log('Rescanning website', website.url)
-
-    // Get the scan
-    // We rescan the entire website, in case of new scripts or removed scripts
-    const xray = await getXray(website.url)
-
-    if (!xray) {
-      throw new Error('Could not scan website. Make sure the url is correct')
-    }
-
-    // Check which of the domains are green
-    const green = (await hosting.check(Object.keys(xray))) as string[]
-
-    // Delete and readd all the scans (Cleanups the database)
-    await prisma.scan.deleteMany({
-      where: {
-        websiteId: website.id,
-      },
-    })
-
-    // Create the final website
-    await prisma.website.update({
-      where: {
-        id: website.id,
-      },
-      data: {
-        scans: {
-          createMany: {
-            data: Object.keys(xray).map((url) => ({
-              url,
-              green: green.includes(url),
-              transferSize: xray[url].transferSize,
-              contentSize: xray[url].contentSize,
-            })),
-            skipDuplicates: true,
-          },
-        },
-      },
-    })
+    await scanWebsite(website)
   }
 }
 

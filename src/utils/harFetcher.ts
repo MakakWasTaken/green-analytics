@@ -18,6 +18,7 @@ export const getXray = async (url: string) => {
     [key: string]: {
       contentSize: number
       transferSize: number
+      ip: string
     }
   } = {}
 
@@ -38,6 +39,7 @@ export const getXray = async (url: string) => {
       urls[formattedUrl] = {
         contentSize,
         transferSize,
+        ip: entry.serverIPAddress,
       }
     } else {
       urls[formattedUrl].contentSize += contentSize
