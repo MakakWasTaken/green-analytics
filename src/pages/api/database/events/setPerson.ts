@@ -1,7 +1,14 @@
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
+import NextCors from 'nextjs-cors'
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
+  await NextCors(req, res, {
+    // Options
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    origin: '*',
+    optionsSuccessStatus: 200,
+  })
   const token = req.headers.api_token as string | undefined
 
   if (!token) {

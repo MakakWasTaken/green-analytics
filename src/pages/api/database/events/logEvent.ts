@@ -4,6 +4,7 @@ import { Event, Property, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { getXray } from '@src/utils/harFetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
+import NextCors from 'nextjs-cors'
 
 const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
@@ -65,6 +66,12 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 }
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
+  await NextCors(req, res, {
+    // Options
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    origin: '*',
+    optionsSuccessStatus: 200,
+  })
   const method = req.method
 
   const token = req.headers.api_token as string | undefined
