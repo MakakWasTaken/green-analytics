@@ -29,7 +29,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   } else {
     // Check if the website.url is a valid url
     const url = new URL(req.body.person.website.url)
-    if (!url.origin) {
+    if (!url.host) {
       res.status(400).json({ ok: false, message: 'Invalid website url' })
       return
     }
@@ -38,7 +38,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     website = await prisma.website.findFirst({
       where: {
         token,
-        url: req.body.person.website.url,
+        url: url.host,
       },
     })
 
@@ -50,7 +50,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     const origin = req.headers.host || req.headers.origin
     const originURL = new URL(origin || '')
     // Check that the origin of the request matches the given url
-    if (website.url !== originURL.origin) {
+    if (website.url !== originURL.host) {
       res.status(403).json({ ok: false, message: 'Invalid origin' })
       return
     }
