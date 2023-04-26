@@ -36,8 +36,8 @@ model Team {
 model TeamRole {
   id     String @id @default(uuid())
   role   String
-  user   User   @relation(fields: [userId], references: [id])
-  team   Team   @relation(fields: [teamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
   teamId String
 
@@ -50,7 +50,7 @@ model Website {
   name    String
   url     String
   token   String   @unique @default(uuid()) // The token is used to authenticate the website
-  team    Team     @relation(fields: [teamId], references: [id])
+  team    Team     @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   teamId  String
   events  Event[]
   persons Person[]
@@ -67,7 +67,7 @@ model Website {
 model Scan {
   domain      String   @id
 
-  website    Website  @relation(fields: [websiteId], references: [id])
+  website    Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId  String
 
   green           Boolean
@@ -86,7 +86,7 @@ model Person {
   email      String?
   properties Property[] @relation("PersonProperty") // 1-to-many relation
   events     Event[]    @relation("PersonEvent") // 1-to-many relation
-  website    Website    @relation(fields: [websiteId], references: [id])
+  website    Website    @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId  String
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
@@ -99,9 +99,9 @@ model Event {
   name String
   type String
 
-  person    Person? @relation("PersonEvent", fields: [personId], references: [id]) // 0-to-1 relation
+  person    Person? @relation("PersonEvent", fields: [personId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
   personId  String?
-  website   Website @relation(fields: [websiteId], references: [id])
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId String
 
   createdAt DateTime @default(now())
@@ -116,9 +116,9 @@ model Property {
   key   String
   value String
 
-  person   Person? @relation("PersonProperty", fields: [personId], references: [id]) // 0-to-1 relation
+  person   Person? @relation("PersonProperty", fields: [personId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
   personId String?
-  website   Website @relation(fields: [websiteId], references: [id])
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId String
 
   createdAt DateTime @default(now())
