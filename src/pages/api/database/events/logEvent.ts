@@ -85,6 +85,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Check if the website.url is localhost
   // If it is, allow it
   let website: (Website & { scans: Scan[] }) | null = null
+  console.log(req.body.event)
   if (req.body.event.website.url.startsWith('http://localhost:')) {
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
@@ -131,6 +132,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(403).json({ ok: false, message: 'Invalid origin' })
       return
     }
+
+    console.log(req.method, req.headers.origin)
 
     // Give a cors error if the website url does not match the origin and token
     // Prevents abuse of the API
