@@ -117,7 +117,7 @@ export const handle = withApiAuthRequired(
 
           // We need to upscale the amount of pageview to be a monthly amount.
 
-          const factor = daysInMonth / differenceInDays
+          const factor = daysInMonth / (differenceInDays || 1)
 
           res.json({
             domains: website.scans.length,

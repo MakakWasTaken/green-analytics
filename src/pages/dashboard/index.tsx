@@ -159,7 +159,7 @@ const Dashboard = withPageAuthRequired(
             >
               <Box>
                 <Typography level="h1">
-                  {emission.quantity.toPrecision(2)}
+                  {emission.quantity.toFixed(1)}
                 </Typography>
                 <Typography level="h6">
                   {emission.unit} approximate CO2 emissions
