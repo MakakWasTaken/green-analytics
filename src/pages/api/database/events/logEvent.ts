@@ -120,9 +120,10 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
-    const origin = req.headers.host || req.headers.origin
-    console.log(origin)
-    const originURL = new URL(origin || '')
+    const origin = req.headers.host || req.headers.origin || ''
+    const originURL = new URL(
+      origin.startsWith('http') ? origin : 'https://' + origin,
+    )
     // Check that the origin of the request matches the given url
     if (website.url !== originURL.origin) {
       res.status(403).json({ ok: false, message: 'Invalid origin' })
