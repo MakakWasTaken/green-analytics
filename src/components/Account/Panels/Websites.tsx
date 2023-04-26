@@ -38,6 +38,30 @@ const Websites = () => {
   // Add Website
   const [addWebsiteOpen, setAddWebsiteOpen] = useState(false)
 
+  const deleteWebsite = (id: string) => async () => {
+    try {
+      if (
+        window.confirm(
+          'Are you sure you want to delete this item? This cannot be undone.',
+        )
+      ) {
+        const response = await api.delete('/database/website/' + id)
+        toast.success(response.data.message)
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || error)
+    }
+  }
+
+  const rescanWebsite = (id: string) => async () => {
+    try {
+      const response = await api.post('/database/website/' + id + '/scan')
+      toast.success(response.data.message)
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || error)
+    }
+  }
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID' },
     { field: 'name', headerName: 'Name', editable: true, flex: 0.33 },
@@ -62,42 +86,14 @@ const Websites = () => {
           icon={<Delete />}
           key="delete"
           showInMenu={false}
-          onClick={async () => {
-            if (
-              window.confirm(
-                'Are you sure you want to delete this item? This cannot be undone.',
-              )
-            ) {
-              try {
-                const response = await api.delete(
-                  '/database/website/' + params.id,
-                )
-                toast.success(response.data.message)
-              } catch (error: any) {
-                toast.error(
-                  error?.response?.data?.message || error?.message || error,
-                )
-              }
-            }
-          }}
+          onClick={deleteWebsite(params.id)}
           label="Delete"
         />,
         <GridActionsCellItem
           icon={<Refresh />}
           key="rescan"
           showInMenu={false}
-          onClick={async () => {
-            try {
-              const response = await api.post(
-                '/database/website/' + params.id + '/scan',
-              )
-              toast.success(response.data.message)
-            } catch (error: any) {
-              toast.error(
-                error?.response?.data?.message || error?.message || error,
-              )
-            }
-          }}
+          onClick={rescanWebsite(params.id)}
           label="Rescan"
         />,
       ],
