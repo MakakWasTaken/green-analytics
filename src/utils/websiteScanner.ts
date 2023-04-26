@@ -31,7 +31,7 @@ export const scanWebsite = async (website: Website) => {
         `http://ip-api.com/json/${ip}?field=countryCode`,
       )
 
-      xray[url].countryCode = countryISOMapping[location.data]
+      xray[url].countryCode = countryISOMapping[location.data.countryCode]
     }),
   )
 
