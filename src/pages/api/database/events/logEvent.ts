@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { getPageXray, hosting } from '@makakwastaken/co2'
+import { hosting } from '@makakwastaken/co2'
 import { Event, Property, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
+import { getXray } from '@src/utils/harFetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
@@ -26,13 +27,13 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 
     // Get the scan
     // We rescan the entire website, in case of new scripts or removed scripts
-    const xray = await getPageXray(website.url)
+    const xray = await getXray(website.url)
 
     if (!xray) {
       throw new Error('Could not scan website. Make sure the url is correct')
     }
-    Object.keys(xray?.domains).forEach((domain) => {
-      console.log(domain, xray?.domains[domain].transferSize)
+    Object.keys(xray).forEach((domain) => {
+      console.log(domain, xray[domain].transferSize)
     })
 
     // Check which of the domains are green
@@ -53,10 +54,11 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
       data: {
         scans: {
           createMany: {
-            data: Object.keys(xray?.domains).map((domain) => ({
-              domain,
-              green: green.includes(domain),
-              transferSize: xray?.domains[domain].transferSize,
+            data: Object.keys(xray).map((url) => ({
+              url,
+              green: green.includes(url),
+              transferSize: xray[url].transferSize,
+              contentSize: xray[url].contentSize,
             })),
             skipDuplicates: true,
           },

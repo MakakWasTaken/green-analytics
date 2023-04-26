@@ -1,6 +1,7 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { getPageXray, hosting } from '@makakwastaken/co2'
+import { hosting } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
+import { getXray } from '@src/utils/harFetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(
@@ -34,7 +35,7 @@ export const handle = withApiAuthRequired(
         const { name, url } = req.body
 
         // Get first scan
-        const xray = await getPageXray(url)
+        const xray = await getXray(url)
 
         if (!xray) {
           res.status(500).json({
@@ -43,14 +44,12 @@ export const handle = withApiAuthRequired(
           })
           return
         }
-        Object.keys(xray?.domains).forEach((domain) => {
-          console.log(domain, xray?.domains[domain].transferSize)
+        Object.keys(xray).forEach((domain) => {
+          console.log(domain, xray[domain].transferSize)
         })
 
         // Check which of the domains are green
-        const green = (await hosting.check(
-          Object.keys(xray.domains),
-        )) as string[]
+        const green = (await hosting.check(Object.keys(xray))) as string[]
 
         // Create the final website
         const website = await prisma.website.create({
@@ -64,10 +63,11 @@ export const handle = withApiAuthRequired(
             },
             scans: {
               createMany: {
-                data: Object.keys(xray?.domains).map((domain) => ({
-                  domain,
-                  green: green.includes(domain),
-                  transferSize: xray?.domains[domain].transferSize,
+                data: Object.keys(xray).map((url) => ({
+                  url,
+                  green: green.includes(url),
+                  transferSize: xray[url].transferSize,
+                  contentSize: xray[url].contentSize,
                 })),
                 skipDuplicates: true,
               },
