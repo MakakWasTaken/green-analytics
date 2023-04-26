@@ -11,19 +11,18 @@ export const scanWebsite = async (website: Website) => {
 
   // Get the scan
   // We rescan the entire website, in case of new scripts or removed scripts
-  const xray = await getXray(website.url)
+  const xray: {
+    [key: string]: {
+      ip: string
+      countryCode?: string
+      contentSize: number
+      transferSize: number
+    }
+  } = await getXray(website.url)
 
   if (!xray) {
     throw new Error('Could not scan website. Make sure the url is correct')
   }
-
-  const xrayWithLocations: {
-    [key: string]: {
-      countryCode: string
-      contentSize: number
-      transferSize: number
-    }
-  } = {}
 
   await Promise.all(
     Object.keys(xray).map(async (url) => {
@@ -32,14 +31,12 @@ export const scanWebsite = async (website: Website) => {
         `http://ip-api.com/json/${ip}?field=countryCode`,
       )
 
-      xrayWithLocations[url].countryCode = countryISOMapping[location.data]
+      xray[url].countryCode = countryISOMapping[location.data]
     }),
   )
 
   // Check which of the domains are green
-  const green = (await hosting.check(
-    Object.keys(xrayWithLocations),
-  )) as string[]
+  const green = (await hosting.check(Object.keys(xray))) as string[]
 
   // Delete and readd all the scans (Cleanups the database)
   await prisma.scan.deleteMany({
@@ -56,12 +53,12 @@ export const scanWebsite = async (website: Website) => {
     data: {
       scans: {
         createMany: {
-          data: Object.keys(xrayWithLocations).map((url) => ({
+          data: Object.keys(xray).map((url) => ({
             url,
             green: green.includes(url),
-            transferSize: xrayWithLocations[url].transferSize,
-            contentSize: xrayWithLocations[url].contentSize,
-            countryCode: xrayWithLocations[url].countryCode,
+            transferSize: xray[url].transferSize,
+            contentSize: xray[url].contentSize,
+            countryCode: xray[url].countryCode,
           })),
           skipDuplicates: true,
         },
