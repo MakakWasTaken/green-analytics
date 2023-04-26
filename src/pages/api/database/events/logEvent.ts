@@ -85,14 +85,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Check if the website.url is localhost
   // If it is, allow it
   let website: (Website & { scans: Scan[] }) | null = null
-  console.log(
-    req.body.event.website,
-    req.body.event.website.url.startsWith('http://localhost:'),
-  )
   const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
   const urlMatch = urlRegex.exec(req.body.event.website.url)
   const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
-  console.log(formattedEventUrl)
   if (formattedEventUrl.startsWith('localhost:')) {
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
@@ -109,13 +104,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
   } else {
-    // Check if the website.url is a valid url
-    const url = new URL(req.body.event.website.url)
-    if (!url.origin) {
-      res.status(400).json({ ok: false, message: 'Invalid website url' })
-      return
-    }
-
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
       where: {
@@ -133,6 +121,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     const origin = req.headers.host || req.headers.origin
+    console.log(origin)
     const originURL = new URL(origin || '')
     // Check that the origin of the request matches the given url
     if (website.url !== originURL.origin) {

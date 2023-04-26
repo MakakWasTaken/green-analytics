@@ -88,7 +88,7 @@ const Websites = () => {
 
   const fixURL = (url: string): string => {
     // Get match from regex
-    const regex = /^(?:\w+?:\/\/)?([A-z0-9.-]+).*/g
+    const regex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
 
     const urlMatch = regex.exec(url)
 
