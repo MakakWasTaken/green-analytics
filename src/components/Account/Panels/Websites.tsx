@@ -172,7 +172,7 @@ const Websites = () => {
   async
   src="https://green-analytics.dk/green-analytics.js"
   data-token="${viewTokenDialog}"
-/>`}
+><script/>`}
               </SyntaxHighlighter>
             </TabPanel>
             <TabPanel value={1}>
