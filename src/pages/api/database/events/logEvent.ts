@@ -85,7 +85,10 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Check if the website.url is localhost
   // If it is, allow it
   let website: (Website & { scans: Scan[] }) | null = null
-  console.log(req.body.event)
+  console.log(
+    req.body.event.website,
+    req.body.event.website.url.startsWith('http://localhost:'),
+  )
   if (req.body.event.website.url.startsWith('http://localhost:')) {
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
