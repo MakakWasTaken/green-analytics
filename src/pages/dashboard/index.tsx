@@ -3,6 +3,7 @@ import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import { Box, Grid, Typography, useTheme } from '@mui/joy'
 import { Event, Property } from '@prisma/client'
 import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
+import HorizontalBarChart from '@src/components/Dashboard/Charts/HorizontalBarChart'
 import LineChart from '@src/components/Dashboard/Charts/LineChart'
 import RadarChart from '@src/components/Dashboard/Charts/RadarChart'
 import GridBox from '@src/components/Dashboard/Grid/GridBox'
@@ -261,6 +262,28 @@ const Dashboard = withPageAuthRequired(
                       countProperties(
                         previousMonthProperties || [],
                         'browser',
+                      ).values(),
+                    ),
+                  },
+                ],
+              }}
+            />
+            <HorizontalBarChart
+              md={4}
+              label="Popular Pages"
+              data={{
+                labels: Array.from(
+                  countProperties(previousMonthProperties || [], 'path').keys(),
+                ),
+                datasets: [
+                  {
+                    normalized: true,
+                    backgroundColor: getRandomColor(5),
+                    borderWidth: 0,
+                    data: Array.from(
+                      countProperties(
+                        previousMonthProperties || [],
+                        'path',
                       ).values(),
                     ),
                   },

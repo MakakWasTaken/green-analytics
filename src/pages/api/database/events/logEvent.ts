@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { hosting } from '@makakwastaken/co2'
-import { Event, Scan, Website } from '@prisma/client'
+import { Event, Scan, Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { getXray } from '@src/utils/harFetcher'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -176,7 +176,18 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     // Create the new properties
-    const userProperties = req.body.userProperties
+    const userProperties: {
+      [key: string]: number | boolean | string
+    } = req.body.userProperties
+
+    console.log(
+      Object.keys(userProperties).map((property) => ({
+        key: property,
+        value: userProperties[property].toString(),
+        personId: req.body.personId || req.body.sessionId,
+        websiteId: website!.id,
+      })),
+    )
     await prisma.property.createMany({
       data: Object.keys(userProperties).map((property) => ({
         key: property,
