@@ -105,7 +105,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     await prisma.property.createMany({
       data: req.body.person.properties.map((property: any) => ({
         key: property.key,
-        value: JSON.stringify(property.value),
+        value: property.value,
         personId: person?.id,
       })),
       skipDuplicates: true,
