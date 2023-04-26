@@ -48,11 +48,7 @@ const Dashboard = withPageAuthRequired(
       domains: number
       greenDomains: number
       emission: number
-    }>(
-      selectedWebsite
-        ? `/database/website/co2?websiteId=${selectedWebsite.id}`
-        : null,
-    )
+    }>(selectedWebsite ? `/database/website/${selectedWebsite.id}/co2` : null)
 
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
