@@ -127,8 +127,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     const origin = req.headers.host || req.headers.origin
     const originURL = new URL(origin || '')
     // Check that the origin of the request matches the given url
-    const websiteURL = new URL(website.url)
-    if (websiteURL.origin !== originURL.origin) {
+    if (website.url !== originURL.origin) {
       res.status(403).json({ ok: false, message: 'Invalid origin' })
       return
     }
@@ -138,7 +137,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     await NextCors(req, res, {
       // Options
       methods: ['POST'],
-      origin: website.url,
+      origin: 'https://' + website.url,
       optionsSuccessStatus: 200,
     })
   }
