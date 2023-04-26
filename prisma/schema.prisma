@@ -65,14 +65,14 @@ model Website {
 }
 
 model Scan {
-  url      String   @id
+  domain      String   @id
 
   website    Website  @relation(fields: [websiteId], references: [id])
   websiteId  String
 
   green           Boolean
-  transferSize    Float
-  contentSize     Float
+  transferSize    Float @default(0.0)
+  contentSize     Float @default(0.0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
