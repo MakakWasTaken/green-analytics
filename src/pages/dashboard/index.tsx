@@ -97,15 +97,14 @@ const Dashboard = withPageAuthRequired(
       const filteredProperties = properties.filter((p) => p.key === propertyKey)
       filteredProperties.forEach((filteredProperty) => {
         if (filteredProperty) {
-          const value = JSON.parse(filteredProperty.value)
-          if (eventsByProperty.has(value)) {
+          if (eventsByProperty.has(filteredProperty.value)) {
             eventsByProperty.set(
-              value,
+              filteredProperty.value,
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              eventsByProperty.get(value)! + 1,
+              eventsByProperty.get(filteredProperty.value)! + 1,
             )
           } else {
-            eventsByProperty.set(value, 1)
+            eventsByProperty.set(filteredProperty.value, 1)
           }
         }
       })
