@@ -44,7 +44,12 @@ export const scanWebsite = async (website: Website) => {
   })
 
   // Check which of the domains are green
-  const green = (await hosting.check(Object.keys(xray))) as string[]
+  const hostOnly = Object.keys(xray).map((url) => {
+    const urlObject = new URL(url)
+    return urlObject.host
+  })
+
+  const green = (await hosting.check(hostOnly)) as string[]
 
   // Delete and readd all the scans (Cleanups the database)
   await prisma.scan.deleteMany({
@@ -63,7 +68,7 @@ export const scanWebsite = async (website: Website) => {
         createMany: {
           data: Object.keys(xray).map((url) => ({
             url,
-            green: green.includes(url),
+            green: green.includes(new URL(url).host),
             transferSize: xray[url].transferSize,
             contentSize: xray[url].contentSize,
             countryCode: xray[url].countryCode,

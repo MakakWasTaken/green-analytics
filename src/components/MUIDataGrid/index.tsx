@@ -30,6 +30,13 @@ const MUIDataGrid: FC<DataGridProps> = (props) => {
               },
             },
           },
+          MuiIconButton: {
+            styleOverrides: {
+              root: {
+                color: 'var(--joy-pallette-text-primary)',
+              },
+            },
+          },
         },
       })}
     >
