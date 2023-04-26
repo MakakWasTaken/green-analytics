@@ -13,7 +13,7 @@ export const handle = withApiAuthRequired(
           const urls = req.query.urls as string[]
           const scripts = await prisma.scan.findMany({
             where: {
-              url: {
+              domain: {
                 in: urls,
               },
               createdAt: req.query.start
