@@ -97,9 +97,8 @@ export const handle = withApiAuthRequired(
               greenDomains: website.scans.filter((scan) => scan.green).length,
               emission: 0.0, // We return 0, because it is invalid if no pageviews are present
             })
+            return
           }
-
-          console.log(pageviews)
 
           const firstPageView = pageviews[0]
           const lastPageView = pageviews[pageviews.length - 1]
