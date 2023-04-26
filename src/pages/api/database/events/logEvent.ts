@@ -89,7 +89,11 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     req.body.event.website,
     req.body.event.website.url.startsWith('http://localhost:'),
   )
-  if (req.body.event.website.url.startsWith('http://localhost:')) {
+  const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.-:]+).*/g
+  const urlMatch = urlRegex.exec(req.body.event.website.url)
+  const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
+  console.log(formattedEventUrl)
+  if (formattedEventUrl.startsWith('localhost:')) {
     // Get the website from the token and req.body.event.website.url
     website = await prisma.website.findFirst({
       where: {
@@ -116,7 +120,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     website = await prisma.website.findFirst({
       where: {
         token,
-        url: req.body.event.website.url,
+        url: formattedEventUrl,
       },
       include: {
         scans: true,
@@ -136,7 +140,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
-    console.log(req.method, req.headers.origin)
+    console.log(req.method, req.headers.origin, 'https://' + website.url)
 
     // Give a cors error if the website url does not match the origin and token
     // Prevents abuse of the API
