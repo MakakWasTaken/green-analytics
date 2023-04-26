@@ -126,7 +126,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   if (method === 'POST') {
     // Create the new event
 
-    const event: Event = req.body.event
+    const event: Event & { properties: { [key: string]: string } } =
+      req.body.event
 
     await handleURLs(website)
 
@@ -137,6 +138,15 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         website: {
           connect: {
             id: website.id,
+          },
+        },
+        properties: {
+          createMany: {
+            data: Object.keys(event.properties).map((key) => ({
+              key,
+              value: event.properties[key],
+              websiteId: website.id,
+            })),
           },
         },
         person: {
@@ -153,9 +163,10 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Create the new properties
     const properties: Omit<Property, 'id' | 'createdAt' | 'updatedAt'>[] =
-      Object.keys(req.body.properties).map((key) => ({
+      Object.keys(req.body.userProperties).map((key) => ({
         key,
-        value: req.body.properties[key],
+        value: req.body.userProperties[key],
+        eventId: null,
         websiteId: website!.id,
         personId: req.body.personId || req.body.sessionId,
       }))

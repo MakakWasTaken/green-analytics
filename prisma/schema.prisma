@@ -101,6 +101,8 @@ model Event {
   name String
   type String
 
+  properties Property[] // 1-to-many relation
+
   person    Person? @relation("PersonEvent", fields: [personId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
   personId  String?
   website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -118,6 +120,8 @@ model Property {
   key   String
   value String
 
+  event    Event? @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
+  eventId  String?
   person   Person? @relation("PersonProperty", fields: [personId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
   personId String?
   website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -130,4 +134,5 @@ model Property {
 
   @@index([websiteId])
   @@index([personId])
+  @@index([eventId])
 }

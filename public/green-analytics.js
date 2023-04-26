@@ -119,9 +119,14 @@ const initGA = async () => {
     website: {
       url: window.location.origin,
     },
+
+    properties: {
+      path: window.location.pathname,
+      referrer: document.referrer,
+    },
   }
 
-  const properties = {
+  const userProperties = {
     browser: getBrowser(),
     os: getOS(),
     mobile: getMobile(),
@@ -142,7 +147,7 @@ const initGA = async () => {
     userAgent: navigator.userAgent,
   }
 
-  await logEvent(event, properties)
+  await logEvent(event, userProperties)
 }
 
 const getSessionId = () => {
@@ -214,7 +219,7 @@ const setPerson = async (person) => {
  * @param {ArrayLike<Property>} properties The properties of the user using this event
  * @returns {Promise<void>} A promise that resolves when the event is logged
  */
-const logEvent = async (event, properties) => {
+const logEvent = async (event, userProperties) => {
   if (navigator.doNotTrack === '1') {
     return
   }
@@ -240,7 +245,7 @@ const logEvent = async (event, properties) => {
       // Add the token to the header
       API_TOKEN: token,
     },
-    body: JSON.stringify({ event, properties, sessionId, personId }),
+    body: JSON.stringify({ event, userProperties, sessionId, personId }),
   })
 }
 
