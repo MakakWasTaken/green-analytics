@@ -133,12 +133,17 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Give a cors error if the website url does not match the origin and token
     // Prevents abuse of the API
-    await NextCors(req, res, {
-      // Options
-      methods: ['POST'],
-      origin: 'https://' + website.url,
-      optionsSuccessStatus: 200,
-    })
+    try {
+      await NextCors(req, res, {
+        // Options
+        methods: ['POST'],
+        origin: 'https://' + website.url,
+        optionsSuccessStatus: 200,
+      })
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
   }
 
   if (!website) {
