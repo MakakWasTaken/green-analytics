@@ -89,7 +89,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     req.body.event.website,
     req.body.event.website.url.startsWith('http://localhost:'),
   )
-  const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.-:]+).*/g
+  const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
   const urlMatch = urlRegex.exec(req.body.event.website.url)
   const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
   console.log(formattedEventUrl)
