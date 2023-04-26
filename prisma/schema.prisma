@@ -65,7 +65,8 @@ model Website {
 }
 
 model Scan {
-  domain      String   @id
+  id         String     @id @default(uuid())
+  url      String   
 
   website    Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId  String
@@ -78,6 +79,7 @@ model Scan {
   updatedAt DateTime @updatedAt
 
   @@index([websiteId])
+  @@unique([websiteId, url], name: "domainWebsiteUnique")
 }
 
 model Person {

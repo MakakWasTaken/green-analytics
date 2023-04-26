@@ -54,11 +54,11 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
       data: {
         scans: {
           createMany: {
-            data: Object.keys(xray).map((domain) => ({
-              domain,
-              green: green.includes(domain),
-              transferSize: xray[domain].transferSize,
-              contentSize: xray[domain].contentSize,
+            data: Object.keys(xray).map((url) => ({
+              url,
+              green: green.includes(url),
+              transferSize: xray[url].transferSize,
+              contentSize: xray[url].contentSize,
             })),
             skipDuplicates: true,
           },

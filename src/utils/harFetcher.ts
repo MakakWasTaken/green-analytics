@@ -22,18 +22,26 @@ export const getXray = async (url: string) => {
   } = {}
 
   entries.forEach((entry: any) => {
+    const urlRegex = /^(\w+?:\/\/[^?]+).*/g
     const url = entry.request.url
+    // Apply the regex and only keep the first match
+    const match = urlRegex.exec(url)
+    if (!match) {
+      return
+    }
+    const formattedUrl = match[1]
+
     const contentSize = entry.response.content.size
     const transferSize = entry.response.bodySize
 
-    if (!urls[url]) {
-      urls[url] = {
+    if (!urls[formattedUrl]) {
+      urls[formattedUrl] = {
         contentSize,
         transferSize,
       }
     } else {
-      urls[url].contentSize += contentSize
-      urls[url].transferSize += transferSize
+      urls[formattedUrl].contentSize += contentSize
+      urls[formattedUrl].transferSize += transferSize
     }
   })
 
