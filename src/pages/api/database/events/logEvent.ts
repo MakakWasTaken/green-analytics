@@ -66,12 +66,6 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 }
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
-  await NextCors(req, res, {
-    // Options
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    origin: '*',
-    optionsSuccessStatus: 200,
-  })
   const method = req.method
 
   const token = req.headers.api_token as string | undefined
@@ -105,7 +99,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const origin = req.headers.host || req.headers.origin || ''
+  const origin = req.headers.origin || ''
   const originURL = new URL(
     origin.startsWith('http') ? origin : 'https://' + origin,
   )
@@ -113,6 +107,24 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   if (website.url !== originURL.host) {
     res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
     return
+  }
+
+  // Give a cors error if the website url does not match the origin and token
+  // Prevents abuse of the API
+  try {
+    await NextCors(req, res, {
+      // Options
+      methods: ['POST'],
+      origin: [
+        'https://' + website.url,
+        'https://green-analytics.dk',
+        'http://localhost:3000',
+      ],
+      optionsSuccessStatus: 200,
+    })
+  } catch (e) {
+    console.error(e)
+    throw e
   }
 
   if (!website) {
