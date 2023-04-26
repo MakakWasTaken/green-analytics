@@ -4,6 +4,7 @@ import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import Pagination from '@src/components/Dashboard/Pagination'
 import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -29,6 +30,9 @@ const PersonsPage: FC = () => {
 
   return (
     <Box sx={{ margin: 8 }}>
+      <Head>
+        <title>Green Analytics | Dashboard - Persons</title>
+      </Head>
       <TeamHeader selectWebsite />
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
         <NavigationMenu />

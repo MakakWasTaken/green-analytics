@@ -1,11 +1,15 @@
 import { Box, CircularProgress, Typography } from '@mui/joy'
 import Link from '@src/components/Link'
+import Head from 'next/head'
 import Image from 'next/image'
 import { FC, Suspense } from 'react'
 
 export const Home: FC = () => {
   return (
     <Suspense fallback={<CircularProgress />}>
+      <Head>
+        <title>Green Analytics</title>
+      </Head>
       <Box
         sx={{
           margin: { xs: 0, md: '0 10vw' },

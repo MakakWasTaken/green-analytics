@@ -5,6 +5,7 @@ import { Event, Person, Property } from '@prisma/client'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import TeamHeader from '@src/components/TeamHeader'
 import { DateTime } from 'luxon'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
 
@@ -18,6 +19,9 @@ const PersonPage = withPageAuthRequired(() => {
 
   return (
     <Box sx={{ margin: 8 }}>
+      <Head>
+        <title>Green Analytics | Person</title>
+      </Head>
       <TeamHeader selectWebsite />
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
         <NavigationMenu />
