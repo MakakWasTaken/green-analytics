@@ -24,16 +24,24 @@ export const scanWebsite = async (website: Website) => {
     throw new Error('Could not scan website. Make sure the url is correct')
   }
 
-  await Promise.all(
-    Object.keys(xray).map(async (url) => {
-      const ip = xray[url].ip
-      const location = await axios.get(
-        `http://ip-api.com/json/${ip}?field=countryCode`,
-      )
-
-      xray[url].countryCode = countryISOMapping[location.data.countryCode]
-    }),
+  const IPset = Array.from(
+    new Set(Object.keys(xray).map((url) => xray[url].ip)),
   )
+
+  const response = await axios.post(
+    'http://ip-api.com/batch?fields=countryCode,query',
+    IPset,
+  )
+
+  // Get the country codes
+  const data: { countryCode: string; query: string }[] = response.data
+
+  Object.keys(xray).forEach((url) => {
+    const location = data.find((location) => location.query === xray[url].ip)
+    if (location) {
+      xray[url].countryCode = countryISOMapping[location.countryCode]
+    }
+  })
 
   // Check which of the domains are green
   const green = (await hosting.check(Object.keys(xray))) as string[]
