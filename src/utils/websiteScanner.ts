@@ -3,6 +3,7 @@ import { Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import axios from 'axios'
 import { countryISOMapping } from './countryISOMapping'
+import { getPredictedCarbonIntensity } from './getPredictedCarbonIntensity'
 import { getXray } from './harFetcher'
 
 export const scanWebsite = async (website: Website) => {
@@ -43,6 +44,12 @@ export const scanWebsite = async (website: Website) => {
     }
   })
 
+  const co2Intensities = await getPredictedCarbonIntensity(
+    Object.keys(xray)
+      .map((url) => xray[url].countryCode)
+      .filter((countryCode) => !!countryCode) as string[],
+  )
+
   // Check which of the domains are green
   const hostOnly = Object.keys(xray).map((url) => {
     const urlObject = new URL(url)
@@ -72,6 +79,8 @@ export const scanWebsite = async (website: Website) => {
             transferSize: xray[url].transferSize,
             contentSize: xray[url].contentSize,
             countryCode: xray[url].countryCode,
+            co2Intensity:
+              co2Intensities[xray[url].countryCode || '']?.prediction || 0,
           })),
           skipDuplicates: true,
         },

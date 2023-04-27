@@ -75,6 +75,7 @@ model Scan {
   transferSize    Float @default(0.0)
   contentSize     Float @default(0.0)
   countryCode     String @default("DNK")
+  co2Intensity    Float @default(0.0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
