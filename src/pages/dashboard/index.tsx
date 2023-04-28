@@ -166,6 +166,16 @@ const Dashboard = withPageAuthRequired(
       }
     }, [scans])
 
+    const pathData = useMemo(() => {
+      const countedPaths = countProperties(
+        previousMonthProperties || [],
+        'path',
+      )
+      return new Map(
+        [...countedPaths.entries()].sort((a, b) => b[1] - a[1]).splice(0, 5),
+      )
+    }, [previousMonthProperties])
+
     return (
       <Box sx={{ margin: 8 }}>
         <Head>
@@ -336,20 +346,13 @@ const Dashboard = withPageAuthRequired(
               md={4}
               label="Popular Pages"
               data={{
-                labels: Array.from(
-                  countProperties(previousMonthProperties || [], 'path').keys(),
-                ),
+                labels: Array.from(pathData.keys()),
                 datasets: [
                   {
                     normalized: true,
                     backgroundColor: getRandomColor(5),
                     borderWidth: 0,
-                    data: Array.from(
-                      countProperties(
-                        previousMonthProperties || [],
-                        'path',
-                      ).values(),
-                    ),
+                    data: Array.from(pathData.values()),
                   },
                 ],
               }}

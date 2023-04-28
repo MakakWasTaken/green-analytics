@@ -50,14 +50,12 @@ const HorizontalBarChart: FC<HorizontalBarChartProps> = ({ data, ...rest }) => {
             },
             scales: {
               x: {
+                display: false,
                 grid: {
                   display: false,
                 },
               },
               y: {
-                ticks: {
-                  maxTicksLimit: 4,
-                },
                 min: 0,
                 border: {
                   display: false,
