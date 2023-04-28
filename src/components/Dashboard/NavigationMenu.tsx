@@ -19,6 +19,10 @@ const pages: Page[] = [
     title: 'Persons',
     href: '/dashboard/persons',
   },
+  {
+    title: 'Scan',
+    href: '/dashboard/scan',
+  },
 ]
 
 const NavigationMenu = () => {

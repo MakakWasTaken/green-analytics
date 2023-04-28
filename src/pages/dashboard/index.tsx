@@ -1,10 +1,11 @@
 /* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import { Box, Grid, Typography, useTheme } from '@mui/joy'
-import { Event, Property } from '@prisma/client'
+import { Event, Property, Scan } from '@prisma/client'
 import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
 import HorizontalBarChart from '@src/components/Dashboard/Charts/HorizontalBarChart'
 import LineChart from '@src/components/Dashboard/Charts/LineChart'
+import ProgressChart from '@src/components/Dashboard/Charts/ProgressChart'
 import RadarChart from '@src/components/Dashboard/Charts/RadarChart'
 import GridBox from '@src/components/Dashboard/Grid/GridBox'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
@@ -50,6 +51,10 @@ const Dashboard = withPageAuthRequired(
       greenDomains: number
       emission: number
     }>(selectedWebsite ? `/database/website/${selectedWebsite.id}/co2` : null)
+
+    const { data: scans } = useSWR<Scan[]>(
+      selectedWebsite ? `/database/website/${selectedWebsite.id}/scan` : null,
+    )
 
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
@@ -117,6 +122,50 @@ const Dashboard = withPageAuthRequired(
       [co2Response?.emission],
     )
 
+    const devicePercentages = useMemo((): {
+      desktop: number
+      mobile: number
+    } => {
+      if (!previousMonthProperties) {
+        return {
+          desktop: 0,
+          mobile: 0,
+        }
+      }
+      const countByDevice = countProperties(previousMonthProperties, 'mobile')
+      const desktop = countByDevice.get('false') || 0
+      const mobile = countByDevice.get('true') || 0
+
+      const total = desktop + mobile || 1.0
+      return {
+        desktop: desktop / total,
+        mobile: mobile / total,
+      }
+    }, [previousMonthProperties])
+
+    const bytePercentages = useMemo((): {
+      totalBytes: number
+      green: number
+      grey: number // Grey bytes are bytes that are not green
+    } => {
+      let total = 0.0
+      let green = 0.0
+      let grey = 0.0
+      scans?.forEach((scan) => {
+        total += scan.transferSize
+        if (scan.green) {
+          green += scan.transferSize
+        } else {
+          grey += scan.transferSize
+        }
+      })
+      return {
+        totalBytes: total,
+        green: green / (total || 0.01),
+        grey: grey / (total || 0.01),
+      }
+    }, [scans])
+
     return (
       <Box sx={{ margin: 8 }}>
         <Head>
@@ -167,27 +216,13 @@ const Dashboard = withPageAuthRequired(
                 <Typography level="h6">this year</Typography>
               </Box>
             </GridBox>
-            <RadarChart
+            {/* The percentage of green bytes */}
+            <ProgressChart
               md={4}
-              label="Weekly Visitors"
-              data={{
-                labels: weekdays,
-                datasets: [
-                  {
-                    normalized: true,
-                    borderColor: theme.palette.primary[500],
-                    backgroundColor: theme.palette.primary[500],
-                    pointRadius: (ctx) =>
-                      ctx.chart.data.labels?.[ctx.dataIndex] === today
-                        ? 3
-                        : ctx.active
-                        ? 5
-                        : 1,
-                    pointHitRadius: 10,
-                    data: averageEventsByDay,
-                  },
-                ],
-              }}
+              label="Green Bytes"
+              mainLabel={`${(bytePercentages.green * 100.0).toFixed(2)}%`}
+              subLabel={'of all bytes are green'}
+              value={bytePercentages.green * 100.0}
             />
             <LineChart
               xs={12}
@@ -242,6 +277,35 @@ const Dashboard = withPageAuthRequired(
                   },
                 ],
               }}
+            />
+            <RadarChart
+              md={4}
+              label="Weekly Visitors"
+              data={{
+                labels: weekdays,
+                datasets: [
+                  {
+                    normalized: true,
+                    borderColor: theme.palette.primary[500],
+                    backgroundColor: theme.palette.primary[500],
+                    pointRadius: (ctx) =>
+                      ctx.chart.data.labels?.[ctx.dataIndex] === today
+                        ? 3
+                        : ctx.active
+                        ? 5
+                        : 1,
+                    pointHitRadius: 10,
+                    data: averageEventsByDay,
+                  },
+                ],
+              }}
+            />
+            <ProgressChart
+              md={4}
+              label="Mobile"
+              mainLabel={`${(devicePercentages.mobile * 100.0).toFixed(2)}%`}
+              subLabel={'is mobile users'}
+              value={devicePercentages.mobile * 100.0}
             />
             <DoughnutChart
               md={4}

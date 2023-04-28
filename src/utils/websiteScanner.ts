@@ -2,7 +2,7 @@ import { hosting } from '@makakwastaken/co2'
 import { Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import axios from 'axios'
-import { countryISOMapping } from './countryISOMapping'
+import { countryISO3Mapping } from './countryISOMapping'
 import { getPredictedCarbonIntensity } from './getPredictedCarbonIntensity'
 import { getXray } from './harFetcher'
 
@@ -40,7 +40,7 @@ export const scanWebsite = async (website: Website) => {
   Object.keys(xray).forEach((url) => {
     const location = data.find((location) => location.query === xray[url].ip)
     if (location) {
-      xray[url].countryCode = countryISOMapping[location.countryCode]
+      xray[url].countryCode = countryISO3Mapping[location.countryCode]
     }
   })
 

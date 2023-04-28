@@ -32,13 +32,35 @@ const Pagination: FC<BoxProps & PaginationProps> = ({
         gap: 1,
       }}
     >
-      <Button onClick={() => setPage(page - 1)}>Prev</Button>
-      {totalPages > maxVisible && page > maxVisible / 2 && (
-        <Button onClick={() => setPage(totalPages - 1)}>{totalPages}</Button>
-      )}
+      {/* {page !== 0 && <Button onClick={() => setPage(page - 1)}>Prev</Button>} */}
       {Array.from({ length: totalPages }).map((_, i) => {
-        if (i < page - maxVisible / 2) return null
-        if (i > page + maxVisible / 2) return null
+        if (i === 0 && page > Math.ceil(maxVisible / 2)) {
+          return (
+            <Button key={i} onClick={() => setPage(i)}>
+              {1}
+            </Button>
+          )
+        }
+        if (
+          i === totalPages - 1 &&
+          page < totalPages - Math.ceil(maxVisible / 2)
+        ) {
+          return (
+            <Button key={i} onClick={() => setPage(i)}>
+              {totalPages}
+            </Button>
+          )
+        }
+        if (i < Math.ceil(page - maxVisible / 2)) return null
+        if (i > Math.ceil(page + maxVisible / 2)) return null
+        const minShown = page > Math.ceil(maxVisible / 2)
+        const maxShown = page < totalPages - Math.ceil(maxVisible / 2)
+        if (minShown && i === Math.ceil(page - maxVisible / 2)) {
+          return null
+        }
+        if (maxShown && i === Math.ceil(page + maxVisible / 2)) {
+          return null
+        }
         return (
           <Button
             key={i}
@@ -53,10 +75,9 @@ const Pagination: FC<BoxProps & PaginationProps> = ({
           </Button>
         )
       })}
-      {totalPages > maxVisible && page < totalPages - maxVisible / 2 && (
-        <Button onClick={() => setPage(totalPages - 1)}>{totalPages}</Button>
-      )}
-      <Button onClick={() => setPage(page + 1)}>Next</Button>
+      {/* {page !== totalPages - 1 && (
+        <Button onClick={() => setPage(page + 1)}>Next</Button>
+      )} */}
     </Box>
   )
 }

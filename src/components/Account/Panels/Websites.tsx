@@ -46,7 +46,7 @@ const Websites = () => {
         )
       ) {
         const response = await api.delete('/database/website/' + id)
-        toast.success(response.data.message)
+        toast.success(response.data.message || 'Successfully deleted website')
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || error)
@@ -56,7 +56,7 @@ const Websites = () => {
   const rescanWebsite = (id: string) => async () => {
     try {
       const response = await api.post('/database/website/' + id + '/scan')
-      toast.success(response.data.message)
+      toast.success(response.data.message || 'Successfully scanned website')
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || error)
     }
