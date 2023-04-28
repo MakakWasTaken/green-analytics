@@ -34,6 +34,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   })
   const method = req.method
+  const ip =
+    (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress
 
   const token = req.headers.api_token as string | undefined
   if (!token) {
@@ -104,11 +106,18 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         },
         properties: {
           createMany: {
-            data: Object.keys(event.properties).map((key) => ({
-              key,
-              value: event.properties[key].toString(),
-              websiteId: website.id,
-            })),
+            data: [
+              ...Object.keys(event.properties).map((key) => ({
+                key,
+                value: event.properties[key].toString(),
+                websiteId: website.id,
+              })),
+              {
+                key: 'ip',
+                value: ip || '',
+                websiteId: website.id,
+              },
+            ],
           },
         },
         person: {
