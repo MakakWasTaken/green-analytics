@@ -130,8 +130,6 @@ const initGA = async () => {
     browser: getBrowser(),
     os: getOS(),
     mobile: getMobile(),
-    path: window.location.pathname,
-    referrer: document.referrer,
 
     // Get the screen size
     width: window.innerWidth,
