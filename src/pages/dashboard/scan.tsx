@@ -31,7 +31,8 @@ const ScanPage: FC = () => {
       renderCell: (params) =>
         params.value ? <LocalFloristIcon color="success" /> : null,
     },
-    { field: 'transferSize', headerName: 'Size', width: 100 },
+    { field: 'transferSize', headerName: 'Transfer Size', width: 100 },
+    { field: 'contentSize', headerName: 'Content Size', width: 100 },
     {
       field: 'countryCode',
       headerName: 'Country',

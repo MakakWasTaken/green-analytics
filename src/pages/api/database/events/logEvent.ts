@@ -69,14 +69,13 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const origin = req.headers.origin || req.headers.host || ''
-  console.log(origin)
   const originURL = new URL(
     origin.startsWith('http') ? origin : 'https://' + origin,
   )
   // Check that the origin of the request matches the given url
   if (
     website.url !== originURL.host &&
-    originURL.host !== 'green-analytics.dk'
+    originURL.host !== 'green-analytics.com'
   ) {
     res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
     return

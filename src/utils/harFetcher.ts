@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const getXray = async (url: string) => {
-  const response = await axios.get('https://har.green-analytics.dk/api', {
+  const response = await axios.get('https://har.green-analytics.com/api', {
     params: {
       url,
     },

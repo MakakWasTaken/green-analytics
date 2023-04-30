@@ -184,7 +184,7 @@ const Websites = () => {
               <SyntaxHighlighter language="html">
                 {`<script
   async
-  src="https://green-analytics.dk/green-analytics.js"
+  src="https://green-analytics.com/green-analytics.js"
   data-token="${viewTokenDialog}"
 ><script/>`}
               </SyntaxHighlighter>

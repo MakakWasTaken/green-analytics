@@ -3,7 +3,7 @@ import axios from 'axios'
 export const api = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? 'https://green-analytics.dk/api'
+      ? 'https://green-analytics.com/api'
       : 'http://localhost:3000/api',
   withCredentials: true,
   headers: {

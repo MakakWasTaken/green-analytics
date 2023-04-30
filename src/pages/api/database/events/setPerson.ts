@@ -41,7 +41,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Check that the origin of the request matches the given url
   if (
     website.url !== originURL.host &&
-    originURL.host !== 'green-analytics.dk'
+    originURL.host !== 'green-analytics.com'
   ) {
     res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
     return
