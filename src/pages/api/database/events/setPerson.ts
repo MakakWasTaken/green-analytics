@@ -71,7 +71,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   // Update all events where person.id is equal to sessionId
-  // to have the new person id
+  // to have the new person Invalid
   await prisma.event.updateMany({
     where: {
       website: {
@@ -111,6 +111,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       skipDuplicates: true,
     })
   }
+
+  await prisma.person.delete({
+    where: {
+      id: req.body.sessionId,
+    },
+  })
 
   res.json({ ok: true })
 }
