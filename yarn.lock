@@ -2227,10 +2227,10 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-green-analytics-react@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/green-analytics-react/-/green-analytics-react-1.0.10.tgz#b3c6e77fe40d8beb96204f1fe35d0422e583e9ee"
-  integrity sha512-SzBOOsndVoN4uzaQTDmYS5tFi3IsmsLQ+VdLcz1IX2B6Kpi+W2sp2mUriCZ/F/GLBYczZlo9D1y3SNrhd6tbmQ==
+green-analytics-react@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/green-analytics-react/-/green-analytics-react-1.0.11.tgz#7d254b7d647202e858f0766a3cec0c683a286fc7"
+  integrity sha512-ZH60TBHh1+l9G5fVfjQf12FDk4Yv2248GNbmXs1b83qcK5C0AoPQlwXQUxskz2cs0GBSL8XeTM7DyAbLdnMkAQ==
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
