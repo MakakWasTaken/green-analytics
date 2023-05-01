@@ -1,6 +1,8 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { CO2 } from '@makakwastaken/co2/dist/src/co2'
+import { SustainableWebDesign } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
+import { countryISO3Mapping } from '@src/utils/countryISOMapping'
+import { getPredictedCarbonIntensity } from '@src/utils/getPredictedCarbonIntensity'
 import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -64,16 +66,10 @@ export const handle = withApiAuthRequired(
 
         // Calculate the CO2 data using SWD (@makakwastaken/co2)
 
-        const co2 = new CO2({ model: 'swd' })
+        const swd = new SustainableWebDesign()
 
         let totalEmission = 0.0
         if (type === 'yearly') {
-          website.scans.forEach((scan) => {
-            const emission = co2.perByte(scan.transferSize, scan.green)
-
-            totalEmission += emission.total
-          })
-
           // Get number of pageviews within the past month and multiply it by the total emission and 12 to get the yearly emission.
           const pageviews = await prisma.event.findMany({
             where: {
@@ -83,9 +79,79 @@ export const handle = withApiAuthRequired(
                 gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
               },
             },
+            select: {
+              personId: true,
+              person: {
+                select: {
+                  properties: {
+                    where: {
+                      key: 'country',
+                    },
+                  },
+                },
+              },
+              createdAt: true,
+            },
             orderBy: {
               createdAt: 'desc',
             },
+          })
+
+          // Calculate the number of returning pageviews
+          const returningUsers = new Set<string>()
+          const totalUsers = new Array<string>()
+          pageviews?.forEach((event) => {
+            if (event.personId) {
+              totalUsers.push(event.personId)
+              returningUsers.add(event.personId)
+            }
+          })
+          const firstVisitPercentage =
+            1 - returningUsers.size / (totalUsers.length || 1)
+
+          const countrySet = Array.from([
+            ...new Set([
+              ...pageviews.flatMap((pageview) =>
+                pageview.person?.properties.map(
+                  (property) => countryISO3Mapping[property.value],
+                ),
+              ),
+            ]),
+          ]).filter((countryCode) => countryCode !== undefined) as string[]
+          const predictedCarbonIntensities = await getPredictedCarbonIntensity(
+            countrySet,
+          )
+
+          website.scans.forEach((scan) => {
+            pageviews.forEach((pageview) => {
+              const countryProperty = pageview.person?.properties.find(
+                (property) => property.key === 'country',
+              )
+
+              const pageviewCountryCode = countryProperty?.value || ''
+
+              const emission = swd.perVisit(
+                scan.transferSize,
+                scan.green,
+                false,
+                {
+                  gridIntensity: {
+                    dataCenter: {
+                      value: scan.co2Intensity,
+                      country: scan.countryCode as any,
+                    },
+                    device: {
+                      value:
+                        predictedCarbonIntensities[pageviewCountryCode]
+                          ?.prediction,
+                    },
+                  },
+                  firstVisitPercentage,
+                },
+              )
+
+              totalEmission += emission.total
+            })
           })
 
           // We hope to get one month of pageviews, but this might not be possible.
@@ -122,11 +188,22 @@ export const handle = withApiAuthRequired(
           res.json({
             domains: website.scans.length,
             greenDomains: website.scans.filter((scan) => scan.green).length,
-            emission: totalEmission * pageviews.length * factor * 12,
+            emission: totalEmission * factor * 12,
           })
         } else if (type === 'pageview') {
           website.scans.forEach((scan) => {
-            const emission = co2.perByte(scan.transferSize, scan.green)
+            const emission = swd.perVisit(
+              scan.transferSize,
+              scan.green,
+              false,
+              {
+                gridIntensity: {
+                  dataCenter: {
+                    country: scan.countryCode as any,
+                  },
+                },
+              },
+            )
 
             totalEmission += emission.total
           })

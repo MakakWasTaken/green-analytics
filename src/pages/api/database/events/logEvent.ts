@@ -4,6 +4,7 @@ import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@src/utils/websiteScanner'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
+import requestCountry from 'request-country'
 
 const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
@@ -42,6 +43,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(200).json({ ok: true })
     return
   }
+
+  const country = requestCountry(req, 'US')
 
   const token = req.headers.api_token as string | undefined
   if (!token) {
@@ -117,11 +120,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
                 value: event.properties[key].toString(),
                 websiteId: website.id,
               })),
-              {
-                key: 'ip',
-                value: ip || '',
-                websiteId: website.id,
-              },
             ],
           },
         },
@@ -155,6 +153,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     const userProperties: {
       [key: string]: number | boolean | string
     } = req.body.userProperties
+
+    userProperties.ip = ip || ''
+    userProperties.country = country
 
     await prisma.property.createMany({
       data: Object.keys(userProperties).map((property) => ({

@@ -5,7 +5,14 @@ export const getPredictedCarbonIntensity = async (
   countries: string | string[] = 'global',
   month: number = new Date().getMonth(),
   year: number = new Date().getFullYear(),
-): Promise<{ [key: string]: any }> => {
+): Promise<{
+  [key: string]: {
+    prediction: number
+    latestYear: string | number | Date
+    coalDeadline: string | number | Date
+    cleanDeadline: string | number | Date
+  }
+}> => {
   if (countries === 'global') {
     const query = `
   SELECT AVG(emissions_intensity_gco2_per_kwh) from (
@@ -78,7 +85,14 @@ export const getPredictedCarbonIntensity = async (
       })
     }
 
-    const finalEmissionData: { [key: string]: any } = {}
+    const finalEmissionData: {
+      [key: string]: {
+        prediction: number
+        latestYear: string | number | Date
+        coalDeadline: string | number | Date
+        cleanDeadline: string | number | Date
+      }
+    } = {}
     Object.keys(countrySeperated).forEach((countryKey) => {
       const data = countrySeperated[countryKey]
 
