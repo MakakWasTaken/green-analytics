@@ -243,8 +243,8 @@ const Dashboard = withPageAuthRequired(
                   {
                     previousMonthEvents?.filter(
                       (e) =>
-                        DateTime.fromISO(e.createdAt as any).weekNumber ===
-                        DateTime.now().weekNumber,
+                        DateTime.fromISO(e.createdAt as any) >
+                        DateTime.now().startOf('week'),
                     ).length
                   }
                 </Typography>
@@ -303,7 +303,7 @@ const Dashboard = withPageAuthRequired(
                       previousMonthEvents?.filter(
                         (e) =>
                           DateTime.fromISO(e.createdAt as any) >
-                          DateTime.now().minus({ week: 1 }),
+                          DateTime.now().startOf('week'),
                       ) || [],
                     ),
                   },
@@ -324,7 +324,7 @@ const Dashboard = withPageAuthRequired(
                       previousMonthEvents?.filter(
                         (e) =>
                           DateTime.fromISO(e.createdAt as any) <=
-                          DateTime.now().minus({ week: 1 }),
+                          DateTime.now().startOf('week'),
                       ) || [],
                     ),
                   },

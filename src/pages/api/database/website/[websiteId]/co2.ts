@@ -138,12 +138,15 @@ export const handle = withApiAuthRequired(
                   gridIntensity: {
                     dataCenter: {
                       value: scan.co2Intensity,
-                      country: scan.countryCode as any,
+                      country: scan.countryCode as any | undefined,
                     },
                     device: {
                       value:
                         predictedCarbonIntensities[pageviewCountryCode]
                           ?.prediction,
+                      country: countryISO3Mapping[pageviewCountryCode] as
+                        | any
+                        | undefined,
                     },
                   },
                   firstVisitPercentage,
