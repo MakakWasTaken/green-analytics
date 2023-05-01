@@ -7,6 +7,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (method) {
     case 'GET':
+      const includePersons = req.query.includePersons === 'true'
       try {
         if (!req.query.websiteId) {
           res.status(400).json({ error: 'Missing websiteId' })
@@ -24,6 +25,24 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
                 }
               : undefined,
           },
+          select: includePersons
+            ? {
+                id: true,
+                personId: true,
+                person: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
+                },
+                createdAt: true,
+              }
+            : {
+                id: true,
+                personId: true,
+                createdAt: true,
+              },
         })
         res.status(200).json(events)
       } catch (error) {

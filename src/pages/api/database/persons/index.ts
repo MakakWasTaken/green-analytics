@@ -34,23 +34,35 @@ export const handle = withApiAuthRequired(
 
     if (method === 'GET') {
       // Get all persons for this website, use pagination
-      const persons = await prisma.person.findMany({
-        where: {
-          websiteId: website.id as string,
-        },
-        skip: req.query.page
-          ? Number.parseInt(req.query.page as string) * 20
-          : 0,
-        take: 20,
-        orderBy: [{ email: 'desc' }, { name: 'desc' }, { createdAt: 'desc' }],
-      })
-      const count = await prisma.person.count({
-        where: {
-          websiteId: website.id as string,
-        },
-      })
+      if (req.query.page) {
+        const persons = await prisma.person.findMany({
+          where: {
+            websiteId: website.id as string,
+          },
+          skip: req.query.page
+            ? Number.parseInt(req.query.page as string) * 20
+            : 0,
+          take: 20,
+          orderBy: [{ email: 'desc' }, { name: 'desc' }, { createdAt: 'desc' }],
+        })
+        const count = await prisma.person.count({
+          where: {
+            websiteId: website.id as string,
+          },
+        })
 
-      res.json({ persons, count })
+        res.json({ persons, count })
+      } else {
+        // Get all persons for this website
+        const persons = await prisma.person.findMany({
+          where: {
+            websiteId: website.id as string,
+          },
+          orderBy: [{ email: 'desc' }, { name: 'desc' }, { createdAt: 'desc' }],
+        })
+
+        res.json({ persons })
+      }
     } else {
       res.status(405).json({ ok: false, message: 'Method not allowed' })
     }

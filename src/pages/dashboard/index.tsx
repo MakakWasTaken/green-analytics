@@ -1,12 +1,11 @@
 /* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import { Box, Grid, Typography, useTheme } from '@mui/joy'
-import { Event, Property, Scan } from '@prisma/client'
+import { Person, Property, Scan } from '@prisma/client'
 import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
 import HorizontalBarChart from '@src/components/Dashboard/Charts/HorizontalBarChart'
 import LineChart from '@src/components/Dashboard/Charts/LineChart'
 import ProgressChart from '@src/components/Dashboard/Charts/ProgressChart'
-import RadarChart from '@src/components/Dashboard/Charts/RadarChart'
 import GridBox from '@src/components/Dashboard/Grid/GridBox'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import TeamHeader from '@src/components/TeamHeader'
@@ -24,24 +23,18 @@ const Dashboard = withPageAuthRequired(
 
     const { selectedWebsite } = useContext(HeaderContext)
 
-    const { data: previous2WeeksEvents } = useSWR<Event[]>(
-      selectedWebsite
-        ? `/database/events?websiteId=${selectedWebsite.id}&start=` +
-            DateTime.now().minus({ weeks: 2 }).toISODate()
-        : null,
-    )
     const { data: previousMonthEvents } = useSWR<
-      (Event & { properties: Property[] })[]
+      { id: string; personId: string; person: Person; createdAt: Date }[]
     >(
       selectedWebsite
-        ? `/database/events?websiteId=${selectedWebsite.id}&start=` +
+        ? `/database/events?websiteId=${selectedWebsite.id}&type=pageview&includePersons=true&start=` +
             DateTime.now().minus({ months: 1 }).toISODate()
         : null,
     )
 
     const { data: previousMonthProperties } = useSWR<Property[]>(
       selectedWebsite
-        ? `/database/properties?websiteId=${selectedWebsite.id}&start=` +
+        ? `/database/properties?websiteId=${selectedWebsite.id}&type=browser,mobile,path&start=` +
             DateTime.now().minus({ months: 1 }).toISODate()
         : null,
     )
@@ -56,6 +49,12 @@ const Dashboard = withPageAuthRequired(
       selectedWebsite ? `/database/website/${selectedWebsite.id}/scan` : null,
     )
 
+    const { data: personCount } = useSWR<{ count: number }>(
+      selectedWebsite
+        ? `/database/persons/count?websiteId=${selectedWebsite.id}`
+        : null,
+    )
+
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
       return datetime.toFormat('ccc')
@@ -66,10 +65,17 @@ const Dashboard = withPageAuthRequired(
     })
     const today = DateTime.now().toFormat('LLL dd')
 
-    const extractEventsByDay = (events: Event[]) => {
+    const extractEventsByDay = (
+      events: {
+        id: string
+        personId: string
+        person: Person
+        createdAt: Date
+      }[],
+    ) => {
       const eventsByDay = new Array(7).fill(0)
       events.forEach((event) => {
-        const eventDay = DateTime.fromISO(event.createdAt as any).toFormat(
+        const eventDay = DateTime.fromISO(event?.createdAt as any).toFormat(
           'ccc',
         )
         const eventDayIndex = weekdays.indexOf(eventDay)
@@ -78,25 +84,21 @@ const Dashboard = withPageAuthRequired(
       return eventsByDay
     }
 
-    const averageEventsByDay = extractEventsByDay(
-      previousMonthEvents || [],
-    ).map((e) => Math.round(e / 4))
-
-    const extractEventsByType = (events: Event[]) => {
-      const eventsByType = new Map<string, number>()
-      events.forEach((event) => {
-        if (eventsByType.has(event.type)) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          eventsByType.set(event.type, eventsByType.get(event.type)! + 1)
-        } else {
-          eventsByType.set(event.type, 1)
-        }
-      })
-      return eventsByType
-    }
+    // const extractEventsByType = (events: Event[]) => {
+    //   const eventsByType = new Map<string, number>()
+    //   events.forEach((event) => {
+    //     if (eventsByType.has(event.type)) {
+    //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    //       eventsByType.set(event.type, eventsByType.get(event.type)! + 1)
+    //     } else {
+    //       eventsByType.set(event.type, 1)
+    //     }
+    //   })
+    //   return eventsByType
+    // }
 
     const countProperties = (
-      properties: Property[],
+      properties: { key: string; value: string }[],
       propertyKey: string,
     ): Map<string, number> => {
       const eventsByProperty = new Map<string, number>()
@@ -176,6 +178,50 @@ const Dashboard = withPageAuthRequired(
       )
     }, [previousMonthProperties])
 
+    const activeUsers = useMemo(() => {
+      // From the events, extract the persons active for each day. While keeping it distinct for the date and person.
+      const activeUsersMap: { [key: string]: number } = {}
+      for (let i = 0; i < 14; i++) {
+        const date =
+          DateTime.now()
+            .minus({ days: 14 - i })
+            .toFormat('MMM d') || ''
+        const dateSet = new Set<string>()
+
+        previousMonthEvents?.forEach((event) => {
+          const eventDate = DateTime.fromISO(event.createdAt as any).toFormat(
+            'MMM d',
+          )
+          if (
+            event.person.email !== null &&
+            event.personId &&
+            eventDate === date
+          ) {
+            dateSet.add(event.personId)
+          }
+        })
+
+        activeUsersMap[date] = dateSet.size
+      }
+
+      return activeUsersMap
+    }, [previousMonthEvents])
+
+    /**
+     * Get the percentage of pageviews that are from returning users
+     */
+    const returningUserPercentage = useMemo(() => {
+      const returningUsers = new Set<string>()
+      const totalUsers = new Array<string>()
+      previousMonthEvents?.forEach((event) => {
+        if (event.personId) {
+          totalUsers.push(event.personId)
+          returningUsers.add(event.personId)
+        }
+      })
+      return returningUsers.size / (totalUsers.length || 1)
+    }, [previousMonthEvents])
+
     return (
       <Box sx={{ margin: 8 }}>
         <Head>
@@ -195,11 +241,10 @@ const Dashboard = withPageAuthRequired(
               <Box>
                 <Typography level="h1">
                   {
-                    previous2WeeksEvents?.filter(
+                    previousMonthEvents?.filter(
                       (e) =>
-                        e.type === 'pageview' &&
                         DateTime.fromISO(e.createdAt as any).weekNumber ===
-                          DateTime.now().weekNumber,
+                        DateTime.now().weekNumber,
                     ).length
                   }
                 </Typography>
@@ -255,11 +300,10 @@ const Dashboard = withPageAuthRequired(
                     pointHitRadius: 10,
                     cubicInterpolationMode: 'monotone',
                     data: extractEventsByDay(
-                      previous2WeeksEvents?.filter(
+                      previousMonthEvents?.filter(
                         (e) =>
-                          e.type === 'pageview' &&
                           DateTime.fromISO(e.createdAt as any) >
-                            DateTime.now().minus({ week: 1 }),
+                          DateTime.now().minus({ week: 1 }),
                       ) || [],
                     ),
                   },
@@ -277,35 +321,12 @@ const Dashboard = withPageAuthRequired(
                     pointHitRadius: 10,
                     cubicInterpolationMode: 'monotone',
                     data: extractEventsByDay(
-                      previous2WeeksEvents?.filter(
+                      previousMonthEvents?.filter(
                         (e) =>
-                          e.type === 'pageview' &&
                           DateTime.fromISO(e.createdAt as any) <=
-                            DateTime.now().minus({ week: 1 }),
+                          DateTime.now().minus({ week: 1 }),
                       ) || [],
                     ),
-                  },
-                ],
-              }}
-            />
-            <RadarChart
-              md={4}
-              label="Weekly Visitors"
-              data={{
-                labels: weekdays,
-                datasets: [
-                  {
-                    normalized: true,
-                    borderColor: theme.palette.primary[500],
-                    backgroundColor: theme.palette.primary[500],
-                    pointRadius: (ctx) =>
-                      ctx.chart.data.labels?.[ctx.dataIndex] === today
-                        ? 3
-                        : ctx.active
-                        ? 5
-                        : 1,
-                    pointHitRadius: 10,
-                    data: averageEventsByDay,
                   },
                 ],
               }}
@@ -342,6 +363,30 @@ const Dashboard = withPageAuthRequired(
                 ],
               }}
             />
+            <LineChart
+              md={8}
+              label="Active Persons"
+              data={{
+                labels: Object.keys(activeUsers),
+                datasets: [
+                  {
+                    label: 'Active persons',
+                    normalized: true,
+                    borderColor: theme.palette.primary[500],
+                    backgroundColor: theme.palette.primary[500],
+                    pointRadius: (ctx) =>
+                      ctx.chart.data.labels?.[ctx.dataIndex] === today
+                        ? 3
+                        : ctx.active
+                        ? 5
+                        : 1,
+                    pointHitRadius: 10,
+                    cubicInterpolationMode: 'monotone',
+                    data: Object.values(activeUsers),
+                  },
+                ],
+              }}
+            />
             <HorizontalBarChart
               md={4}
               label="Popular Pages"
@@ -356,6 +401,16 @@ const Dashboard = withPageAuthRequired(
                   },
                 ],
               }}
+            />
+            <GridBox md={4} label="Total Person #">
+              <Typography level="h1">{personCount?.count || 0}</Typography>
+            </GridBox>
+            <ProgressChart
+              label="Returning Users"
+              md={4}
+              mainLabel={`${(returningUserPercentage * 100.0).toFixed(2)}%`}
+              subLabel="are returning"
+              value={returningUserPercentage * 100.0}
             />
           </Grid>
         </Box>

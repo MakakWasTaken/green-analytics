@@ -50,6 +50,9 @@ const LineChart: FC<LineChartProps> = ({ data, ...rest }) => {
                 grid: {
                   display: false,
                 },
+                ticks: {
+                  maxTicksLimit: 7,
+                },
               },
               y: {
                 ticks: {
