@@ -38,8 +38,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const ip =
     (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress
 
-  // Check if the request is headless. If it is we don't want to log it
-  if (req.headers['user-agent']?.includes('Headless')) {
+  // Check if the request is headless or bot. If it is we don't want to log it
+  const userAgent = req.headers['user-agent']?.toLowerCase()
+  if (userAgent?.includes('headless') || userAgent?.includes('bot')) {
     res.status(200).json({ ok: true })
     return
   }
