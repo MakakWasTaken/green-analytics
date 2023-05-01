@@ -53,10 +53,55 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
   )
 
   useEffect(() => {
+    if (internalSelectedTeam) {
+      localStorage.setItem('selectedTeamId', internalSelectedTeam.id)
+    }
+  }, [internalSelectedTeam])
+
+  useEffect(() => {
+    if (selectedWebsite) {
+      localStorage.setItem('selectedWebsiteId', selectedWebsite.id)
+    }
+  }, [selectedWebsite])
+
+  /**
+   * Used to get the previous team id from local storage (Persist the selected team)
+   */
+  useEffect(() => {
     if (allTeams && allTeams.length > 0) {
+      const previouslySelectedTeamId = localStorage.getItem('selectedTeamId')
+      if (previouslySelectedTeamId) {
+        const previouslySelectedTeam = allTeams.find(
+          (team) => team.id === previouslySelectedTeamId,
+        )
+        if (previouslySelectedTeam) {
+          setSelectedTeam(previouslySelectedTeam)
+          return
+        }
+      }
       setSelectedTeam(allTeams[0] || null)
     }
   }, [allTeams])
+
+  /**
+   * Used to get the previous website id from local storage (Persist the selected website)
+   */
+  useEffect(() => {
+    if (selectedTeam && selectedTeam.websites.length > 0) {
+      const previouslySelectedWebsiteId =
+        localStorage.getItem('selectedWebsiteId')
+      if (previouslySelectedWebsiteId) {
+        const previouslySelectedWebsite = selectedTeam.websites.find(
+          (website) => website.id === previouslySelectedWebsiteId,
+        )
+        if (previouslySelectedWebsite) {
+          setSelectedWebsite(previouslySelectedWebsite)
+          return
+        }
+      }
+      setSelectedWebsite(selectedTeam.websites[0] || null)
+    }
+  }, [selectedTeam])
 
   return (
     <HeaderContext.Provider

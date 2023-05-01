@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Option, Select } from '@mui/joy'
 import { HeaderContext } from '@src/contexts/HeaderContext'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext } from 'react'
 
 interface TeamHeaderProps {
   selectWebsite?: boolean
@@ -14,12 +14,6 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
     selectedWebsite,
     setSelectedWebsite,
   } = useContext(HeaderContext)
-
-  useEffect(() => {
-    if (selectedTeam && selectedTeam.websites.length > 0) {
-      setSelectedWebsite(selectedTeam.websites[0])
-    }
-  }, [selectedTeam])
 
   return (
     <Box
