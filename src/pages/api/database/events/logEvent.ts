@@ -37,6 +37,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const ip =
     (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress
 
+  // Check if the request is headless. If it is we don't want to log it
+  if (req.headers['user-agent']?.includes('Headless')) {
+    res.status(200).json({ ok: true })
+    return
+  }
+
   const token = req.headers.api_token as string | undefined
   if (!token) {
     res.status(403).json({ ok: false, message: 'Missing token' })
