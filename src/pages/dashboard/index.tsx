@@ -181,10 +181,10 @@ const Dashboard = withPageAuthRequired(
     const activeUsers = useMemo(() => {
       // From the events, extract the persons active for each day. While keeping it distinct for the date and person.
       const activeUsersMap: { [key: string]: number } = {}
-      for (let i = 0; i < 14; i++) {
+      for (let i = 14; i >= 0; i--) {
         const date =
           DateTime.now()
-            .minus({ days: 14 - i })
+            .minus({ days: i }) //
             .toFormat('MMM d') || ''
         const dateSet = new Set<string>()
 
@@ -370,7 +370,7 @@ const Dashboard = withPageAuthRequired(
                 labels: Object.keys(activeUsers),
                 datasets: [
                   {
-                    label: 'Active persons',
+                    label: 'Active Persons',
                     normalized: true,
                     borderColor: theme.palette.primary[500],
                     backgroundColor: theme.palette.primary[500],
