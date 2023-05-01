@@ -33,7 +33,7 @@ const LineChart: FC<LineChartProps> = ({ data, ...rest }) => {
       <div
         style={{
           position: 'relative',
-          maxHeight: '100%', // There is an issue with overflowing labels in chart.js
+          minHeight: '200px',
           width: '100%',
         }}
       >

@@ -238,18 +238,16 @@ const Dashboard = withPageAuthRequired(
             sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1 }}
           >
             <GridBox md={4} label="Page Views">
-              <Box>
-                <Typography level="h1">
-                  {
-                    previousMonthEvents?.filter(
-                      (e) =>
-                        DateTime.fromISO(e.createdAt as any) >
-                        DateTime.now().startOf('week'),
-                    ).length
-                  }
-                </Typography>
-                <Typography level="h6">This week</Typography>
-              </Box>
+              <Typography level="h1">
+                {
+                  previousMonthEvents?.filter(
+                    (e) =>
+                      DateTime.fromISO(e.createdAt as any) >
+                      DateTime.now().startOf('week'),
+                  ).length
+                }
+              </Typography>
+              <Typography level="h6">This week</Typography>
             </GridBox>
             <GridBox
               md={4}
@@ -261,15 +259,10 @@ const Dashboard = withPageAuthRequired(
             This is then multiplied by the number of visitors per month.
             `}
             >
-              <Box>
-                <Typography level="h1">
-                  {emission.quantity.toFixed(1)}
-                </Typography>
-                <Typography level="h6">
-                  {emission.unit} approximate CO2 emissions
-                </Typography>
-                <Typography level="h6">this year</Typography>
-              </Box>
+              <Typography level="h1">{emission.quantity.toFixed(1)}</Typography>
+              <Typography level="h6">
+                {emission.unit} CO2 emissions this year
+              </Typography>
             </GridBox>
             {/* The percentage of green bytes */}
             <ProgressChart
@@ -397,6 +390,7 @@ const Dashboard = withPageAuthRequired(
                     normalized: true,
                     backgroundColor: getRandomColor(5),
                     borderWidth: 0,
+                    borderRadius: 5,
                     data: Array.from(pathData.values()),
                   },
                 ],

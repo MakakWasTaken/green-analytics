@@ -95,9 +95,9 @@ const ResponsiveAppBar: FC = () => {
           display: { xs: 'none', md: 'flex' },
           fontWeight: 700,
           letterSpacing: '.3rem',
-          color: 'inherit',
           textDecoration: 'none',
         }}
+        color="primary"
       >
         Green Analytics
       </Link>
@@ -136,9 +136,9 @@ const ResponsiveAppBar: FC = () => {
           fontFamily: 'monospace',
           fontWeight: 700,
           letterSpacing: '.3rem',
-          color: 'inherit',
           textDecoration: 'none',
         }}
+        color="primary"
       >
         Green Analytics
       </Link>
