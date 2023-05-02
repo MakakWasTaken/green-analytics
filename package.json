@@ -17,7 +17,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.6",
-    "@makakwastaken/co2": "^0.12.1",
+    "@makakwastaken/co2": "^0.12.2",
     "@mui/icons-material": "^5.11.16",
     "@mui/joy": "^5.0.0-alpha.75",
     "@mui/material": "^5.12.0",

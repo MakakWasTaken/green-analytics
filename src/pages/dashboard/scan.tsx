@@ -39,18 +39,20 @@ const ScanPage: FC = () => {
       width: 100,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            loading="lazy"
-            width="20"
-            src={`https://flagcdn.com/w20/${countryISO2Mapping[
-              params.value as string
-            ].toLowerCase()}.png`}
-            srcSet={`https://flagcdn.com/w40/${countryISO2Mapping[
-              params.value as string
-            ].toLowerCase()}.png 2x`}
-            alt={params.value + ' flag'}
-          />
+          {params.value && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              loading="lazy"
+              width="20"
+              src={`https://flagcdn.com/w20/${countryISO2Mapping[
+                params.value as string
+              ]?.toLowerCase()}.png`}
+              srcSet={`https://flagcdn.com/w40/${countryISO2Mapping[
+                params.value as string
+              ]?.toLowerCase()}.png 2x`}
+              alt={params.value + ' flag'}
+            />
+          )}
           <Box sx={{ marginLeft: 1 }}>{params.value}</Box>
         </Box>
       ),
@@ -80,7 +82,29 @@ const ScanPage: FC = () => {
             hideFooter
             autoHeight
             loading={isLoading}
-            rows={data || []}
+            rows={[
+              ...(data || []),
+              {
+                id: 'total',
+                url: 'Total',
+                green: data?.every((scan) => scan.green),
+                transferSize: data?.reduce(
+                  (acc, scan) => acc + scan.transferSize,
+                  0,
+                ),
+
+                contentSize: data?.reduce(
+                  (acc, scan) => acc + scan.contentSize,
+                  0,
+                ),
+
+                countryCode: '',
+                // Average co2 intensity
+                co2Intensity:
+                  (data?.reduce((acc, scan) => acc + scan.co2Intensity, 0) ||
+                    0.0) / (data?.length || 1.0),
+              },
+            ]}
             columns={columns}
           />
         </Grid>

@@ -305,10 +305,10 @@
   resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
   integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
 
-"@makakwastaken/co2@^0.12.1":
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/@makakwastaken/co2/-/co2-0.12.1.tgz#05f18b2f0b926edce4819e8d141dbe4dea305bbb"
-  integrity sha512-CndI+Nm6iUtug2n1Vse/VAH1RTFDe+xjpprMW8chnyQVwNSkbQqnDLKANlgpDSnxlsSyIKxTyzXTXrLMljvZhw==
+"@makakwastaken/co2@^0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@makakwastaken/co2/-/co2-0.12.2.tgz#e845e5df24e0cab32699454a1565fdb165d57eba"
+  integrity sha512-q4walsVz1MGQliehZ+2kUJ7DoP0ZbylncNZUOc+QxsFNUDwUIFVc2E4QK65BO7CoTGo5PqUQl9jiVpuJJnUGJA==
   dependencies:
     axios "^1.2.0"
     chrome-har "^0.13.0"
