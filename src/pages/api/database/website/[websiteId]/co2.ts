@@ -152,8 +152,9 @@ export const handle = withApiAuthRequired(
                   firstVisitPercentage,
                 },
               )
-
-              totalEmission += emission.total
+              if (emission.total) {
+                totalEmission += emission.total
+              }
             })
           })
 
