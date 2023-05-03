@@ -1,6 +1,14 @@
-import { extendTheme } from '@mui/joy/styles'
+import { CssVarsThemeOptions, extendTheme } from '@mui/joy/styles'
+import { poppins } from '@src/components/Layout'
 
-export const themeDefinitions = {
+export const themeDefinitions: CssVarsThemeOptions = {
+  fontFamily: {
+    body: poppins.style.fontFamily,
+  },
+  fontWeight: {
+    xs: 400,
+    md: 500,
+  },
   colorSchemes: {
     light: {
       palette: {

@@ -12,7 +12,7 @@ export const Home: FC = () => {
       </Head>
       <Box
         sx={{
-          margin: { xs: 0, md: '0 10vw' },
+          margin: { xs: '0 3vw', md: '0 10vw' },
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           minHeight: 'calc(100vh - 75px)',
@@ -47,10 +47,10 @@ export const Home: FC = () => {
           </Typography>
           <Link
             sx={{
-              marginTop: '1rem',
-              fontSize: { xs: '1rem', md: '1.25rem' },
-              padding: 2,
-              borderRadius: '50vh',
+              marginTop: '25px',
+              fontSize: { xs: '1rem', md: '1rem' },
+              padding: 1,
+              borderRadius: '15px',
               fontWeight: 'bold',
               width: '250px',
             }}
