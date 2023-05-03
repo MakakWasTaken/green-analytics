@@ -4,8 +4,8 @@ import theme from '@src/styles/theme'
 import { initGA, setPerson } from 'green-analytics-react'
 import { Public_Sans as PublicSans } from 'next/font/google'
 import { FC, PropsWithChildren, useEffect } from 'react'
-import Footer from './Footer'
-import Header from './Header'
+import { Footer } from './Footer'
+import { Header } from './Header'
 
 const publicSans = PublicSans({
   weight: '400',
