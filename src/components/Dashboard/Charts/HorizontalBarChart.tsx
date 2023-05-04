@@ -1,3 +1,4 @@
+import { poppins } from '@src/styles/font'
 import {
   BarElement,
   CategoryScale,
@@ -9,10 +10,14 @@ import {
   PointElement,
   Title,
   Tooltip,
+  defaults,
 } from 'chart.js'
 import { FC } from 'react'
 import { Bar } from 'react-chartjs-2'
 import GridBox, { GridBoxProps } from '../Grid/GridBox'
+
+defaults.font.family = poppins.style.fontFamily
+defaults.font.weight = '500'
 
 ChartJS.register(
   BarElement,

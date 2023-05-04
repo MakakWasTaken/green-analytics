@@ -2,15 +2,23 @@ import {
   Experimental_CssVarsProvider as MUICssVarsProvider,
   experimental_extendTheme as experimentalExtendTheme,
 } from '@mui/material/styles'
-import { DataGrid, DataGridProps } from '@mui/x-data-grid'
+import { DataGridProps } from '@mui/x-data-grid'
+import { poppins } from '@src/styles/font'
 import { themeDefinitions } from '@src/styles/theme'
+import dynamic from 'next/dynamic'
 import { FC } from 'react'
+const DataGrid = dynamic(() =>
+  import('@mui/x-data-grid').then((mod) => mod.DataGrid),
+)
 
 const MUIDataGrid: FC<DataGridProps> = (props) => {
   return (
     <MUICssVarsProvider
       theme={experimentalExtendTheme({
         ...themeDefinitions,
+        typography: {
+          fontFamily: poppins.style.fontFamily,
+        },
         components: {
           MuiDataGrid: {
             styleOverrides: {

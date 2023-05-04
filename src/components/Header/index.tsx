@@ -1,16 +1,13 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
 import MenuIcon from '@mui/icons-material/Menu'
-import Avatar from '@mui/joy/Avatar'
 import Box from '@mui/joy/Box'
 import Button from '@mui/joy/Button'
 import IconButton from '@mui/joy/IconButton'
 import Menu from '@mui/joy/Menu'
 import MenuItem from '@mui/joy/MenuItem'
-import Tooltip from '@mui/joy/Tooltip'
 import Typography from '@mui/joy/Typography'
 import { useRouter } from 'next/router'
-import * as React from 'react'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import Link from '../Link'
 
 interface Page {
@@ -40,10 +37,8 @@ export const Header: FC = () => {
 
   const router = useRouter()
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null)
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null,
-  )
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
@@ -166,14 +161,13 @@ export const Header: FC = () => {
       <Box sx={{ flexGrow: 0 }}>
         {user ? (
           <>
-            <Tooltip title="Open settings">
-              <IconButton
-                onClick={handleOpenUserMenu}
-                sx={{ p: 0, borderRadius: '50vh' }}
-              >
-                <Avatar alt={user.name || ''} src={user.picture || ''} />
-              </IconButton>
-            </Tooltip>
+            <IconButton
+              onClick={handleOpenUserMenu}
+              sx={{ p: 0, borderRadius: '50vh' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt={user.name || ''} src={user.picture || ''} />
+            </IconButton>
             <Menu
               id="user-menu"
               anchorEl={anchorElUser}
