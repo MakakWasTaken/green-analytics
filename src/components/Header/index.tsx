@@ -158,42 +158,46 @@ export const Header: FC = () => {
         ))}
       </Box>
 
-      <Box sx={{ flexGrow: 0 }}>
-        {user ? (
-          <>
-            <IconButton
-              onClick={handleOpenUserMenu}
-              sx={{ p: 0, borderRadius: '50vh' }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt={user.name || ''} src={user.picture || ''} />
-            </IconButton>
-            <Menu
-              id="user-menu"
-              anchorEl={anchorElUser}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem
-                  key={setting.label}
-                  onClick={() => onPageClick(setting)}
-                >
-                  <Typography textAlign="center">{setting.label}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </>
-        ) : (
-          <Button
-            variant="solid"
-            onClick={() => onPageClick(settings[0])}
-            sx={{ my: 2, display: 'block' }}
+      {user ? (
+        <>
+          <IconButton
+            onClick={handleOpenUserMenu}
+            sx={{ width: '40px', height: '40px', p: 0, borderRadius: '50vh' }}
           >
-            {settings[0].label}
-          </Button>
-        )}
-      </Box>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              width={40}
+              height={40}
+              style={{ borderRadius: '50vh' }}
+              alt={user.name || ''}
+              src={user.picture || ''}
+            />
+          </IconButton>
+          <Menu
+            id="user-menu"
+            anchorEl={anchorElUser}
+            open={Boolean(anchorElUser)}
+            onClose={handleCloseUserMenu}
+          >
+            {settings.map((setting) => (
+              <MenuItem
+                key={setting.label}
+                onClick={() => onPageClick(setting)}
+              >
+                <Typography textAlign="center">{setting.label}</Typography>
+              </MenuItem>
+            ))}
+          </Menu>
+        </>
+      ) : (
+        <Button
+          variant="solid"
+          onClick={() => onPageClick(settings[0])}
+          sx={{ my: 2, display: 'block' }}
+        >
+          {settings[0].label}
+        </Button>
+      )}
     </Box>
   )
 }

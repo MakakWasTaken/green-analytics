@@ -42,10 +42,7 @@ const theme = extendTheme({
   fontFamily: {
     body: poppins.style.fontFamily,
   },
-  fontWeight: {
-    xs: 400,
-    md: 500,
-  },
+  fontWeight: { xs: 400 },
   ...themeDefinitions,
 })
 

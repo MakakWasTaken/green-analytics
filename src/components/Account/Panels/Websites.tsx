@@ -1,32 +1,35 @@
-import { Delete, Refresh } from '@mui/icons-material'
+import { Code, Refresh } from '@mui/icons-material'
 import {
   Button,
-  FormControl,
-  FormLabel,
-  Input,
   Modal,
   ModalClose,
   ModalDialog,
-  Stack,
   Tab,
   TabList,
   TabPanel,
   Tabs,
   Typography,
 } from '@mui/joy'
-import { Button as MUIButton } from '@mui/material'
-import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
-import type {} from '@mui/x-data-grid/themeAugmentation'
 import { Website } from '@prisma/client'
-import MUIDataGrid from '@src/components/MUIDataGrid'
+import SimpleGrid, {
+  SimpleGridColumnDefinition,
+  SimpleGridRef,
+} from '@src/components/SimpleGrid'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { AccountPage } from '@src/pages/account'
 import { api } from '@src/utils/network'
-import { useContext, useState } from 'react'
-import SyntaxHighlighter from 'react-syntax-highlighter'
+import { useContext, useRef, useState } from 'react'
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
+import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
+import js from 'react-syntax-highlighter/dist/cjs/languages/hljs/javascript'
+import xml from 'react-syntax-highlighter/dist/cjs/languages/hljs/xml'
 import { toast } from 'react-toastify'
 import useSWR from 'swr'
 import AccountBox from '../AccountBox'
+
+SyntaxHighlighter.registerLanguage('javascript', js)
+SyntaxHighlighter.registerLanguage('xml', xml)
+SyntaxHighlighter.registerLanguage('bash', bash)
 
 const Websites = () => {
   const { selectedTeam } = useContext(HeaderContext)
@@ -34,11 +37,9 @@ const Websites = () => {
     selectedTeam ? '/database/website/getAll?teamId=' + selectedTeam.id : null,
   )
   const [viewTokenDialog, setViewTokenDialog] = useState<string | null>(null)
+  const simpleGridRef = useRef<SimpleGridRef>(null)
 
-  // Add Website
-  const [addWebsiteOpen, setAddWebsiteOpen] = useState(false)
-
-  const deleteWebsite = (id: string) => async () => {
+  const deleteWebsite = async (id: string) => {
     try {
       if (
         window.confirm(
@@ -62,41 +63,26 @@ const Websites = () => {
     }
   }
 
-  const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID' },
-    { field: 'name', headerName: 'Name', editable: true, flex: 0.33 },
-    { field: 'url', headerName: 'URL', editable: true, flex: 0.66 },
+  const columns: SimpleGridColumnDefinition[] = [
+    { field: 'name', headerName: 'Name', editable: true },
+    { field: 'url', headerName: 'URL', type: 'url', editable: true },
     {
       field: 'token',
       headerName: 'Setup',
-      renderCell: (props) => (
-        <MUIButton onClick={() => setViewTokenDialog(props.value)}>
-          View Code
-        </MUIButton>
+      renderCell: (value: string) => (
+        <Button onClick={() => setViewTokenDialog(value)}>
+          <Code />
+        </Button>
       ),
     },
-    { field: 'createdAt', headerName: 'Created' },
-    { field: 'updatedAt', headerName: 'Updated' },
     {
-      field: 'actions',
-      headerName: 'Actions',
-      type: 'actions',
-      getActions: (params: any) => [
-        <GridActionsCellItem
-          icon={<Delete />}
-          key="delete"
-          showInMenu={false}
-          onClick={deleteWebsite(params.id)}
-          label="Delete"
-        />,
-        <GridActionsCellItem
-          icon={<Refresh />}
-          key="rescan"
-          showInMenu={false}
-          onClick={rescanWebsite(params.id)}
-          label="Rescan"
-        />,
-      ],
+      field: 'rescan',
+      headerName: 'Rescan',
+      renderCell: (value: string, id) => (
+        <Button onClick={rescanWebsite(id)}>
+          <Refresh />
+        </Button>
+      ),
     },
   ]
 
@@ -115,52 +101,6 @@ const Websites = () => {
 
   return (
     <TabPanel value={AccountPage.Websites}>
-      <Modal open={addWebsiteOpen} onClose={() => setAddWebsiteOpen(false)}>
-        <ModalDialog>
-          <ModalClose />
-          <Typography level="h4">Add Website</Typography>
-          <form
-            onSubmit={async (event: React.FormEvent<HTMLFormElement>) => {
-              event.preventDefault()
-              const elements = event.currentTarget.elements
-              const name = elements[0]
-              const url = elements[1]
-              if (
-                name instanceof HTMLInputElement &&
-                url instanceof HTMLInputElement
-              ) {
-                if (!selectedTeam) {
-                  toast.error('Please select a team')
-                  return
-                }
-
-                const response = await api.post<Website>('/database/website', {
-                  name: name.value,
-                  url: fixURL(url.value),
-                  teamId: selectedTeam.id,
-                })
-                setData((prev) =>
-                  prev ? [...prev, response.data] : [response.data],
-                )
-                toast.success('Website added')
-              }
-              setAddWebsiteOpen(false)
-            }}
-          >
-            <Stack spacing={2}>
-              <FormControl>
-                <FormLabel>Name</FormLabel>
-                <Input id="name" autoFocus required />
-              </FormControl>
-              <FormControl>
-                <FormLabel>URL</FormLabel>
-                <Input id="url" type="url" required />
-              </FormControl>
-              <Button type="submit">Submit</Button>
-            </Stack>
-          </form>
-        </ModalDialog>
-      </Modal>
       <Modal
         open={viewTokenDialog !== null}
         onClose={() => setViewTokenDialog(null)}
@@ -181,7 +121,7 @@ const Websites = () => {
                 Copy and paste this code into your website header. It should be
                 the first thing in the <code>&lt;head&gt;</code> tag.
               </Typography>
-              <SyntaxHighlighter language="html">
+              <SyntaxHighlighter language="xml">
                 {`<script
   async
   src="https://green-analytics.com/green-analytics.js"
@@ -220,38 +160,41 @@ setPerson({
         actionButton={{
           label: 'Add',
           onClick: () => {
-            setAddWebsiteOpen(true)
+            simpleGridRef.current?.addRow()
           },
         }}
       >
-        <MUIDataGrid
-          disableColumnMenu
-          autoHeight
-          onProcessRowUpdateError={(error) => {
-            console.error(error)
-            toast.error(
-              error?.response?.data?.message || error?.message || error,
-            )
-          }}
-          processRowUpdate={async (newRow: Website, oldRow: Website) => {
+        <SimpleGrid
+          rows={data ?? []}
+          columns={columns}
+          onRowDelete={deleteWebsite}
+          onRowAdd={async (newRow: Website) => {
             // For this grid we only allow editing the URL
             newRow.url = fixURL(newRow.url)
-            await api.put<Website>('/database/website/' + oldRow.id, {
+            const response = await api.post<Website>('/database/website', {
+              name: newRow.name,
+              url: newRow.url,
+            })
+            setData((prev) =>
+              prev ? [...prev, response.data] : [response.data],
+            )
+            toast.success('Website added')
+          }}
+          onRowEdit={async (newRow: Website) => {
+            // For this grid we only allow editing the URL
+            newRow.url = fixURL(newRow.url)
+            await api.put<Website>('/database/website/' + newRow.id, {
               name: newRow.name,
               url: newRow.url,
             })
 
+            setData((prev) =>
+              prev
+                ? prev.map((item) => (item.id === newRow.id ? newRow : item))
+                : [newRow],
+            )
             toast.success('Website updated')
-            return newRow
           }}
-          columnVisibilityModel={{
-            id: false,
-            createdAt: false,
-            updatedAt: false,
-          }}
-          hideFooter
-          rows={data ?? []}
-          columns={columns}
         />
       </AccountBox>
     </TabPanel>
