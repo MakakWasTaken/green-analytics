@@ -132,13 +132,13 @@ const Websites = () => {
             <TabPanel value={1}>
               <Typography>Installation</Typography>
               <SyntaxHighlighter language="bash">
-                {`yarn add green-analytics-react
+                {`yarn add green-analytics-js
 # or
-npm install green-analytics-react`}
+npm install green-analytics-js`}
               </SyntaxHighlighter>
               <Typography>Usage</Typography>
               <SyntaxHighlighter language="javascript">
-                {`import { initGA, setPerson } from 'green-analytics-react'
+                {`import { initGA, setPerson } from 'green-analytics-js'
 
 // Initializes the analytics script
 initGA('${viewTokenDialog}')

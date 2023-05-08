@@ -1953,10 +1953,10 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-green-analytics-react@^1.0.12:
+green-analytics-js@^1.0.12:
   version "1.0.12"
-  resolved "https://registry.yarnpkg.com/green-analytics-react/-/green-analytics-react-1.0.12.tgz#a2969dcb2e3ed7e2ff5288ea9c9ddfdd211391aa"
-  integrity sha512-Kp/qIJM9D1zeJHbWNkpzJLLZGHoUH2sAp4LRVdMpiOI2GQn6wUzVc8OHXVbOuHwIsBNEOv7S+GfalFQPVqxNIQ==
+  resolved "https://registry.yarnpkg.com/green-analytics-js/-/green-analytics-js-1.0.12.tgz#8bcc83f2a6e6a0986e82facbacda109cc6369f2a"
+  integrity sha512-hvqBtI0hqkvuiI6pfpbeUatCUj/7IN5JwRS/d6AjkyeSwyFtqyk3ShXoQpCFacLhYd6XcLQ8uFPKvKTd8r1EqQ==
 
 gzip-size@^6.0.0:
   version "6.0.0"
