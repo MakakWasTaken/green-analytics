@@ -166,7 +166,9 @@ export const Header: FC = () => {
             sx={{
               margin: 1,
             }}
-            href="https://github.com/MakakWasTaken/green-analytics"
+            onClick={() =>
+              window.open('https://github.com/MakakWasTaken/green-analytics')
+            }
           >
             <GitHub />
           </IconButton>
@@ -206,7 +208,9 @@ export const Header: FC = () => {
             sx={{
               margin: 1,
             }}
-            href="https://github.com/MakakWasTaken/green-analytics"
+            onClick={() =>
+              window.open('https://github.com/MakakWasTaken/green-analytics')
+            }
           >
             <GitHub />
           </IconButton>
