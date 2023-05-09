@@ -9,6 +9,10 @@ export const Home: FC = () => {
     <Suspense fallback={<CircularProgress />}>
       <Head>
         <title>Green Analytics</title>
+        <meta
+          name="description"
+          content="Green Analytics is an analytics tool that is built on top of SWD's model. The tool allows you to do basis analytics on your website and provide your company with insights into your carbon emissions."
+        />
       </Head>
       <Box
         sx={{
@@ -33,17 +37,19 @@ export const Home: FC = () => {
               fontWeight: 'bold',
             }}
           >
-            Welcome to <br /> Green Analytics
+            A new way of measuring emissions
           </Typography>
           <Typography
             sx={{
               fontSize: { xs: '0.75rem', md: '1rem' },
             }}
           >
-            Green Analytics is an analytics tool that is built on top of the
-            idea of <Link href="https://sustainablewebdesign.org/">SWD</Link>.
-            The tool allows you to do basis analytics on your website and
-            provides you with a score based on the SWD principles.
+            Green Analytics is an analytics tool that is built on top of{' '}
+            <Link href="https://sustainablewebdesign.org/">
+              {"SWD's model"}
+            </Link>
+            . The tool allows you to do basis analytics on your website and
+            provide your company with insights into your carbon emissions.
           </Typography>
           <Link
             sx={{

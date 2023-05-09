@@ -1,4 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
+import { GitHub } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
 import Box from '@mui/joy/Box'
 import Button from '@mui/joy/Button'
@@ -161,6 +162,15 @@ export const Header: FC = () => {
       {user ? (
         <>
           <IconButton
+            variant="plain"
+            sx={{
+              margin: 1,
+            }}
+            href="https://github.com/MakakWasTaken/green-analytics"
+          >
+            <GitHub />
+          </IconButton>
+          <IconButton
             onClick={handleOpenUserMenu}
             sx={{ width: '40px', height: '40px', p: 0, borderRadius: '50vh' }}
           >
@@ -190,13 +200,24 @@ export const Header: FC = () => {
           </Menu>
         </>
       ) : (
-        <Button
-          variant="solid"
-          onClick={() => onPageClick(settings[0])}
-          sx={{ my: 2, display: 'block' }}
-        >
-          {settings[0].label}
-        </Button>
+        <>
+          <IconButton
+            variant="plain"
+            sx={{
+              margin: 1,
+            }}
+            href="https://github.com/MakakWasTaken/green-analytics"
+          >
+            <GitHub />
+          </IconButton>
+          <Button
+            variant="solid"
+            onClick={() => onPageClick(settings[0])}
+            sx={{ my: 2, display: 'block' }}
+          >
+            {settings[0].label}
+          </Button>
+        </>
       )}
     </Box>
   )
