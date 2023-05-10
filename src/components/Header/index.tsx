@@ -113,15 +113,16 @@ export const Header: FC = () => {
           aria-controls="menu-appbar"
           aria-haspopup="true"
           onClick={handleOpenNavMenu}
+          id="pages-menu"
         >
-          <MenuIcon />
+          <MenuIcon aria-labelledby="pages-menu" />
         </IconButton>
         <Menu
           id="nav-menu"
           anchorEl={anchorElNav}
           open={Boolean(anchorElNav)}
           onClose={handleCloseNavMenu}
-          aria-labelledby="selected-demo-button"
+          aria-labelledby="pages-menu"
         >
           {pages.map((page) => (
             <MenuItem key={page.label} onClick={() => onPageClick(page)}>

@@ -97,7 +97,7 @@ export const Home: FC = () => {
                   pointRadius: 0,
                   borderWidth: 5,
                   data: [65, 59, 80, 81, 56, 55, 40],
-                  borderColor: '#fff',
+                  borderColor: 'var(--joy-palette-text-primary)',
                 },
               ],
             }}
