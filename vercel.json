@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "pages/api/database/events/logEvent.ts": {
+      "maxDuration": 60
+    },
+    "pages/api/database/website/index.ts": {
+      "maxDuration": 60
+    },
+    "pages/api/database/website/**/scan.ts": {
+      "maxDuration": 60
+    }
+  }
+}
