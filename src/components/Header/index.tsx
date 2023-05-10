@@ -174,6 +174,7 @@ export const Header: FC = () => {
             sx={{
               margin: 1,
             }}
+            aria-label="GitHub repository"
             onClick={() =>
               window.open('https://github.com/MakakWasTaken/green-analytics')
             }
@@ -216,6 +217,7 @@ export const Header: FC = () => {
             sx={{
               margin: 1,
             }}
+            aria-label="GitHub repository"
             onClick={() =>
               window.open('https://github.com/MakakWasTaken/green-analytics')
             }
