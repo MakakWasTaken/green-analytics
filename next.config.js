@@ -4,17 +4,11 @@ const bundleAnalyzer = require('@next/bundle-analyzer')
 const nextConfig = {
   reactStrictMode: true,
   modularizeImports: {
-    '@mui/material': {
-      transform: '@mui/material/{{member}}',
+    '@mui/material/?(((\\w*)?/?)*)': {
+      transform: '@mui/material/{{ matches.[1] }}/{{member}}',
     },
-    '@mui/icons-material': {
-      transform: '@mui/icons-material/{{member}}',
-    },
-    '@mui/styles': {
-      transform: '@mui/styles/{{member}}',
-    },
-    '@mui/lab': {
-      transform: '@mui/lab/{{member}}',
+    '@mui/icons-material/?(((\\w*)?/?)*)': {
+      transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
     },
   },
 }

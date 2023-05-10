@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "next-sitemap",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "prettier . --write && next lint",
@@ -31,6 +32,7 @@
     "green-analytics-js": "^1.0.12",
     "luxon": "^3.3.0",
     "next": "13.3.0",
+    "next-sitemap": "^4.0.9",
     "nextjs-cors": "^2.1.2",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
