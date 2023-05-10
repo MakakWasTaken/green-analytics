@@ -17,6 +17,9 @@ export const themeDefinitions = {
           800: '#2c602c',
           900: '#1f481f',
         },
+        background: {
+          body: '#f5faf5',
+        },
       },
     },
     dark: {
@@ -32,6 +35,9 @@ export const themeDefinitions = {
           700: '#347b39',
           800: '#2a6930',
           900: '#1f4e1f',
+        },
+        background: {
+          body: '#0c180d',
         },
       },
     },
