@@ -14,15 +14,15 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
   twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
 
   // If the website has not been updated in two weeks. (Meaning its scans has not been updated in two weeks)
-  let rescanRequired =
-    website.updatedAt < twoWeeksAgo || website.scans.length === 0
+  let alreadyScanned =
+    website.updatedAt >= twoWeeksAgo || website.scans.length === 0
   website.scans.forEach((scan) => {
-    if (scan.updatedAt < twoWeeksAgo) {
-      rescanRequired = true
+    if (scan.updatedAt >= twoWeeksAgo) {
+      alreadyScanned = true
     }
   })
 
-  if (rescanRequired) {
+  if (!alreadyScanned) {
     await scanWebsite(website)
   }
 }
