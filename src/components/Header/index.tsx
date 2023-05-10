@@ -7,8 +7,10 @@ import IconButton from '@mui/joy/IconButton'
 import Menu from '@mui/joy/Menu'
 import MenuItem from '@mui/joy/MenuItem'
 import Typography from '@mui/joy/Typography'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
+import Logo from '../../../public/logo192.png'
 import Link from '../Link'
 
 interface Page {
@@ -21,7 +23,6 @@ export const Header: FC = () => {
   const { user } = useUser()
 
   const pages: Page[] = [
-    { label: 'Home', href: '/' },
     { label: 'Features', href: '/features' },
     { label: 'Pricing', href: '/pricing' },
   ]
@@ -95,6 +96,13 @@ export const Header: FC = () => {
         }}
         color="primary"
       >
+        <Image
+          src={Logo}
+          alt="Green Analytics Logo"
+          style={{ marginRight: 8 }}
+          width={40}
+          height={40}
+        />
         Green Analytics
       </Link>
 
