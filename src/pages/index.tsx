@@ -1,8 +1,17 @@
 import { Box, CircularProgress, Typography } from '@mui/joy'
 import Link from '@src/components/Link'
+import {
+  CategoryScale,
+  Chart as ChartJS,
+  LineElement,
+  LinearScale,
+  PointElement,
+} from 'chart.js'
 import Head from 'next/head'
-import Image from 'next/image'
 import { FC, Suspense } from 'react'
+import { Line } from 'react-chartjs-2'
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement)
 
 export const Home: FC = () => {
   return (
@@ -74,11 +83,42 @@ export const Home: FC = () => {
             alignItems: 'center',
           }}
         >
-          <Image
-            src="/images/undraw_healthy_habit.svg"
-            alt="Healthy Habit"
-            width={500}
-            height={500}
+          <Line
+            style={{
+              maxWidth: '400px',
+              maxHeight: '250px',
+            }}
+            data={{
+              labels: ['1', '1', '1', '1', '1', '1', '1'],
+              datasets: [
+                {
+                  label: 'Default graph',
+                  normalized: true,
+                  pointRadius: 0,
+                  borderWidth: 5,
+                  data: [65, 59, 80, 81, 56, 55, 40],
+                  borderColor: '#fff',
+                },
+              ],
+            }}
+            options={{
+              events: [],
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  display: false,
+                },
+                y: {
+                  display: false,
+                },
+              },
+              plugins: {
+                legend: {
+                  display: false,
+                },
+              },
+            }}
           />
         </Box>
       </Box>
