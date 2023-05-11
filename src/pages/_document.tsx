@@ -35,8 +35,6 @@ export const GADocument = ({ emotionStyleTags }: GADocumentProps) => {
   )
 }
 
-// `getInitialProps` belongs to `_document` (instead of `_app`),
-// it's compatible with static-site generation (SSG).
 GADocument.getInitialProps = async (ctx: DocumentContext) => {
   // Resolution order
   //

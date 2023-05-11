@@ -1,6 +1,5 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
-import { Box, Card, CardContent, Grid, Table } from '@mui/joy'
-import { CardHeader } from '@mui/material'
+import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/joy'
 import { Event, Person, Property } from '@prisma/client'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import TeamHeader from '@src/components/TeamHeader'
@@ -33,8 +32,9 @@ const PersonPage = withPageAuthRequired(() => {
           {/* PERSON DETAILS */}
           <Grid xs={12} md={6}>
             <Card>
-              <CardHeader title="Person Details" />
               <CardContent>
+                <Typography level="h2">Person Details</Typography>
+
                 <Table>
                   <tbody>
                     <tr>
@@ -74,8 +74,8 @@ const PersonPage = withPageAuthRequired(() => {
           {/* PERSON PROPERTIES */}
           <Grid xs={12} md={6}>
             <Card>
-              <CardHeader title="Person Properties" />
               <CardContent>
+                <Typography level="h2">Person Properties</Typography>
                 <Table>
                   <thead>
                     <tr>
@@ -99,8 +99,8 @@ const PersonPage = withPageAuthRequired(() => {
           {/* PERSON EVENTS */}
           <Grid xs={12} md={12}>
             <Card>
-              <CardHeader title="Person Events" />
               <CardContent>
+                <Typography level="h2">Person Events</Typography>
                 <Table>
                   <thead>
                     <tr>

@@ -1,6 +1,6 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
 import { CssBaseline, CssVarsProvider } from '@mui/joy'
-import Box from '@mui/material/Box'
+import Box from '@mui/joy/Box'
 import { poppins } from '@src/styles/font'
 import theme from '@src/styles/theme'
 import { initGA, setPerson } from 'green-analytics-js'

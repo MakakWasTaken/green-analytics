@@ -2,14 +2,16 @@
 const bundleAnalyzer = require('@next/bundle-analyzer')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   modularizeImports: {
-    '@mui/material/?(((\\w*)?/?)*)': {
-      transform: '@mui/material/{{ matches.[1] }}/{{member}}',
+    '@mui/icons-material': {
+      transform: '@mui/icons-material/{{member}}',
     },
-    '@mui/icons-material/?(((\\w*)?/?)*)': {
-      transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
-    },
+  },
+
+  compiler: {
+    // Enables the styled-components SWC transform
+    styledComponents: true,
   },
 }
 

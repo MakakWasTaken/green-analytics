@@ -1,5 +1,11 @@
-import { Box, CircularProgress, List, ListItem, Typography } from '@mui/joy'
-import { ListItemText } from '@mui/material'
+import {
+  Box,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemContent,
+  Typography,
+} from '@mui/joy'
 import Link from '@src/components/Link'
 import Head from 'next/head'
 import { Suspense } from 'react'
@@ -23,63 +29,81 @@ const FeaturesPage = () => {
         <Typography level="h1">Features</Typography>
         <List>
           <ListItem>
-            <ListItemText
-              primary="Web Analytics"
-              secondary="Allows logging the page views to websites"
-            />
+            <ListItemContent>
+              <Typography>Web Analytics</Typography>
+              <Typography level="body2">
+                Allows logging the page views to websites
+              </Typography>
+            </ListItemContent>
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary="User Analytics"
-              secondary="Allows setting attributes to users and logging events"
-            />
+            <ListItemContent>
+              <Typography>User Management</Typography>
+              <Typography level="body2">
+                Allows setting attributes to users and logging events
+              </Typography>
+            </ListItemContent>
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary="Carbon Calculations"
-              secondary="Is able to convert the page views into carbon emissions"
-            />
+            <ListItemContent>
+              <Typography>Carbon Caluclations</Typography>
+              <Typography level="body2">
+                Ability to convert the page views into carbon emissions
+              </Typography>
+            </ListItemContent>
           </ListItem>
-
           <ListItem>
-            <ListItemText
-              primary="Dashboard"
-              secondary="Provides a simple dashboard that allows for an easy overview"
-            />
+            <ListItemContent>
+              <Typography>Dashboard</Typography>
+              <Typography level="body2">
+                Provides a simple dashboard that allows for an easy overview
+              </Typography>
+            </ListItemContent>
           </ListItem>
         </List>
 
         <Typography level="h1">Planned Features</Typography>
         <List>
           <ListItem>
-            <ListItemText
-              primary="API"
-              secondary="Allows for easy integration with other tools"
-            />
+            <ListItemContent>
+              <Typography>API</Typography>
+              <Typography level="body2">
+                Allows for easy integration with other tools
+              </Typography>
+            </ListItemContent>
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary="Customizable Dashboard"
-              secondary="Allows for a customizable dashboard"
-            />
+            <ListItemContent>
+              <Typography>Customizability</Typography>
+              <Typography level="body2">
+                Allows for a customizable dashboard
+              </Typography>
+            </ListItemContent>
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary="Customizable Carbon Calculations"
-              secondary="Allows for a customizable carbon calculation"
-            />
+            <ListItemContent>
+              <Typography>Customizable Carbon Calculations</Typography>
+              <Typography level="body2">
+                Allows for a customizable carbon calculations
+              </Typography>
+            </ListItemContent>
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary="Additional data sources"
-              secondary="Allows for additional data sources"
-            />
+            <ListItemContent>
+              <Typography>Additional data sources</Typography>
+              <Typography level="body2">
+                Allows for additional data sources
+              </Typography>
+            </ListItemContent>
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary="Additional tools for data collection"
-              secondary="Create tools for measuring carbon emission from docker containers, backend systems, mobile apps, etc."
-            />
+            <ListItemContent>
+              <Typography>Additional tools for data collection</Typography>
+              <Typography level="body2">
+                Create tools for measuring carbon emission from docker
+                containers, backend systems, mobile apps, etc.
+              </Typography>
+            </ListItemContent>
           </ListItem>
         </List>
         <Typography level="h5">
