@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography } from '@mui/joy'
+import { Box, CircularProgress, Typography, useColorScheme } from '@mui/joy'
 import Link from '@src/components/Link'
 import {
   CategoryScale,
@@ -14,6 +14,8 @@ import { Line } from 'react-chartjs-2'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement)
 
 export const Home: FC = () => {
+  const colorScheme = useColorScheme()
+
   return (
     <Suspense fallback={<CircularProgress />}>
       <Head>
@@ -64,7 +66,7 @@ export const Home: FC = () => {
             sx={{
               marginTop: '25px',
               fontSize: { xs: '1rem', md: '1rem' },
-              padding: 1,
+              padding: '10px 20px',
               borderRadius: '15px',
               fontWeight: 'bold',
               width: '250px',
@@ -97,7 +99,8 @@ export const Home: FC = () => {
                   pointRadius: 0,
                   borderWidth: 5,
                   data: [65, 59, 80, 81, 56, 55, 40],
-                  borderColor: 'var(--joy-palette-text-primary)',
+                  borderColor:
+                    colorScheme.colorScheme === 'dark' ? '#fff' : '#000',
                 },
               ],
             }}
