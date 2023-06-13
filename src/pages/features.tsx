@@ -118,7 +118,7 @@ const FeaturesPage = () => {
             fontWeight: 'bold',
           }}
           variant="solid"
-          href="https://github.com/MakakWasTaken/projects/1"
+          href="https://github.com/users/MakakWasTaken/projects/1"
         >
           Github Project
         </Link>
