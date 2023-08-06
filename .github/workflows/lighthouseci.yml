@@ -10,7 +10,7 @@ jobs:
           node-version: 16
       - run: yarn && yarn global add -g @lhci/cli@0.8.x
       - run: yarn build
-      - run: lhci collect
-      - run: lhci upload
+      - run: npx lhci collect
+      - run: npx lhci upload
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
