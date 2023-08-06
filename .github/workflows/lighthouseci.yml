@@ -4,11 +4,9 @@ jobs:
   lighthouseci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 16
-      - run: yarn && yarn global add -g @lhci/cli@0.8.x
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: yarn && yarn global add -g @lhci/cli
       - run: yarn build
       - run: npx lhci collect
       - run: npx lhci upload
