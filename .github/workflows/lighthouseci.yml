@@ -4,11 +4,18 @@ jobs:
   lighthouseci:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build and start the project
+        run: yarn build && yarn start
+
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: yarn && yarn global add -g @lhci/cli
-      - run: yarn build
-      - run: npx lhci collect
-      - run: npx lhci upload
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: http://localhost:3000
+          uploadArtifacts: true # save results as an action artifacts
+          temporaryPublicStorage: true # upload lighthouse audits to google temporary storage
