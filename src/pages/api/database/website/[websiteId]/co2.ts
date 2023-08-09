@@ -148,7 +148,10 @@ export const handle = withApiAuthRequired(
                         | any
                         | undefined,
                     },
+                    renewableEnergy: 10, // 10g/kWh for renewable energy.
                   },
+                  kwhPerGB: 0.75, // 0.75 kWh per GB of data transfer.
+                  dataReloadRatio: 0.089, // 8.9% of data is reloaded.
                   firstVisitPercentage,
                 },
               )
@@ -205,7 +208,10 @@ export const handle = withApiAuthRequired(
                   dataCenter: {
                     country: scan.countryCode as any,
                   },
+                  renewableEnergy: 10, // 10g/kWh for renewable energy.
                 },
+                kwhPerGB: 0.75, // 0.75 kWh per GB of data transfer.
+                dataReloadRatio: 0.089, // 8.9% of data is reloaded.
               },
             )
 

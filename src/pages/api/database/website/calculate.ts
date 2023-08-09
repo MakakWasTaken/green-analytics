@@ -28,6 +28,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   })
 
+  let returningUserRate: number | undefined
+
   if (!website) {
     // The website was not found, we need to create it
     // We don't have a team to connect with the website yet, so leave it.
@@ -50,6 +52,30 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       ...createResult,
       scans: [],
     }
+  } else {
+    // If the website already exists, try to get the returning user rate.
+
+    // Get all events within the last month
+    const events = await prisma.event.findMany({
+      where: {
+        websiteId: website.id,
+        createdAt: {
+          gte: DateTime.now().minus({ month: 1 }).toJSDate(),
+        },
+      },
+    })
+
+    // Get the unique users
+    const uniqueUsers = new Set(events.map((event) => event.personId)).size
+
+    // Get the total users
+    const totalUsers = events.map((event) => event.personId).length
+
+    // Calculate the returning user rate
+    returningUserRate = uniqueUsers / totalUsers
+
+    // This info is private. Don't add it to the response.
+    console.log('Returning user rate:', returningUserRate)
   }
 
   if (!website) {
@@ -61,7 +87,10 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   // We now have a website no matter what, so we can scan it if needed.
-  if (website.updatedAt <= DateTime.now().minus({ week: 2 }).toJSDate()) {
+  if (
+    website.scans.length === 0 ||
+    website.updatedAt <= DateTime.now().minus({ week: 2 }).toJSDate()
+  ) {
     // The scan is over 2 weeks old, rescan the website.
     await scanWebsite(website)
 
@@ -79,13 +108,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // Get the carbon intensity for the user base country
   const carbonIntensity = await getPredictedCarbonIntensity(country)
 
-  const swd = new SustainableWebDesign({
-    gridIntensity: {
-      device: {
-        value: carbonIntensity[country]?.prediction,
-      },
-    },
-  })
+  const swd = new SustainableWebDesign()
 
   // The metric. The unit is gram CO2e per pageview
   let totalEmission = 0.0
@@ -95,10 +118,19 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   website.scans.forEach((scan) => {
     const emission = swd.perVisit(scan.transferSize, scan.green, false, {
       gridIntensity: {
+        device: {
+          value: carbonIntensity[country]?.prediction,
+        },
         dataCenter: {
           country: scan.countryCode as any,
         },
+        renewableEnergy: 10, // 10g/kWh for renewable energy.
       },
+      kwhPerGB: 0.75, // 0.75 kWh per GB of data transfer.
+      dataReloadRatio: 0.089, // 8.9% of data is reloaded.
+      firstVisitPercentage: returningUserRate
+        ? 1 - returningUserRate
+        : undefined,
     })
 
     totalEmission += emission.total
@@ -106,6 +138,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   res.json({
     co2perPageview: totalEmission,
+    totalSize: website.scans.reduce((acc, scan) => acc + scan.transferSize, 0),
+    carbonIntensity: carbonIntensity[country]?.prediction,
   })
 }
 

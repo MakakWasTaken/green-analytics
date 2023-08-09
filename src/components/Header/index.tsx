@@ -24,6 +24,7 @@ export const Header: FC = () => {
 
   const pages: Page[] = [
     { label: 'Features', href: '/features' },
+    { label: 'Calculate', href: '/calculate' },
     { label: 'Pricing', href: '/pricing' },
   ]
   const settings: Page[] = user

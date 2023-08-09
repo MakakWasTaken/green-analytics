@@ -62,8 +62,6 @@ export const getPredictedCarbonIntensity = async (
       },
     )
 
-    console.log(allCountries)
-
     // Format the data located in response.data.rows and seperate it by country, then get the prediction for each country
     const countrySeperated: {
       [key: string]: {

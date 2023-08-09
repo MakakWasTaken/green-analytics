@@ -3,11 +3,14 @@ import { AccountInput } from '@src/components/Account/AccountInput'
 import CountrySelect from '@src/components/Calculate/CountrySelect'
 import { countryISO3Mapping } from '@src/utils/countryISOMapping'
 import { api } from '@src/utils/network'
+import convert from 'convert'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 
 interface CalculateResult {
   co2perPageview: number
+  transferSize: number
+  carbonIntensity?: number
 }
 
 const CalculatePage = () => {
@@ -43,34 +46,39 @@ const CalculatePage = () => {
 
   return (
     <Box>
-      <h1>Calculate Page</h1>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'center',
-          width: { sm: '100%', md: '60%' },
         }}
       >
         <Box
           sx={{
             padding: 4,
-            width: '90%',
+            width: { sm: '100%', md: '60%' },
             height: '100%',
             gap: 2,
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: (theme) => theme.palette.background.backdrop,
+            backgroundColor: 'var(--joy-palette-background-backdrop)',
           }}
         >
           {!result ? (
             <>
+              <Typography component="h1" sx={{ fontSize: '25px' }}>
+                Calculate the carbon footprint of a website
+              </Typography>
               <AccountInput
                 label="URL"
                 value={url}
                 placeholder="https://..."
                 onChange={(e) => setUrl(e.target.value)}
               />
-              <CountrySelect value={country} onChange={setCountry} />
+              <CountrySelect
+                value={country}
+                onChange={setCountry}
+                placeholder="Majority userbase country"
+              />
               <Button
                 disabled={loading}
                 loading={loading}
@@ -82,21 +90,49 @@ const CalculatePage = () => {
             </>
           ) : (
             <>
+              <Typography component="h1" sx={{ fontSize: '25px' }}>
+                Result
+              </Typography>
               <AccountInput
                 label="Page Views"
                 value={pageviews}
-                onChange={(e) => setPageviews(e.target.valueAsNumber)}
+                onChange={(e) => {
+                  try {
+                    setPageviews(parseInt(e.target.value))
+                  } catch (err) {
+                    console.log(err)
+                  }
+                }}
               />
 
               <Typography component="h4">
-                This website uses {result.co2perPageview.toFixed(2)}g CO2e/page
-                visit
+                This website uses{' '}
+                {convert(result.co2perPageview, 'grams').to('best').toString(2)}{' '}
+                CO2e/page visit
               </Typography>
 
               <Typography component="h4">
                 This means that {pageviews} pageviews will emit{' '}
-                {(result.co2perPageview * pageviews).toFixed(2)}g CO2e
+                {convert(result.co2perPageview * pageviews, 'grams')
+                  .to('best')
+                  .toString(2)}{' '}
+                CO2e
               </Typography>
+              {result.carbonIntensity && (
+                <Typography component="h4">
+                  The carbon intensity of {country} is{' '}
+                  {convert(result.carbonIntensity, 'grams')
+                    .to('best')
+                    .toString(2)}{' '}
+                  CO2e/kWh
+                </Typography>
+              )}
+              {result.transferSize && (
+                <Typography component="h4">
+                  The transfer size of {url} is{' '}
+                  {convert(result.transferSize, 'bytes').to('best').toString(2)}
+                </Typography>
+              )}
             </>
           )}
         </Box>
