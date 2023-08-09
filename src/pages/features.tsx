@@ -7,19 +7,17 @@ import {
   Typography,
 } from '@mui/joy'
 import Link from '@src/components/Link'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { Suspense } from 'react'
 
 const FeaturesPage = () => {
   return (
     <Suspense fallback={<CircularProgress />}>
-      <Head>
-        <title>Features | Green-Analytics</title>
-        <meta
-          name="description"
-          content="This page describes the features of the analytics tool. "
-        />
-      </Head>
+      <NextSeo
+        title="Calculate"
+        description="This page describes the features of the analytics tool."
+      />
+
       <Box
         sx={{
           margin: { xs: '0 3vw', md: '0 20vw' },

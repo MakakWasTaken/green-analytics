@@ -17,7 +17,7 @@ import Websites from '@src/components/Account/Panels/Websites'
 import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
@@ -79,9 +79,7 @@ const UserPage = withPageAuthRequired(
 
     return (
       <Box sx={{ margin: 8 }}>
-        <Head>
-          <title>Green Analytics | Account</title>
-        </Head>
+        <NextSeo title="Account" />
         <TeamHeader />
         <Box sx={{ alignItems: 'center', display: 'flex' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

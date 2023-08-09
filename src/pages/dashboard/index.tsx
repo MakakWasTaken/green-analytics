@@ -13,7 +13,7 @@ import { HeaderContext } from '@src/contexts/HeaderContext'
 import { getRandomColor } from '@src/utils/utils'
 import convert from 'convert'
 import { DateTime } from 'luxon'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -224,9 +224,7 @@ const Dashboard = withPageAuthRequired(
 
     return (
       <Box sx={{ margin: 8 }}>
-        <Head>
-          <title>Green Analytics | Dashboard</title>
-        </Head>
+        <NextSeo title="Dashboard" />
         <TeamHeader selectWebsite />
         <Box
           sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}

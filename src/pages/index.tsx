@@ -15,7 +15,7 @@ import {
   LinearScale,
   PointElement,
 } from 'chart.js'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { FC, Suspense } from 'react'
 import { Line } from 'react-chartjs-2'
 
@@ -26,13 +26,10 @@ export const Home: FC = () => {
 
   return (
     <Suspense fallback={<CircularProgress />}>
-      <Head>
-        <title>Green Analytics</title>
-        <meta
-          name="description"
-          content="Green Analytics is an analytics tool that is built on top of SWD's model. The tool allows you to do basis analytics on your website and provide your company with insights into your carbon emissions."
-        />
-      </Head>
+      <NextSeo
+        title="Home"
+        description="Green Analytics is an analytics tool that is built on top of SWD's model. The tool allows you to do basis analytics on your website and provide your company with insights into your carbon emissions."
+      />
       <Box
         sx={{
           margin: { xs: '0 3vw', md: '0 20vw' },

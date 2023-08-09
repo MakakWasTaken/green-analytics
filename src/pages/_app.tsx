@@ -3,6 +3,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react'
 import { Layout } from '@src/components/Layout'
 import { HeaderProvider } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'
+import { NextSeo } from 'next-seo'
 import { AppProps } from 'next/app'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -30,6 +31,24 @@ export const GAApp = (props: GAAppProps) => {
         },
       }}
     >
+      <NextSeo
+        additionalLinkTags={[
+          {
+            rel: 'apple-touch-icon',
+            href: '/logo192.png',
+            sizes: '192x192',
+          },
+          {
+            rel: 'manifest',
+            href: '/manifest.json',
+          },
+          {
+            rel: 'preconnect',
+            href: 'https://log.cookieyes.com',
+          },
+        ]}
+        titleTemplate="%s | Green Analytics"
+      />
       <UserProvider>
         <HeaderProvider>
           <CacheProvider value={emotionCache}>

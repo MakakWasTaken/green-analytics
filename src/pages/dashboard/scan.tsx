@@ -9,7 +9,7 @@ import SimpleGrid, {
 import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { countryISO2Mapping } from '@src/utils/countryISOMapping'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { FC, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -110,9 +110,7 @@ const ScanPage: FC = () => {
 
   return (
     <Box sx={{ margin: 8 }}>
-      <Head>
-        <title>Green Analytics | Dashboard - Scan Results</title>
-      </Head>
+      <NextSeo title="Dashboard - Scan Results" />
       <TeamHeader selectWebsite />
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
         <NavigationMenu />

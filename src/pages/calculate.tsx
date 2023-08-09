@@ -4,6 +4,7 @@ import CountrySelect from '@src/components/Calculate/CountrySelect'
 import { countryISO3Mapping } from '@src/utils/countryISOMapping'
 import { api } from '@src/utils/network'
 import convert from 'convert'
+import { NextSeo } from 'next-seo'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 
@@ -46,6 +47,10 @@ const CalculatePage = () => {
 
   return (
     <Box>
+      <NextSeo
+        title="Calculate"
+        description="Calculate the carbon footprint of a website"
+      />
       <Box
         sx={{
           display: 'flex',
@@ -136,6 +141,7 @@ const CalculatePage = () => {
             </>
           )}
         </Box>
+        NNB
       </Box>
     </Box>
   )
