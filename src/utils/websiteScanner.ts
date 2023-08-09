@@ -71,6 +71,7 @@ export const scanWebsite = async (website: Website) => {
       id: website.id,
     },
     data: {
+      updatedAt: new Date(), // Update the updatedAt field
       scans: {
         createMany: {
           data: Object.keys(xray).map((url) => ({

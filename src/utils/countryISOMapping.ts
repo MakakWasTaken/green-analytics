@@ -498,4 +498,9 @@ export const countryISO3Mapping: { [key: string]: string } = {
   XK: 'XKX',
 }
 
+export const convertISO2ToName = (iso2: string): string | undefined => {
+  const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+  return regionNames.of(iso2)
+}
+
 export default countryISO3Mapping
