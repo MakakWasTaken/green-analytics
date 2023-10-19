@@ -1,6 +1,6 @@
 /* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
-import { Box, Grid, Typography, useTheme } from '@mui/joy'
+import { Box, CircularProgress, Grid, Typography, useTheme } from '@mui/joy'
 import { Person, Property, Scan } from '@prisma/client'
 import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
 import HorizontalBarChart from '@src/components/Dashboard/Charts/HorizontalBarChart'
@@ -21,7 +21,7 @@ const Dashboard = withPageAuthRequired(
   () => {
     const theme = useTheme()
 
-    const { selectedWebsite } = useContext(HeaderContext)
+    const { selectedWebsite, loadingTeams } = useContext(HeaderContext)
 
     const { data: previousMonthEvents } = useSWR<
       { id: string; personId: string; person: Person; createdAt: Date }[]
@@ -227,181 +227,189 @@ const Dashboard = withPageAuthRequired(
           sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}
         >
           <NavigationMenu />
-          <Grid
-            container
-            spacing={2}
-            sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1 }}
-          >
-            <GridBox md={4} label="Page Views">
-              <Typography level="h1">
-                {
-                  previousMonthEvents?.filter(
-                    (e) =>
-                      DateTime.fromISO(e.createdAt as any) >
-                      DateTime.now().startOf('week'),
-                  ).length
-                }
-              </Typography>
-              <Typography level="h4">This week</Typography>
-            </GridBox>
-            <GridBox
-              md={4}
-              label="CO2 Emissions"
-              helpLabel={`This indicator is an estimate.
+          {loadingTeams && <CircularProgress />}
+          {!loadingTeams && !selectedWebsite && (
+            <Typography level="h3">You need to select a team</Typography>
+          )}
+          {!loadingTeams && selectedWebsite && (
+            <Grid
+              container
+              spacing={2}
+              sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1 }}
+            >
+              <GridBox md={4} label="Page Views">
+                <Typography level="h1">
+                  {
+                    previousMonthEvents?.filter(
+                      (e) =>
+                        DateTime.fromISO(e.createdAt as any) >
+                        DateTime.now().startOf('week'),
+                    ).length
+                  }
+                </Typography>
+                <Typography level="h4">This week</Typography>
+              </GridBox>
+              <GridBox
+                md={4}
+                label="CO2 Emissions"
+                helpLabel={`This indicator is an estimate.
             
             It uses the estimations from sustainable web design guidelines to predict the yearly emissions. 
             This indicator takes the transfer size for each resource and multiplies it by the CO2 emissions per byte transfered. 
             This is then multiplied by the number of visitors per month.
             `}
-            >
-              <Typography level="h1">{emission.quantity.toFixed(1)}</Typography>
-              <Typography level="h4">
-                {emission.unit} CO2 emissions this year
-              </Typography>
-            </GridBox>
-            {/* The percentage of green bytes */}
-            <ProgressChart
-              md={4}
-              label="Green Bytes"
-              mainLabel={`${(bytePercentages.green * 100.0).toFixed(2)}%`}
-              subLabel={'of all bytes are green'}
-              value={bytePercentages.green * 100.0}
-            />
-            <LineChart
-              xs={12}
-              md={8}
-              label={'Page Views'}
-              data={{
-                labels: thisWeekDays,
-                datasets: [
-                  {
-                    label: 'This week',
-                    normalized: true,
-                    borderColor: theme.palette.primary[500],
-                    backgroundColor: theme.palette.primary[500],
-                    pointRadius: (ctx) =>
-                      ctx.chart.data.labels?.[ctx.dataIndex] === today
-                        ? 3
-                        : ctx.active
-                        ? 5
-                        : 1,
-                    pointHitRadius: 10,
-                    cubicInterpolationMode: 'monotone',
-                    data: extractEventsByDay(
-                      previousMonthEvents?.filter(
-                        (e) =>
-                          DateTime.fromISO(e.createdAt as any) >
-                          DateTime.now().startOf('week'),
-                      ) || [],
-                    ),
-                  },
-                  {
-                    label: 'Previous week',
-                    normalized: true,
-                    borderColor: theme.palette.neutral[500],
-                    backgroundColor: theme.palette.neutral[500],
-                    pointRadius: (ctx) =>
-                      ctx.chart.data.labels?.[ctx.dataIndex] === today
-                        ? 3
-                        : ctx.active
-                        ? 5
-                        : 1,
-                    pointHitRadius: 10,
-                    cubicInterpolationMode: 'monotone',
-                    data: extractEventsByDay(
-                      previousMonthEvents?.filter(
-                        (e) =>
-                          DateTime.fromISO(e.createdAt as any) <=
-                          DateTime.now().startOf('week'),
-                      ) || [],
-                    ),
-                  },
-                ],
-              }}
-            />
-            <ProgressChart
-              md={4}
-              label="Mobile"
-              mainLabel={`${(devicePercentages.mobile * 100.0).toFixed(2)}%`}
-              subLabel={'is mobile users'}
-              value={devicePercentages.mobile * 100.0}
-            />
-            <DoughnutChart
-              md={4}
-              label="Browser"
-              data={{
-                labels: Array.from(
-                  countProperties(
-                    previousMonthProperties || [],
-                    'browser',
-                  ).keys(),
-                ),
-                datasets: [
-                  {
-                    normalized: true,
-                    backgroundColor: getRandomColor(5),
-                    borderWidth: 0,
-                    data: Array.from(
-                      countProperties(
-                        previousMonthProperties || [],
-                        'browser',
-                      ).values(),
-                    ),
-                  },
-                ],
-              }}
-            />
-            <LineChart
-              md={8}
-              label="Active Persons"
-              data={{
-                labels: Object.keys(activeUsers),
-                datasets: [
-                  {
-                    label: 'Active Persons',
-                    normalized: true,
-                    borderColor: theme.palette.primary[500],
-                    backgroundColor: theme.palette.primary[500],
-                    pointRadius: (ctx) =>
-                      ctx.chart.data.labels?.[ctx.dataIndex] === today
-                        ? 3
-                        : ctx.active
-                        ? 5
-                        : 1,
-                    pointHitRadius: 10,
-                    cubicInterpolationMode: 'monotone',
-                    data: Object.values(activeUsers),
-                  },
-                ],
-              }}
-            />
-            <HorizontalBarChart
-              md={4}
-              label="Popular Pages"
-              data={{
-                labels: Array.from(pathData.keys()),
-                datasets: [
-                  {
-                    normalized: true,
-                    backgroundColor: getRandomColor(5),
-                    borderWidth: 0,
-                    borderRadius: 5,
-                    data: Array.from(pathData.values()),
-                  },
-                ],
-              }}
-            />
-            <GridBox md={4} label="Total Person #">
-              <Typography level="h1">{personCount?.count || 0}</Typography>
-            </GridBox>
-            <ProgressChart
-              label="Returning Users"
-              md={4}
-              mainLabel={`${(returningUserPercentage * 100.0).toFixed(2)}%`}
-              subLabel="are returning"
-              value={returningUserPercentage * 100.0}
-            />
-          </Grid>
+              >
+                <Typography level="h1">
+                  {emission.quantity.toFixed(1)}
+                </Typography>
+                <Typography level="h4">
+                  {emission.unit} CO2 emissions this year
+                </Typography>
+              </GridBox>
+              {/* The percentage of green bytes */}
+              <ProgressChart
+                md={4}
+                label="Green Bytes"
+                mainLabel={`${(bytePercentages.green * 100.0).toFixed(2)}%`}
+                subLabel={'of all bytes are green'}
+                value={bytePercentages.green * 100.0}
+              />
+              <LineChart
+                xs={12}
+                md={8}
+                label={'Page Views'}
+                data={{
+                  labels: thisWeekDays,
+                  datasets: [
+                    {
+                      label: 'This week',
+                      normalized: true,
+                      borderColor: theme.palette.primary[500],
+                      backgroundColor: theme.palette.primary[500],
+                      pointRadius: (ctx) =>
+                        ctx.chart.data.labels?.[ctx.dataIndex] === today
+                          ? 3
+                          : ctx.active
+                          ? 5
+                          : 1,
+                      pointHitRadius: 10,
+                      cubicInterpolationMode: 'monotone',
+                      data: extractEventsByDay(
+                        previousMonthEvents?.filter(
+                          (e) =>
+                            DateTime.fromISO(e.createdAt as any) >
+                            DateTime.now().startOf('week'),
+                        ) || [],
+                      ),
+                    },
+                    {
+                      label: 'Previous week',
+                      normalized: true,
+                      borderColor: theme.palette.neutral[500],
+                      backgroundColor: theme.palette.neutral[500],
+                      pointRadius: (ctx) =>
+                        ctx.chart.data.labels?.[ctx.dataIndex] === today
+                          ? 3
+                          : ctx.active
+                          ? 5
+                          : 1,
+                      pointHitRadius: 10,
+                      cubicInterpolationMode: 'monotone',
+                      data: extractEventsByDay(
+                        previousMonthEvents?.filter(
+                          (e) =>
+                            DateTime.fromISO(e.createdAt as any) <=
+                            DateTime.now().startOf('week'),
+                        ) || [],
+                      ),
+                    },
+                  ],
+                }}
+              />
+              <ProgressChart
+                md={4}
+                label="Mobile"
+                mainLabel={`${(devicePercentages.mobile * 100.0).toFixed(2)}%`}
+                subLabel={'is mobile users'}
+                value={devicePercentages.mobile * 100.0}
+              />
+              <DoughnutChart
+                md={4}
+                label="Browser"
+                data={{
+                  labels: Array.from(
+                    countProperties(
+                      previousMonthProperties || [],
+                      'browser',
+                    ).keys(),
+                  ),
+                  datasets: [
+                    {
+                      normalized: true,
+                      backgroundColor: getRandomColor(5),
+                      borderWidth: 0,
+                      data: Array.from(
+                        countProperties(
+                          previousMonthProperties || [],
+                          'browser',
+                        ).values(),
+                      ),
+                    },
+                  ],
+                }}
+              />
+              <LineChart
+                md={8}
+                label="Active Persons"
+                data={{
+                  labels: Object.keys(activeUsers),
+                  datasets: [
+                    {
+                      label: 'Active Persons',
+                      normalized: true,
+                      borderColor: theme.palette.primary[500],
+                      backgroundColor: theme.palette.primary[500],
+                      pointRadius: (ctx) =>
+                        ctx.chart.data.labels?.[ctx.dataIndex] === today
+                          ? 3
+                          : ctx.active
+                          ? 5
+                          : 1,
+                      pointHitRadius: 10,
+                      cubicInterpolationMode: 'monotone',
+                      data: Object.values(activeUsers),
+                    },
+                  ],
+                }}
+              />
+              <HorizontalBarChart
+                md={4}
+                label="Popular Pages"
+                data={{
+                  labels: Array.from(pathData.keys()),
+                  datasets: [
+                    {
+                      normalized: true,
+                      backgroundColor: getRandomColor(5),
+                      borderWidth: 0,
+                      borderRadius: 5,
+                      data: Array.from(pathData.values()),
+                    },
+                  ],
+                }}
+              />
+              <GridBox md={4} label="Total Person #">
+                <Typography level="h1">{personCount?.count || 0}</Typography>
+              </GridBox>
+              <ProgressChart
+                label="Returning Users"
+                md={4}
+                mainLabel={`${(returningUserPercentage * 100.0).toFixed(2)}%`}
+                subLabel="are returning"
+                value={returningUserPercentage * 100.0}
+              />
+            </Grid>
+          )}
         </Box>
       </Box>
     )

@@ -33,7 +33,7 @@ const AccountUpdateBox: FC<AccountUpdateBoxProps> = ({
     if (!state) return false
     // Used to check if any of the values in the object have changed
     const changedValues = Object.values(state).filter((value, index) => {
-      return value !== Object.values(object)[index]
+      return object && value !== Object.values(object)[index]
     })
     // If any of the values have changed, return true
     return changedValues.length > 0

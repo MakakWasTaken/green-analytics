@@ -78,7 +78,9 @@ const UserPage = withPageAuthRequired(
     }
 
     return (
-      <Box sx={{ margin: 8 }}>
+      <Box
+        sx={{ margin: { xs: 0, sm: 0, md: 8 }, my: { xs: 4, sm: 4, md: 0 } }}
+      >
         <NextSeo title="Settings" />
         <TeamHeader />
         <Box sx={{ alignItems: 'center', display: 'flex' }}>
@@ -104,7 +106,7 @@ const UserPage = withPageAuthRequired(
         </Box>
         <Box
           sx={{
-            margin: 2,
+            my: 2,
           }}
         >
           <Tabs
@@ -165,6 +167,7 @@ const UserPage = withPageAuthRequired(
                     <tr>
                       <th>Name</th>
                       <th>Email</th>
+                      <th>Role</th>
                       <th style={{ width: 'min-content' }}>Actions</th>
                     </tr>
                   </thead>
@@ -173,6 +176,13 @@ const UserPage = withPageAuthRequired(
                       <tr key={user.id}>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
+                        <td>
+                          {
+                            selectedTeam.roles.find(
+                              (role) => role.userId === user.id,
+                            )?.role
+                          }
+                        </td>
                         <td>
                           <Button>Change Role</Button>
                           <Button color="danger">Remove</Button>

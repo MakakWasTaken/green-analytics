@@ -1,6 +1,23 @@
-import { Box, CircularProgress, Option, Select } from '@mui/joy'
+import { useUser } from '@auth0/nextjs-auth0/client'
+import { Add } from '@mui/icons-material'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Modal,
+  ModalClose,
+  ModalDialog,
+  Option,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/joy'
+import { Team } from '@prisma/client'
 import { HeaderContext } from '@src/contexts/HeaderContext'
-import { FC, useContext } from 'react'
+import { api } from '@src/utils/network'
+import { FC, useContext, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import AccountInput from '../Account/AccountInput'
 
 interface TeamHeaderProps {
   selectWebsite?: boolean
@@ -10,10 +27,42 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
   const {
     allTeams,
     selectedTeam,
+    loadingTeams,
+    reloadTeams,
     setSelectedTeam,
     selectedWebsite,
     setSelectedWebsite,
   } = useContext(HeaderContext)
+
+  const [showCreateWebsite, setShowCreateWebsite] = useState(false)
+  const [createTeamName, setCreateTeamName] = useState('')
+
+  const handleCloseCreateTeamModal = () => {
+    setShowCreateWebsite(false)
+    setCreateTeamName('')
+  }
+
+  const handleSubmitCreateTeam = () => {
+    // Validate
+    if (!createTeamName) {
+      toast.error('You need to define a name for your new team')
+      return
+    }
+
+    // Send request
+    toast.promise(api.post<Team>('database/team', { name: createTeamName }), {
+      loading: 'Creating team',
+      error: (err) => err.message || err,
+      success: (response) => {
+        reloadTeams((prev) =>
+          prev ? [...prev, response.data] : [response.data],
+        )
+
+        handleCloseCreateTeamModal()
+        return 'Succesfully created team'
+      },
+    })
+  }
 
   return (
     <Box
@@ -26,6 +75,39 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
       }}
     >
+      <Modal open={showCreateWebsite} onClose={handleCloseCreateTeamModal}>
+        <ModalDialog
+          size="lg"
+          sx={{ overflowY: 'scroll', width: { xs: '100%', md: '500px' } }}
+        >
+          <ModalClose />
+          <Typography level="h4">Create Team</Typography>
+
+          <AccountInput
+            label="Team Name"
+            value={createTeamName}
+            placeholder="Team Name"
+            onChange={(e) => setCreateTeamName(e.target.value)}
+          />{' '}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Button
+              color="danger"
+              variant="soft"
+              onClick={handleCloseCreateTeamModal}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSubmitCreateTeam}>Submit</Button>
+          </Box>
+        </ModalDialog>
+      </Modal>
+
       {!allTeams || !selectedTeam ? (
         <CircularProgress />
       ) : (
@@ -51,6 +133,9 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
               ))}
             </Select>
           )}
+          {!loadingTeams && !selectedWebsite && (
+            <Select placeholder="No websites" disabled />
+          )}
           <Select
             placeholder="Team"
             value={selectedTeam.id}
@@ -66,6 +151,17 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
                 {team.name}
               </Option>
             ))}
+            <Option
+              key="new-team"
+              value="new-team"
+              onClick={() => {
+                // Open modal to create new team
+                setShowCreateWebsite(true)
+              }}
+            >
+              <Add />
+              Create new team
+            </Option>
           </Select>
         </>
       )}
