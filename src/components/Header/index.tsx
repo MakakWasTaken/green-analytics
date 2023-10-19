@@ -29,7 +29,7 @@ export const Header: FC = () => {
   ]
   const settings: Page[] = user
     ? [
-        { label: 'Account', href: '/account' },
+        { label: 'Settings', href: '/settings' },
         { label: 'Dashboard', href: '/dashboard' },
         {
           label: 'Logout',
@@ -46,8 +46,8 @@ export const Header: FC = () => {
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget)
   }
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
+  const handleToggleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser((prev) => (prev ? null : event.currentTarget))
   }
 
   const handleCloseNavMenu = () => {
@@ -86,7 +86,7 @@ export const Header: FC = () => {
       }}
     >
       <Link
-        level="h6"
+        level="h4"
         href="/"
         sx={{
           mr: 2,
@@ -133,7 +133,7 @@ export const Header: FC = () => {
         </Menu>
       </Box>
       <Link
-        level="h5"
+        level="h4"
         href="/"
         sx={{
           mr: 2,
@@ -184,7 +184,7 @@ export const Header: FC = () => {
             <GitHub />
           </IconButton>
           <IconButton
-            onClick={handleOpenUserMenu}
+            onClick={handleToggleUserMenu}
             sx={{ width: '40px', height: '40px', p: 0, borderRadius: '50vh' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

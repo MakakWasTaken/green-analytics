@@ -11,7 +11,7 @@ export const handle = withApiAuthRequired(
     const method = req.method
 
     switch (method) {
-      case 'GET':
+      case 'GET': {
         // When we get a GET request, we want to return the CO2 data for the website. This is given in CO2 per page view or CO2 yearly.
         // We need to get the websiteId from the query parameters.
         // We need to get the type of CO2 data from the query parameters.
@@ -100,12 +100,12 @@ export const handle = withApiAuthRequired(
           // Calculate the number of returning pageviews
           const returningUsers = new Set<string>()
           const totalUsers = new Array<string>()
-          pageviews?.forEach((event) => {
+          for (const event of pageviews) {
             if (event.personId) {
               totalUsers.push(event.personId)
               returningUsers.add(event.personId)
             }
-          })
+          }
           const firstVisitPercentage =
             1 - returningUsers.size / (totalUsers.length || 1)
 
@@ -122,8 +122,8 @@ export const handle = withApiAuthRequired(
             countrySet,
           )
 
-          website.scans.forEach((scan) => {
-            pageviews.forEach((pageview) => {
+          for (const scan of website.scans) {
+            for (const pageview of pageviews) {
               const countryProperty = pageview.person?.properties.find(
                 (property) => property.key === 'country',
               )
@@ -158,8 +158,8 @@ export const handle = withApiAuthRequired(
               if (emission.total) {
                 totalEmission += emission.total
               }
-            })
-          })
+            }
+          }
 
           // We hope to get one month of pageviews, but this might not be possible.
           // So we take the difference in days between the first and last pageview, as this symbolizes the number of days we have pageviews for.
@@ -198,7 +198,7 @@ export const handle = withApiAuthRequired(
             emission: totalEmission * factor * 12,
           })
         } else if (type === 'pageview') {
-          website.scans.forEach((scan) => {
+          for (const scan of website.scans) {
             const emission = swd.perVisit(
               scan.transferSize,
               scan.green,
@@ -216,7 +216,7 @@ export const handle = withApiAuthRequired(
             )
 
             totalEmission += emission.total
-          })
+          }
 
           res.json({
             domains: website.scans.length,
@@ -226,6 +226,7 @@ export const handle = withApiAuthRequired(
         }
 
         break
+      }
       default:
         res.setHeader('Allow', ['GET', 'POST'])
         res.status(405).end(`Method ${method} Not Allowed`)

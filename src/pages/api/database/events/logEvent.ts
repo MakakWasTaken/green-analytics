@@ -16,11 +16,11 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // If the website has not been updated in two weeks. (Meaning its scans has not been updated in two weeks)
   let alreadyScanned =
     website.updatedAt >= twoWeeksAgo || website.scans.length === 0
-  website.scans.forEach((scan) => {
+  for (const scan of website.scans) {
     if (scan.updatedAt >= twoWeeksAgo) {
       alreadyScanned = true
     }
-  })
+  }
 
   if (!alreadyScanned) {
     await scanWebsite(website)
@@ -80,7 +80,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const origin = req.headers.origin || req.headers.host || ''
   const originURL = new URL(
-    origin.startsWith('http') ? origin : 'https://' + origin,
+    origin.startsWith('http') ? origin : `https://${origin}`,
   )
   // Check that the origin of the request matches the given url
   if (
@@ -163,7 +163,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         key: property,
         value: userProperties[property].toString(),
         personId: req.body.personId || req.body.sessionId,
-        websiteId: website!.id,
+        websiteId: website?.id,
       })),
       skipDuplicates: true,
     })

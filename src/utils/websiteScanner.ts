@@ -12,14 +12,16 @@ export const scanWebsite = async (website: Website) => {
 
   // Get the scan
   // We rescan the entire website, in case of new scripts or removed scripts
-  const xray: {
-    [key: string]: {
-      ip: string
-      countryCode?: string
-      contentSize: number
-      transferSize: number
-    }
-  } = await getXray(website.url)
+  const xray:
+    | {
+        [key: string]: {
+          ip: string
+          countryCode?: string
+          contentSize: number
+          transferSize: number
+        }
+      }
+    | undefined = await getXray(website.url)
 
   if (!xray) {
     throw new Error('Could not scan website. Make sure the url is correct')
@@ -37,12 +39,12 @@ export const scanWebsite = async (website: Website) => {
   // Get the country codes
   const data: { countryCode: string; query: string }[] = response.data
 
-  Object.keys(xray).forEach((url) => {
+  for (const url in xray) {
     const location = data.find((location) => location.query === xray[url].ip)
     if (location) {
       xray[url].countryCode = countryISO3Mapping[location.countryCode]
     }
-  })
+  }
 
   const co2Intensities = await getPredictedCarbonIntensity(
     Object.keys(xray)

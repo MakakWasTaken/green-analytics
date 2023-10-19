@@ -5,8 +5,7 @@ import { HeaderProvider } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'
 import { NextSeo } from 'next-seo'
 import { AppProps } from 'next/app'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { Toaster, toast } from 'sonner'
 import { SWRConfig } from 'swr'
 import { createEmotionCache } from '../utils/createEmotionCache'
 
@@ -54,7 +53,7 @@ export const GAApp = (props: GAAppProps) => {
           <CacheProvider value={emotionCache}>
             <Layout>
               <Component {...pageProps} />
-              <ToastContainer />
+              <Toaster richColors />
             </Layout>
           </CacheProvider>
         </HeaderProvider>

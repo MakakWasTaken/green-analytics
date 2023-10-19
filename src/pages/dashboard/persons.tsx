@@ -26,7 +26,7 @@ const PersonsPage: FC = () => {
     if (data?.count) {
       setCount(data.count)
     }
-  }, [data?.count])
+  }, [data])
 
   return (
     <Box sx={{ margin: 8 }}>

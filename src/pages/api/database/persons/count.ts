@@ -5,7 +5,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req.method
 
   switch (method) {
-    case 'GET':
+    case 'GET': {
       if (!req.query.websiteId) {
         res.status(400).json({ message: 'Missing websiteId' })
         return
@@ -22,6 +22,7 @@ const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
       res.status(200).json({ count: personCount })
       break
+    }
     default:
       res.setHeader('Allow', ['GET'])
       res.status(405).end(`Method ${method} Not Allowed`)

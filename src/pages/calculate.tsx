@@ -6,7 +6,7 @@ import { api } from '@src/utils/network'
 import convert from 'convert'
 import { NextSeo } from 'next-seo'
 import { useState } from 'react'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface CalculateResult {
   co2perPageview: number

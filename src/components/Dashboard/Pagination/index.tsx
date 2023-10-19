@@ -36,7 +36,7 @@ const Pagination: FC<BoxProps & PaginationProps> = ({
       {Array.from({ length: totalPages }).map((_, i) => {
         if (i === 0 && page > Math.ceil(maxVisible / 2)) {
           return (
-            <Button key={i} onClick={() => setPage(i)}>
+            <Button key={'first'} onClick={() => setPage(i)}>
               {1}
             </Button>
           )
@@ -46,7 +46,7 @@ const Pagination: FC<BoxProps & PaginationProps> = ({
           page < totalPages - Math.ceil(maxVisible / 2)
         ) {
           return (
-            <Button key={i} onClick={() => setPage(i)}>
+            <Button key={'latest'} onClick={() => setPage(i)}>
               {totalPages}
             </Button>
           )
@@ -63,7 +63,7 @@ const Pagination: FC<BoxProps & PaginationProps> = ({
         }
         return (
           <Button
-            key={i}
+            key={`page-${i}`}
             onClick={() => setPage(i)}
             sx={{
               backgroundColor:

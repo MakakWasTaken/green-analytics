@@ -21,9 +21,12 @@ export const handle = withApiAuthRequired(
             },
           },
         },
+        include: {
+          teams: true,
+        },
       })
 
-      if (!user) {
+      if (!user || !req.body.teamId) {
         res.status(403).json({ ok: false, message: 'Team not found' })
         return
       }

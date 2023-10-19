@@ -21,7 +21,7 @@ import { NextSeo } from 'next-seo'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'
 
-export enum AccountPage {
+export enum SettingsTab {
   General = 0,
   Privacy = 1,
   Websites = 2,
@@ -30,25 +30,25 @@ export enum AccountPage {
 
 interface PageInfo {
   title: string
-  page: AccountPage
+  tab: SettingsTab
 }
 
 const pageInfo: PageInfo[] = [
   {
     title: 'General',
-    page: AccountPage.General,
+    tab: SettingsTab.General,
   },
   {
     title: 'Privacy',
-    page: AccountPage.Privacy,
+    tab: SettingsTab.Privacy,
   },
   {
     title: 'Websites',
-    page: AccountPage.Websites,
+    tab: SettingsTab.Websites,
   },
   {
     title: 'Team',
-    page: AccountPage.Team,
+    tab: SettingsTab.Team,
   },
 ]
 
@@ -58,7 +58,7 @@ const UserPage = withPageAuthRequired(
     const { selectedTeam, setSelectedTeam } = useContext(HeaderContext)
     const { data: user, mutate: setUser } = useSWR<User>('/database/user/own')
 
-    const [index, setIndex] = useState(AccountPage.General)
+    const [index, setIndex] = useState(SettingsTab.General)
 
     const updateUser = async (value: User) => {
       const user = await api.put<User>('/database/user/own', value)
@@ -79,7 +79,7 @@ const UserPage = withPageAuthRequired(
 
     return (
       <Box sx={{ margin: 8 }}>
-        <NextSeo title="Account" />
+        <NextSeo title="Settings" />
         <TeamHeader />
         <Box sx={{ alignItems: 'center', display: 'flex' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -132,28 +132,15 @@ const UserPage = withPageAuthRequired(
                   [`&.${tabClasses.selected}`]: {
                     color: 'primary.plainColor',
                     fontWeight: 'lg',
-                    '&:before': {
-                      content: '""',
-                      display: 'block',
-                      position: 'absolute',
-                      zIndex: 1,
-                      bottom: '-1px',
-                      left: 'var(--ListItem-paddingLeft)',
-                      right: 'var(--ListItem-paddingRight)',
-                      height: '3px',
-                      borderTopLeftRadius: '3px',
-                      borderTopRightRadius: '3px',
-                      bgcolor: 'primary.500',
-                    },
                   },
                 },
               }}
             >
               {pageInfo.map((pageInfo) => (
-                <Tab key={pageInfo.page}>{pageInfo.title}</Tab>
+                <Tab key={pageInfo.tab}>{pageInfo.title}</Tab>
               ))}
             </TabList>
-            <TabPanel value={AccountPage.General}>
+            <TabPanel value={SettingsTab.General}>
               <AccountUpdateBox
                 label="Personal Information"
                 object={user}
@@ -164,8 +151,8 @@ const UserPage = withPageAuthRequired(
                 onSave={updateUser}
               />
             </TabPanel>
-            <TabPanel value={AccountPage.Privacy}></TabPanel>
-            <TabPanel value={AccountPage.Team}>
+            <TabPanel value={SettingsTab.Privacy} />
+            <TabPanel value={SettingsTab.Team}>
               <AccountUpdateBox
                 label="Team Information"
                 object={selectedTeam}

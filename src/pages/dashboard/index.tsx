@@ -28,14 +28,14 @@ const Dashboard = withPageAuthRequired(
     >(
       selectedWebsite
         ? `/database/events?websiteId=${selectedWebsite.id}&type=pageview&includePersons=true&start=` +
-            DateTime.now().minus({ months: 1 }).toISODate()
+          DateTime.now().minus({ months: 1 }).toISODate()
         : null,
     )
 
     const { data: previousMonthProperties } = useSWR<Property[]>(
       selectedWebsite
         ? `/database/properties?websiteId=${selectedWebsite.id}&type=browser,mobile,path&start=` +
-            DateTime.now().minus({ months: 1 }).toISODate()
+          DateTime.now().minus({ months: 1 }).toISODate()
         : null,
     )
 
@@ -74,13 +74,13 @@ const Dashboard = withPageAuthRequired(
       }[],
     ) => {
       const eventsByDay = new Array(7).fill(0)
-      events.forEach((event) => {
+      for (const event of events) {
         const eventDay = DateTime.fromISO(event?.createdAt as any).toFormat(
           'ccc',
         )
         const eventDayIndex = weekdays.indexOf(eventDay)
         eventsByDay[eventDayIndex] += 1
-      })
+      }
       return eventsByDay
     }
 
@@ -103,19 +103,16 @@ const Dashboard = withPageAuthRequired(
     ): Map<string, number> => {
       const eventsByProperty = new Map<string, number>()
       const filteredProperties = properties.filter((p) => p.key === propertyKey)
-      filteredProperties.forEach((filteredProperty) => {
+      for (const filteredProperty of filteredProperties) {
         if (filteredProperty) {
-          if (eventsByProperty.has(filteredProperty.value)) {
-            eventsByProperty.set(
-              filteredProperty.value,
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              eventsByProperty.get(filteredProperty.value)! + 1,
-            )
+          const value = eventsByProperty.get(filteredProperty.value)
+          if (value) {
+            eventsByProperty.set(filteredProperty.value, value + 1)
           } else {
             eventsByProperty.set(filteredProperty.value, 1)
           }
         }
-      })
+      }
       return eventsByProperty
     }
 
@@ -143,7 +140,7 @@ const Dashboard = withPageAuthRequired(
         desktop: desktop / total,
         mobile: mobile / total,
       }
-    }, [previousMonthProperties])
+    }, [previousMonthProperties, countProperties])
 
     const bytePercentages = useMemo((): {
       totalBytes: number
@@ -153,14 +150,14 @@ const Dashboard = withPageAuthRequired(
       let total = 0.0
       let green = 0.0
       let grey = 0.0
-      scans?.forEach((scan) => {
+      for (const scan of scans ?? []) {
         total += scan.transferSize
         if (scan.green) {
           green += scan.transferSize
         } else {
           grey += scan.transferSize
         }
-      })
+      }
       return {
         totalBytes: total,
         green: green / (total || 0.01),
@@ -176,7 +173,7 @@ const Dashboard = withPageAuthRequired(
       return new Map(
         [...countedPaths.entries()].sort((a, b) => b[1] - a[1]).splice(0, 5),
       )
-    }, [previousMonthProperties])
+    }, [previousMonthProperties, countProperties])
 
     const activeUsers = useMemo(() => {
       // From the events, extract the persons active for each day. While keeping it distinct for the date and person.
@@ -188,7 +185,7 @@ const Dashboard = withPageAuthRequired(
             .toFormat('MMM d') || ''
         const dateSet = new Set<string>()
 
-        previousMonthEvents?.forEach((event) => {
+        for (const event of previousMonthEvents ?? []) {
           const eventDate = DateTime.fromISO(event.createdAt as any).toFormat(
             'MMM d',
           )
@@ -199,7 +196,7 @@ const Dashboard = withPageAuthRequired(
           ) {
             dateSet.add(event.personId)
           }
-        })
+        }
 
         activeUsersMap[date] = dateSet.size
       }
@@ -213,12 +210,12 @@ const Dashboard = withPageAuthRequired(
     const returningUserPercentage = useMemo(() => {
       const returningUsers = new Set<string>()
       const totalUsers = new Array<string>()
-      previousMonthEvents?.forEach((event) => {
+      for (const event of previousMonthEvents ?? []) {
         if (event.personId) {
           totalUsers.push(event.personId)
           returningUsers.add(event.personId)
         }
-      })
+      }
       return returningUsers.size / (totalUsers.length || 1)
     }, [previousMonthEvents])
 
@@ -245,7 +242,7 @@ const Dashboard = withPageAuthRequired(
                   ).length
                 }
               </Typography>
-              <Typography level="h6">This week</Typography>
+              <Typography level="h4">This week</Typography>
             </GridBox>
             <GridBox
               md={4}
@@ -258,7 +255,7 @@ const Dashboard = withPageAuthRequired(
             `}
             >
               <Typography level="h1">{emission.quantity.toFixed(1)}</Typography>
-              <Typography level="h6">
+              <Typography level="h4">
                 {emission.unit} CO2 emissions this year
               </Typography>
             </GridBox>

@@ -1,7 +1,15 @@
 import axios from 'axios'
 
+const harAPI = axios.create({
+  baseURL: 'https://har.green-analytics.com',
+})
+
+harAPI.interceptors.response.use(undefined, (err) => {
+  return Promise.reject(err.response?.data?.error || err.message || err)
+})
+
 export const getXray = async (url: string) => {
-  const response = await axios.get('https://har.green-analytics.com/api', {
+  const response = await harAPI.get('/api', {
     params: {
       url,
     },
@@ -22,7 +30,7 @@ export const getXray = async (url: string) => {
     }
   } = {}
 
-  entries.forEach((entry: any) => {
+  for (const entry of entries) {
     const urlRegex = /^(\w+?:\/\/[^?]+).*/g
     const url = entry.request.url
     // Apply the regex and only keep the first match
@@ -45,7 +53,7 @@ export const getXray = async (url: string) => {
       urls[formattedUrl].contentSize += contentSize
       urls[formattedUrl].transferSize += transferSize
     }
-  })
+  }
 
   return urls
 }

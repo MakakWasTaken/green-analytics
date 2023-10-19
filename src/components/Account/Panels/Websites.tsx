@@ -16,14 +16,14 @@ import SimpleGrid, {
   SimpleGridRef,
 } from '@src/components/SimpleGrid'
 import { HeaderContext } from '@src/contexts/HeaderContext'
-import { AccountPage } from '@src/pages/account'
+import { SettingsTab } from '@src/pages/settings'
 import { api } from '@src/utils/network'
 import { useContext, useRef, useState } from 'react'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
 import js from 'react-syntax-highlighter/dist/cjs/languages/hljs/javascript'
 import xml from 'react-syntax-highlighter/dist/cjs/languages/hljs/xml'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import useSWR from 'swr'
 import AccountBox from '../AccountBox'
 
@@ -34,33 +34,33 @@ SyntaxHighlighter.registerLanguage('bash', bash)
 const Websites = () => {
   const { selectedTeam } = useContext(HeaderContext)
   const { data, mutate: setData } = useSWR<Website[]>(
-    selectedTeam ? '/database/website/getAll?teamId=' + selectedTeam.id : null,
+    selectedTeam ? `/database/website/getAll?teamId=${selectedTeam.id}` : null,
   )
   const [viewTokenDialog, setViewTokenDialog] = useState<string | null>(null)
   const simpleGridRef = useRef<SimpleGridRef>(null)
 
   const deleteWebsite = async (id: string) => {
-    try {
-      if (
-        window.confirm(
-          'Are you sure you want to delete this item? This cannot be undone.',
-        )
-      ) {
-        const response = await api.delete('/database/website/' + id)
-        toast.success(response.data.message || 'Successfully deleted website')
-      }
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || error)
+    if (
+      window.confirm(
+        'Are you sure you want to delete this item? This cannot be undone.',
+      )
+    ) {
+      toast.promise(api.delete(`/database/website/${id}`), {
+        loading: 'Deleting website...',
+        error: (err) => err.message || err,
+        success: (response) =>
+          response.data.message || 'Successfully deleted website',
+      })
     }
   }
 
   const rescanWebsite = (id: string) => async () => {
-    try {
-      const response = await api.post('/database/website/' + id + '/scan')
-      toast.success(response.data.message || 'Successfully scanned website')
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || error)
-    }
+    toast.promise(api.post(`/database/website/${id}/scan`), {
+      loading: 'Scanning website...',
+      error: (err) => err.message || err,
+      success: (response) =>
+        response.data.message || 'Successfully scanned website',
+    })
   }
 
   const columns: SimpleGridColumnDefinition[] = [
@@ -100,7 +100,7 @@ const Websites = () => {
   }
 
   return (
-    <TabPanel value={AccountPage.Websites}>
+    <TabPanel value={SettingsTab.Websites}>
       <Modal
         open={viewTokenDialog !== null}
         onClose={() => setViewTokenDialog(null)}
@@ -118,8 +118,9 @@ const Websites = () => {
             </TabList>
             <TabPanel value={0}>
               <Typography>
-                Copy and paste this code into your website header. It should be
-                the first thing in the <code>&lt;head&gt;</code> tag.
+                Copy and paste this code into your website's{' '}
+                <code>&lt;head&gt;</code> element. It should be the first thing
+                in the <code>&lt;head&gt;</code> tag.
               </Typography>
               <SyntaxHighlighter language="xml">
                 {`<script
@@ -160,40 +161,66 @@ setPerson({
         actionButton={{
           label: 'Add',
           onClick: () => {
+            console.log('Adding row', simpleGridRef)
+            if (!simpleGridRef.current) {
+              toast.error('Reference to grid not found')
+              return
+            }
             simpleGridRef.current?.addRow()
           },
         }}
       >
         <SimpleGrid
+          ref={simpleGridRef}
           rows={data ?? []}
           columns={columns}
           onRowDelete={deleteWebsite}
           onRowAdd={async (newRow: Website) => {
             // For this grid we only allow editing the URL
             newRow.url = fixURL(newRow.url)
-            const response = await api.post<Website>('/database/website', {
-              name: newRow.name,
-              url: newRow.url,
-            })
-            setData((prev) =>
-              prev ? [...prev, response.data] : [response.data],
+
+            toast.promise(
+              api.post<Website>('/database/website', {
+                name: newRow.name,
+                url: newRow.url,
+                teamId: selectedTeam?.id,
+              }),
+              {
+                loading: 'Adding website..',
+                error: (err) => err.message || err,
+                success: (response) => {
+                  setData((prev) =>
+                    prev ? [...prev, response.data] : [response.data],
+                  )
+                  return 'Website added'
+                },
+              },
             )
-            toast.success('Website added')
           }}
           onRowEdit={async (newRow: Website) => {
             // For this grid we only allow editing the URL
             newRow.url = fixURL(newRow.url)
-            await api.put<Website>('/database/website/' + newRow.id, {
-              name: newRow.name,
-              url: newRow.url,
-            })
+            toast.promise(
+              api.put<Website>(`/database/website/${newRow.id}`, {
+                name: newRow.name,
+                url: newRow.url,
+                teamId: selectedTeam?.id,
+              }),
+              {
+                loading: 'Updating website..',
+                error: (err) => err.message || err,
+                success: (response) => {
+                  const data = response.data
+                  setData((prev) =>
+                    prev
+                      ? prev.map((item) => (item.id === data.id ? data : item))
+                      : [data],
+                  )
 
-            setData((prev) =>
-              prev
-                ? prev.map((item) => (item.id === newRow.id ? newRow : item))
-                : [newRow],
+                  return 'Website updated'
+                },
+              },
             )
-            toast.success('Website updated')
           }}
         />
       </AccountBox>

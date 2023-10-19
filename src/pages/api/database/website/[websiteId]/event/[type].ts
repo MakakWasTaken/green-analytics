@@ -3,10 +3,10 @@ import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 enum Type {
-  'pageview' = 'pageview',
-  'click' = 'click',
-  'form' = 'form',
-  'error' = 'error',
+  pageview = 'pageview',
+  click = 'click',
+  form = 'form',
+  error = 'error',
 }
 
 export const handle = withApiAuthRequired(

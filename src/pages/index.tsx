@@ -248,9 +248,7 @@ export const Home: FC = () => {
               }}
             >
               This solution is developed by Markus Moltke, from the
-              <Link href="https://unknown-studios.com">
-                Unknown Studios
-              </Link>{' '}
+              <Link href="https://unknown-studios.com">Unknown Studios</Link>{' '}
               team. <br />
               <br />
               Unknown Studios is a small team of developers, designers and

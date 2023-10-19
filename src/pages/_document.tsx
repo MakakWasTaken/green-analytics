@@ -76,14 +76,14 @@ GADocument.getInitialProps = async (ctx: DocumentContext) => {
     })
 
   const initialProps = await Document.getInitialProps(ctx)
-  // This is important. It prevents Emotion to render invalid HTML.
+  // This is important.
   // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
   const emotionStyles = extractCriticalToChunks(initialProps.html)
   const emotionStyleTags = emotionStyles.styles.map((style) => (
     <style
       data-emotion={`${style.key} ${style.ids.join(' ')}`}
       key={style.key}
-      // eslint-disable-next-line react/no-danger
+      // biome-ignore lint: It prevents Emotion to render invalid HTML.
       dangerouslySetInnerHTML={{ __html: style.css }}
     />
   ))

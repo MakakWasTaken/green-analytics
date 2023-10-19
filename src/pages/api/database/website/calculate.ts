@@ -16,7 +16,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { url, country }: { url: string; country: string } = req.body
 
   // Extract hostname from url
-  const formattedURL = new URL(url.startsWith('http') ? url : 'https://' + url)
+  const formattedURL = new URL(url.startsWith('http') ? url : `https://${url}`)
 
   // Check if the website has already been scanned in the past 2 weeks
   let website = await prisma.website.findFirst({
@@ -115,7 +115,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Now we have a website with scans.
   // This can be converted to the carbon emission metric.
-  website.scans.forEach((scan) => {
+  for (const scan of website.scans) {
     const emission = swd.perVisit(scan.transferSize, scan.green, false, {
       gridIntensity: {
         device: {
@@ -134,7 +134,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     })
 
     totalEmission += emission.total
-  })
+  }
 
   res.json({
     co2perPageview: totalEmission,

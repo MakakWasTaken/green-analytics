@@ -1,5 +1,5 @@
 import { poppins } from '@src/styles/font'
-import { ArcElement, ChartData, Chart as ChartJS, defaults } from 'chart.js'
+import { ArcElement, Chart as ChartJS, ChartData, defaults } from 'chart.js'
 import { FC } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import GridBox, { GridBoxProps } from '../Grid/GridBox'

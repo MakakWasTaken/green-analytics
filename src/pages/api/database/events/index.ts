@@ -6,7 +6,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req
 
   switch (method) {
-    case 'GET':
+    case 'GET': {
       const includePersons = req.query.includePersons === 'true'
       try {
         if (!req.query.websiteId) {
@@ -49,6 +49,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(500).json({ error })
       }
       break
+    }
     default:
       res.setHeader('Allow', ['GET', 'POST'])
       res.status(405).end(`Method ${method} Not Allowed`)

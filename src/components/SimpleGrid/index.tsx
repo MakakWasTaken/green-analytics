@@ -19,6 +19,7 @@ import {
   useImperativeHandle,
   useState,
 } from 'react'
+import { toast } from 'sonner'
 import { v4 } from 'uuid'
 
 export interface SimpleGridColumnDefinition {
@@ -52,7 +53,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
     ref,
   ) => {
     // eslint-disable-next-line func-call-spacing
-    const [updateObject, setUpdateObject] = useState<null | (typeof rows)[0]>(
+    const [updateObject, setUpdateObject] = useState<null | typeof rows[0]>(
       null,
     )
 
@@ -67,30 +68,36 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         if (onRowDelete) {
           await onRowDelete(id)
         }
+      } catch (err: any) {
+        toast.error(err.message || err)
       } finally {
         setDeleting(undefined)
       }
     }
 
-    const handleRowEdit = async (row: (typeof rows)[0]) => {
+    const handleRowEdit = async (row: typeof rows[0]) => {
       try {
         setUpdating(true)
         if (onRowEdit) {
           await onRowEdit(row)
         }
         setUpdateObject(null)
+      } catch (err: any) {
+        toast.error(err.message || err)
       } finally {
         setUpdating(false)
       }
     }
 
-    const handleRowAdd = async (row: (typeof rows)[0]) => {
+    const handleRowAdd = async (row: typeof rows[0]) => {
       try {
         setUpdating(true)
         if (onRowAdd) {
           await onRowAdd(row)
         }
         setUpdateObject(null)
+      } catch (err: any) {
+        toast.error(err.message || err)
       } finally {
         setUpdating(false)
       }
@@ -103,29 +110,37 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         addRow: (defaultRow?: any) => {
           // Loop through columns with editable and set default value
           const row: any = { [idField]: v4(), ...defaultRow }
-          !defaultRow &&
-            columns.forEach((column) => {
+          if (!defaultRow) {
+            console.log(defaultRow)
+            for (const column of columns) {
               if (column.editable) {
                 row[column.field] = ''
               }
-            })
+            }
+          }
+
+          // Set the new row as the updateObject to show the creation modal
+          setUpdateObject(row)
         },
       }),
-      [],
+      [columns, idField],
     )
 
     return (
       <>
         {(onRowAdd || onRowEdit) && (
-          <Modal open={updateObject} onClose={() => setUpdateObject(null)}>
+          <Modal
+            open={updateObject !== null}
+            onClose={() => setUpdateObject(null)}
+          >
             <ModalDialog>
-              <ModalClose />
+              <ModalClose onClick={() => setUpdateObject(null)} />
               <Typography>Edit Row</Typography>
               {updateObject && (
                 <>
                   {columns.map((column, index) => {
                     return !column.hidden && column.editable ? (
-                      <FormControl key={index} sx={{ mt: 2 }}>
+                      <FormControl key={column.field} sx={{ mt: 2 }}>
                         <FormLabel>
                           {column.headerName || column.field}
                         </FormLabel>
@@ -177,7 +192,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
           >
             <thead>
               <tr>
-                {columns.map((column, index) => {
+                {columns.map((column) => {
                   return !column.hidden ? (
                     <th
                       style={{
@@ -186,7 +201,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
-                      key={index}
+                      key={column.field}
                     >
                       {column.headerName || column.field}
                     </th>
@@ -204,10 +219,10 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
             </thead>
             <tbody>
               {rows.map((row, index) => (
-                <tr key={index}>
+                <tr key={`row-${index}`}>
                   {columns.map((column, index) => {
                     return !column.hidden ? (
-                      <td key={index}>
+                      <td key={column.field}>
                         {column.renderCell
                           ? column.renderCell(row?.[column.field], row[idField])
                           : row[column.field]}

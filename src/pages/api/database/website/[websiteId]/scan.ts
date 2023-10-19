@@ -47,7 +47,7 @@ export const handle = withApiAuthRequired(
           res.status(500).json({ error })
         }
         break
-      case 'POST':
+      case 'POST': {
         // Get the website
 
         // This action requires the user to be admin or owner (The action requires a lot of server power, so we don't want users to abuse it)
@@ -80,6 +80,7 @@ export const handle = withApiAuthRequired(
 
         res.json({ ok: true })
         break
+      }
       default:
         res.setHeader('Allow', ['POST'])
         res.status(405).end(`Method ${method} Not Allowed`)
