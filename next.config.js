@@ -13,6 +13,11 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
+  webpack: {
+    node: {
+      __dirname: true,
+    },
+  },
 }
 
 const withBundleAnalyzer = bundleAnalyzer({
