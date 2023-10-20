@@ -179,7 +179,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.json({ ok: true })
   } else {
-    res.status(405).json({ ok: false, message: 'Method Not Allowed' })
+    res
+      .status(405)
+      .json({ ok: false, message: `Method '${method}' not allowed` })
   }
 }
 
