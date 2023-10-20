@@ -1,16 +1,21 @@
-import { Code, Refresh } from '@mui/icons-material'
+import { useUser } from '@auth0/nextjs-auth0/client'
+import { ArrowForward, ArrowRight, Code, Refresh } from '@mui/icons-material'
 import {
+  Box,
   Button,
   Modal,
   ModalClose,
   ModalDialog,
+  Option,
+  Select,
   Tab,
   TabList,
   TabPanel,
   Tabs,
+  Tooltip,
   Typography,
 } from '@mui/joy'
-import { Website } from '@prisma/client'
+import { Team, Website } from '@prisma/client'
 import SimpleGrid, {
   SimpleGridColumnDefinition,
   SimpleGridRef,
@@ -18,7 +23,7 @@ import SimpleGrid, {
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { SettingsTab } from '@src/pages/settings'
 import { api } from '@src/utils/network'
-import { useContext, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
 import js from 'react-syntax-highlighter/dist/cjs/languages/hljs/javascript'
@@ -31,13 +36,32 @@ SyntaxHighlighter.registerLanguage('javascript', js)
 SyntaxHighlighter.registerLanguage('xml', xml)
 SyntaxHighlighter.registerLanguage('bash', bash)
 
-const Websites = () => {
-  const { selectedTeam } = useContext(HeaderContext)
+const WebsiteTabPanel = () => {
+  const { selectedTeam, allTeams } = useContext(HeaderContext)
+  const { user } = useUser()
   const { data, mutate: setData } = useSWR<Website[]>(
     selectedTeam ? `/database/website/getAll?teamId=${selectedTeam.id}` : null,
   )
   const [viewTokenDialog, setViewTokenDialog] = useState<string | null>(null)
+  const [transferModalWebsite, setTransferModalWebsite] =
+    useState<Website | null>(null)
+  const [selectedTransferTeam, setSelectedTransferTeam] = useState<Team>()
   const simpleGridRef = useRef<SimpleGridRef>(null)
+
+  const transferTeamDestinations = useMemo((): Team[] => {
+    if (allTeams && transferModalWebsite) {
+      // If allTeams length is 1, we do not have any destinations (We only have the current team)
+      if (allTeams.length === 0) {
+        return []
+      }
+
+      const filteredTeams = allTeams.filter(
+        (team) => team.id !== transferModalWebsite.teamId,
+      )
+      return filteredTeams
+    }
+    return []
+  }, [allTeams, transferModalWebsite])
 
   const deleteWebsite = async (id: string) => {
     if (
@@ -99,6 +123,45 @@ const Websites = () => {
     return urlMatch[1]
   }
 
+  const handleTransferModalClose = () => {
+    setTransferModalWebsite(null)
+    setSelectedTransferTeam(undefined)
+  }
+
+  const submitTransferModal = () => {
+    if (!transferModalWebsite) {
+      toast.error('transferModalWebsite is not defined')
+      return
+    }
+    if (!selectedTransferTeam) {
+      toast.error('You need to select a destination team')
+      return
+    }
+    toast.promise(
+      api.put<Website>(`database/website/${transferModalWebsite.id}`, {
+        teamId: selectedTransferTeam.id,
+      }),
+      {
+        loading: 'Transfering team..',
+        error: (err) => err.message || err,
+        success: (response) => {
+          setData(
+            (prev) =>
+              prev?.filter((website) => website.id !== response.data.id), // We remove the website, because it has been transfered to another team
+          )
+
+          handleTransferModalClose()
+
+          return 'Successfully transfered team'
+        },
+      },
+    )
+  }
+
+  const userRole = useMemo(() => {
+    return selectedTeam?.roles.find((role) => role.userId === user?.sub)?.role
+  }, [selectedTeam, user])
+
   return (
     <TabPanel value={SettingsTab.Websites}>
       <Modal
@@ -127,7 +190,7 @@ const Websites = () => {
   async
   src="https://green-analytics.com/green-analytics.js"
   data-token="${viewTokenDialog}"
-><script/>`}
+></script>`}
               </SyntaxHighlighter>
             </TabPanel>
             <TabPanel value={1}>
@@ -156,6 +219,54 @@ setPerson({
           </Tabs>
         </ModalDialog>
       </Modal>
+      {userRole === 'ADMIN' ||
+        (userRole === 'OWNER' && (
+          <Modal
+            open={transferModalWebsite !== null}
+            onClose={handleTransferModalClose}
+          >
+            <ModalDialog>
+              <ModalClose />
+              <Typography level="h4">Transfer Website</Typography>
+              {/* Show other teams we are admins of (If we are not admin, we are not allowed to create website.*/}
+              <Select
+                value={selectedTransferTeam}
+                onChange={(_e, newValue) => {
+                  console.log(_e, newValue)
+                  setSelectedTransferTeam(
+                    transferTeamDestinations.find(
+                      (team) => team.id === newValue?.id,
+                    ),
+                  )
+                }}
+              >
+                {transferTeamDestinations?.map((team) => (
+                  <Option key={team.id} value={team}>
+                    {team.name}
+                  </Option>
+                ))}
+              </Select>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Button
+                  color="danger"
+                  variant="soft"
+                  onClick={handleTransferModalClose}
+                >
+                  Cancel
+                </Button>
+                <Button color="success" onClick={submitTransferModal}>
+                  Submit
+                </Button>
+              </Box>
+            </ModalDialog>
+          </Modal>
+        ))}
       <AccountBox
         label="Websites"
         actionButton={{
@@ -222,10 +333,28 @@ setPerson({
               },
             )
           }}
+          additionalActions={
+            userRole === 'ADMIN' || userRole === 'OWNER'
+              ? (item: Website) => [
+                  <Tooltip title="Transfer">
+                    <Button
+                      variant="plain"
+                      color="neutral"
+                      onClick={() => {
+                        // Show transfer modal
+                        setTransferModalWebsite(item)
+                      }}
+                    >
+                      <ArrowForward />
+                    </Button>
+                  </Tooltip>,
+                ]
+              : undefined
+          }
         />
       </AccountBox>
     </TabPanel>
   )
 }
 
-export default Websites
+export default WebsiteTabPanel

@@ -62,7 +62,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // If it is, allow it
   const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
   const urlMatch = urlRegex.exec(req.body.event.website.url)
-  const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
+  let formattedEventUrl: string = urlMatch
+    ? urlMatch[1]
+    : req.body.event.website.url
+
+  // Ignore www subdomain
+  formattedEventUrl = formattedEventUrl.replaceAll('www.', '')
   const website = await prisma.website.findFirst({
     where: {
       token,

@@ -41,6 +41,7 @@ interface SimpleGridProps<T = any> {
   onRowAdd?: (row: T) => Promise<void>
   idField?: string
   sx?: SxProps
+  additionalActions?: (row: T) => JSX.Element[]
 }
 
 export type SimpleGridRef = {
@@ -49,7 +50,16 @@ export type SimpleGridRef = {
 
 const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
   (
-    { rows, columns, onRowEdit, onRowDelete, onRowAdd, idField = 'id', sx },
+    {
+      rows,
+      columns,
+      onRowEdit,
+      onRowDelete,
+      onRowAdd,
+      idField = 'id',
+      sx,
+      additionalActions,
+    },
     ref,
   ) => {
     // eslint-disable-next-line func-call-spacing
@@ -264,6 +274,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                             <Delete />
                           </Button>
                         )}
+                        {additionalActions?.(row).map((action) => action)}
                       </td>
                     ) : null
                   }

@@ -13,7 +13,8 @@ import {
 import { Team, User } from '@prisma/client'
 import AccountBox from '@src/components/Account/AccountBox'
 import AccountUpdateBox from '@src/components/Account/AccountUpdateBox'
-import Websites from '@src/components/Account/Panels/Websites'
+import TeamTabPanel from '@src/components/Account/Panels/TeamTabPanel'
+import Websites from '@src/components/Account/Panels/WebsiteTabPanel'
 import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'
@@ -55,7 +56,6 @@ const pageInfo: PageInfo[] = [
 const UserPage = withPageAuthRequired(
   () => {
     const { user: authUser } = useUser()
-    const { selectedTeam, setSelectedTeam } = useContext(HeaderContext)
     const { data: user, mutate: setUser } = useSWR<User>('/database/user/own')
 
     const [index, setIndex] = useState(SettingsTab.General)
@@ -63,18 +63,6 @@ const UserPage = withPageAuthRequired(
     const updateUser = async (value: User) => {
       const user = await api.put<User>('/database/user/own', value)
       setUser(user.data)
-    }
-
-    const updateTeam = async (value: Team) => {
-      if (!selectedTeam) {
-        console.error('No team selected')
-        return
-      }
-      const team = await api.put<Team>(
-        `/database/team/${selectedTeam.id}/info`,
-        value,
-      )
-      setSelectedTeam(team.data)
     }
 
     return (
@@ -154,45 +142,7 @@ const UserPage = withPageAuthRequired(
               />
             </TabPanel>
             <TabPanel value={SettingsTab.Privacy} />
-            <TabPanel value={SettingsTab.Team}>
-              <AccountUpdateBox
-                label="Team Information"
-                object={selectedTeam}
-                cells={[{ field: 'name', label: 'Name' }]}
-                onSave={updateTeam}
-              />
-              <AccountBox label="Team Members">
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                      <th style={{ width: 'min-content' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedTeam?.users.map((user) => (
-                      <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>
-                          {
-                            selectedTeam.roles.find(
-                              (role) => role.userId === user.id,
-                            )?.role
-                          }
-                        </td>
-                        <td>
-                          <Button>Change Role</Button>
-                          <Button color="danger">Remove</Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </AccountBox>
-            </TabPanel>
+            <TeamTabPanel />
             <Websites />
           </Tabs>
         </Box>
