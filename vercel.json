@@ -1,7 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "pages/api/database/events/logEvent.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "./geoip/**"
     },
     "pages/api/database/website/index.ts": {
       "maxDuration": 60
