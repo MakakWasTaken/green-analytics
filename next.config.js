@@ -13,12 +13,6 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
-  webpack: {
-    externals: ['geoip-lite'],
-    node: {
-      __dirname: true,
-    },
-  },
 }
 
 const withBundleAnalyzer = bundleAnalyzer({

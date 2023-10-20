@@ -2,7 +2,7 @@
 import { Event, Scan, Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@src/utils/websiteScanner'
-import geoip from 'geoip-lite'
+import geoip from 'doc999tor-fast-geoip'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 
@@ -48,7 +48,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   let country = 'US'
 
   if (ip) {
-    country = geoip.lookup(ip)?.country ?? 'US'
+    // Get the country from the IP
+    country = (await geoip.lookup(ip))?.country ?? 'US'
   }
 
   const token = req.headers.api_token as string | undefined

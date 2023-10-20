@@ -58,7 +58,7 @@
     "axios": "^1.3.5",
     "chart.js": "^4.2.1",
     "convert": "^4.12.0",
-    "geoip-lite": "^1.4.7",
+    "doc999tor-fast-geoip": "^1.1.163",
     "google-auth-library": "^9.1.0",
     "green-analytics-js": "^1.0.12",
     "luxon": "^3.3.0",
@@ -78,7 +78,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.3.1",
-    "@types/geoip-lite": "^1.4.3",
     "@types/luxon": "^3.3.0",
     "@types/node": "^20.8.7",
     "@types/nodemailer": "^6.4.13",
