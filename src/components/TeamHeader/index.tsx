@@ -69,6 +69,7 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
       sx={{
         display: 'flex',
         justifyContent: 'flex-end',
+        gap: 2,
         paddingBottom: 2,
         paddingTop: 2,
         marginBottom: 2,

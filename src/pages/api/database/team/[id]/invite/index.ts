@@ -17,31 +17,11 @@ export const handle = withApiAuthRequired(
       res.status(401).json({ ok: false, message: 'You are not logged in' })
       return
     }
-    const team = await prisma.team.findFirst({
-      where: {
-        id: teamId,
-        roles: {
-          some: {
-            userId: session.user.sub,
-            role: {
-              in: ['ADMIN', 'OWNER'],
-            },
-          },
-        },
-      },
-    })
-
-    if (!team) {
-      res
-        .status(404)
-        .json({ ok: false, message: `Could not find team with id: ${teamId}` })
-      return
-    }
 
     if (method === 'GET') {
-      await handleGET(res, team)
+      await handleGET(res, session, teamId)
     } else if (method === 'POST') {
-      await handlePOST(req, res, session, team)
+      await handlePOST(req, res, session, teamId)
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }
@@ -55,7 +35,29 @@ export const handle = withApiAuthRequired(
  * @param session The session of the user trying to access this endpoint.
  * @param team The selected team for this transaction
  */
-const handleGET = async (res: NextApiResponse, team: Team) => {
+const handleGET = async (
+  res: NextApiResponse,
+  session: Session,
+  teamId: string,
+) => {
+  const team = await prisma.team.findFirst({
+    where: {
+      id: teamId,
+      users: {
+        some: {
+          id: session.user.sub,
+        },
+      },
+    },
+  })
+
+  if (!team) {
+    res
+      .status(404)
+      .json({ ok: false, message: `Could not find team with id: ${teamId}` })
+    return
+  }
+
   // Get all invitations for this team
   const response = await prisma.teamInvite.findMany({
     where: {
@@ -72,7 +74,7 @@ const transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     type: 'OAuth2',
-    user: 'noreply@green-analytics.com', // Your email address
+    user: 'no-reply@green-analytics.com', // Your email address
     serviceClient: process.env.GMAIL_CLIENT_ID,
     privateKey: process.env.GMAIL_PRIVATE_KEY,
     accessUrl: process.env.GMAIL_TOKEN_URL,
@@ -85,7 +87,7 @@ const sendEmail = async (to: string, subject: string, text: string) => {
     await transporter.verify()
 
     const mailOptions = {
-      from: '"Green-Analytics" <noreply@green-analytics.com>', // sender address
+      from: '"Green-Analytics" <no-reply@green-analytics.com>', // sender address
       to, // receiver
       subject, // Subject line
       text, // plain text body
@@ -114,8 +116,29 @@ const handlePOST = async (
   req: NextApiRequest,
   res: NextApiResponse,
   session: Session,
-  team: Team,
+  teamId: string,
 ) => {
+  const team = await prisma.team.findFirst({
+    where: {
+      id: teamId,
+      roles: {
+        some: {
+          userId: session.user.sub,
+          role: {
+            in: ['ADMIN', 'OWNER'],
+          },
+        },
+      },
+    },
+  })
+
+  if (!team) {
+    res
+      .status(404)
+      .json({ ok: false, message: `Could not find team with id: ${teamId}` })
+    return
+  }
+
   const { invitations }: { invitations: Partial<TeamInvite>[] | undefined } =
     req.body
 
@@ -154,8 +177,11 @@ const handlePOST = async (
         `Invitation to team: ${team.name}`,
         `Hey ${invitation.userName}, 
 
-You have been invited by ${session.user.fullName} to join the team ${team.name}. To react to this invitation go to the following link: https://green-analytics.com/dashboard and create an account. 
-After you've created an account, the invitation will show up.`,
+You have been invited by ${session.user.name} to join the team ${team.name}. To react to this invitation go to the following link: ${process.env.AUTH0_BASE_URL}/dashboard and create an account. 
+After you've created an account, the invitation will show up.
+
+Kind Regards,
+Green-Analytics`,
       )
 
       return response

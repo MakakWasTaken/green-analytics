@@ -28,7 +28,7 @@ const FeaturesPage = () => {
         <List>
           <ListItem>
             <ListItemContent>
-              <Typography>Web Analytics</Typography>
+              <Typography fontWeight="bold">Web Analytics</Typography>
               <Typography level="body-md">
                 Allows logging the page views to websites
               </Typography>
@@ -36,7 +36,7 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>User Management</Typography>
+              <Typography fontWeight="bold">User Management</Typography>
               <Typography level="body-md">
                 Allows setting attributes to users and logging events
               </Typography>
@@ -44,7 +44,7 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>Carbon Caluclations</Typography>
+              <Typography fontWeight="bold">Carbon Caluclations</Typography>
               <Typography level="body-md">
                 Ability to convert the page views into carbon emissions
               </Typography>
@@ -52,7 +52,7 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>Dashboard</Typography>
+              <Typography fontWeight="bold">Dashboard</Typography>
               <Typography level="body-md">
                 Provides a simple dashboard that allows for an easy overview
               </Typography>
@@ -64,7 +64,7 @@ const FeaturesPage = () => {
         <List>
           <ListItem>
             <ListItemContent>
-              <Typography>API</Typography>
+              <Typography fontWeight="bold">API</Typography>
               <Typography level="body-md">
                 Allows for easy integration with other tools
               </Typography>
@@ -72,7 +72,7 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>Customizability</Typography>
+              <Typography fontWeight="bold">Customizability</Typography>
               <Typography level="body-md">
                 Allows for a customizable dashboard
               </Typography>
@@ -80,7 +80,9 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>Customizable Carbon Calculations</Typography>
+              <Typography fontWeight="bold">
+                Customizable Carbon Calculations
+              </Typography>
               <Typography level="body-md">
                 Allows for a customizable carbon calculations
               </Typography>
@@ -88,7 +90,7 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>Additional data sources</Typography>
+              <Typography fontWeight="bold">Additional data sources</Typography>
               <Typography level="body-md">
                 Allows for additional data sources
               </Typography>
@@ -96,7 +98,9 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography>Additional tools for data collection</Typography>
+              <Typography fontWeight="bold">
+                Additional tools for data collection
+              </Typography>
               <Typography level="body-md">
                 Create tools for measuring carbon emission from docker
                 containers, backend systems, mobile apps, etc.

@@ -1,3 +1,4 @@
+import { useUser } from '@auth0/nextjs-auth0/client'
 import {
   Autocomplete,
   Box,
@@ -15,7 +16,8 @@ import { Team, TeamInvite, User } from '@prisma/client'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { SettingsTab } from '@src/pages/settings'
 import { api } from '@src/utils/network'
-import React, { FC, useContext, useState } from 'react'
+import { userAgent } from 'next/server'
+import React, { FC, useContext, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import { v4 } from 'uuid'
@@ -23,6 +25,10 @@ import AccountBox from '../AccountBox'
 import AccountUpdateBox from '../AccountUpdateBox'
 
 const TeamTabPanel: FC = () => {
+  // Context
+  const { user } = useUser()
+
+  // Data
   const { selectedTeam, setSelectedTeam, reloadTeams } =
     useContext(HeaderContext)
   const { data: invitations, mutate: updateInvitations } = useSWR<TeamInvite[]>(
@@ -31,7 +37,15 @@ const TeamTabPanel: FC = () => {
 
   // States
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
-  const [modalInvitations, setModalInvitations] = useState<TeamInvite[]>([])
+  const [modalInvitations, setModalInvitations] = useState<
+    Omit<TeamInvite, 'teamId'>[]
+  >([
+    {
+      id: v4(),
+      userName: '',
+      userEmail: '',
+    },
+  ])
 
   // Update team function
   const updateTeam = async (value: Team) => {
@@ -58,7 +72,13 @@ const TeamTabPanel: FC = () => {
    */
   const handleCloseInviteModal = () => {
     setInviteModalOpen(false)
-    setModalInvitations([])
+    setModalInvitations([
+      {
+        id: v4(),
+        userName: '',
+        userEmail: '',
+      },
+    ])
   }
 
   /**
@@ -66,23 +86,27 @@ const TeamTabPanel: FC = () => {
    * @returns void
    */
   const handleSubmitInviteModal = () => {
+    if (!selectedTeam) {
+      toast.error('Select a team')
+      return
+    }
     if (modalInvitations.length === 0) {
       toast.error('You need to invite at least one person')
       return
     }
     toast.promise(
-      api.post<TeamInvite[]>('database/team/invite', {
+      api.post<{ count: number }>(`database/team/${selectedTeam.id}/invite`, {
         invitations: modalInvitations,
       }),
       {
         loading: 'Inviting members..',
         error: (err) => err.message || err,
         success: (response) => {
-          updateInvitations((prev) =>
-            prev ? [...prev, ...response.data] : response.data,
-          )
+          updateInvitations()
 
-          return 'Successfully invited members'
+          handleCloseInviteModal()
+
+          return `Successfully invited ${response.data.count} members`
         },
       },
     )
@@ -121,7 +145,7 @@ const TeamTabPanel: FC = () => {
           loading: 'Deleting invite..',
           error: (err) => err.message || err,
           success: () => {
-            reloadTeams()
+            updateInvitations()
 
             return 'Successfully deleted invite'
           },
@@ -130,11 +154,15 @@ const TeamTabPanel: FC = () => {
     }
   }
 
+  const ownRole = useMemo(() => {
+    return selectedTeam?.roles.find((role) => role.userId === user?.sub)?.role
+  }, [user, selectedTeam])
+
   return (
     <TabPanel value={SettingsTab.Team}>
       {selectedTeam && (
         <Modal open={inviteModalOpen} onClose={handleCloseInviteModal}>
-          <ModalDialog>
+          <ModalDialog size="md">
             <ModalClose />
             <Typography level="h4">Invite new members</Typography>
             {modalInvitations.map((invitation) => {
@@ -151,9 +179,10 @@ const TeamTabPanel: FC = () => {
               }
 
               return (
-                <Box>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
                   <Input
                     value={invitation.userName}
+                    sx={{ flex: 0.4 }}
                     placeholder="Name"
                     onChange={(e) =>
                       onInvitationChange({
@@ -162,7 +191,8 @@ const TeamTabPanel: FC = () => {
                     }
                   />
                   <Input
-                    value={invitation.userName}
+                    value={invitation.userEmail}
+                    sx={{ flex: 0.6 }}
                     placeholder="Email"
                     onChange={(e) =>
                       onInvitationChange({
@@ -176,18 +206,17 @@ const TeamTabPanel: FC = () => {
             <Button
               fullWidth
               onClick={() => {
-                const newInvite: TeamInvite = {
+                const newInvite: Omit<TeamInvite, 'teamId'> = {
                   id: v4(),
                   userName: '',
                   userEmail: '',
-                  teamId: selectedTeam.id,
                 }
                 setModalInvitations((prev) =>
                   prev ? [...prev, newInvite] : [newInvite],
                 )
               }}
             >
-              Add Invitation
+              Add additional invitation
             </Button>
             <Box
               sx={{
@@ -248,10 +277,21 @@ const TeamTabPanel: FC = () => {
                   }
                 </td>
                 <td>
-                  <Button>Change Role</Button>
-                  <Button color="danger" onClick={() => deleteMember(user.id)}>
-                    Remove
-                  </Button>
+                  {/* If the row's role is not OWNER and the logged in users role is ADMIN or OWNER */}
+                  {selectedTeam.roles.find((role) => role.userId === user.id)
+                    ?.role !== 'OWNER' &&
+                    (ownRole === 'ADMIN' || ownRole === 'OWNER') && (
+                      <>
+                        <Button>Change Role</Button>
+                        <Button
+                          sx={{ ml: 1 }}
+                          color="danger"
+                          onClick={() => deleteMember(user.id)}
+                        >
+                          Remove
+                        </Button>
+                      </>
+                    )}
                 </td>
               </tr>
             ))}
@@ -261,12 +301,14 @@ const TeamTabPanel: FC = () => {
                 <td>{invitation.userEmail}</td>
                 <td>Invitation</td>
                 <td>
-                  <Button
-                    color="danger"
-                    onClick={() => deleteInvite(invitation.id)}
-                  >
-                    Remove
-                  </Button>
+                  {(ownRole === 'ADMIN' || ownRole === 'OWNER') && (
+                    <Button
+                      color="danger"
+                      onClick={() => deleteInvite(invitation.id)}
+                    >
+                      Remove
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

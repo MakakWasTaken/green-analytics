@@ -1,15 +1,21 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
 import { GitHub } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
+import { Modal, ModalDialog } from '@mui/material'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
+import { Team, TeamInvite } from '@prisma/client'
+import { HeaderContext } from '@src/contexts/HeaderContext'
+import { api } from '@src/utils/network'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { FC, useState } from 'react'
+import { FC, useContext, useState } from 'react'
+import { toast } from 'sonner'
+import useSWR from 'swr'
 import Logo from '../../../public/logo192.png'
 import Link from '../Link'
 
@@ -21,6 +27,12 @@ interface Page {
 
 export const Header: FC = () => {
   const { user } = useUser()
+
+  const { reloadTeams } = useContext(HeaderContext)
+
+  const { data: invitations, mutate: setInvitations } = useSWR<
+    (TeamInvite & { team: Team })[]
+  >(user ? 'database/team/invitations' : null)
 
   const pages: Page[] = [
     { label: 'Features', href: '/features' },
@@ -68,6 +80,50 @@ export const Header: FC = () => {
     }
   }
 
+  const acceptInvite = (invite: TeamInvite & { team: Team }) => {
+    toast.promise(
+      api.post('database/team/invitations/accept', {
+        id: invite.id,
+      }),
+      {
+        loading: 'Accepting invite..',
+        error: (err) => err.message || err,
+        success: (response) => {
+          reloadTeams()
+
+          // Remove the invitation from the array.
+          setInvitations((prev) =>
+            prev?.filter((invitation) => invitation.id !== invite.id),
+          )
+
+          return response.data.message
+        },
+      },
+    )
+  }
+
+  const declineInvite = (invite: TeamInvite & { team: Team }) => {
+    toast.promise(
+      api.post('database/team/invitations/decline', {
+        id: invite.id,
+      }),
+      {
+        loading: 'Declining invite..',
+        error: (err) => err.message || err,
+        success: (response) => {
+          reloadTeams()
+
+          // Remove the invitation from the array.
+          setInvitations((prev) =>
+            prev?.filter((invitation) => invitation.id !== invite.id),
+          )
+
+          return response.data.message
+        },
+      },
+    )
+  }
+
   return (
     <Box
       sx={{
@@ -85,6 +141,39 @@ export const Header: FC = () => {
         alignItems: 'center',
       }}
     >
+      {/* INVITATION MODAL */}
+      {invitations && invitations.length > 0 && (
+        <Modal open={invitations.length > 0}>
+          <ModalDialog>
+            <Typography level="h4">
+              Invitation to {invitations[0].team?.name}
+            </Typography>
+            <Typography level="body-md">
+              You have been invited to join the team {invitations[0].team?.name}
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Button
+                color="danger"
+                onClick={() => declineInvite(invitations[0])}
+              >
+                Decline
+              </Button>
+              <Button
+                color="success"
+                onClick={() => acceptInvite(invitations[0])}
+              >
+                Accept
+              </Button>
+            </Box>
+          </ModalDialog>
+        </Modal>
+      )}
       <Link
         level="h4"
         href="/"
