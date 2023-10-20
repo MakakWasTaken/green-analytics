@@ -88,7 +88,8 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const origin = req.headers.origin || req.headers.host || ''
+  let origin = req.headers.origin || req.headers.host || ''
+  origin = origin.replaceAll('www.', '')
   const originURL = new URL(
     origin.startsWith('http') ? origin : `https://${origin}`,
   )
