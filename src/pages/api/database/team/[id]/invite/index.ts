@@ -4,6 +4,7 @@ import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import { Team, TeamInvite } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
+import nodemailer from 'nodemailer'
 
 export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {
@@ -40,7 +41,7 @@ export const handle = withApiAuthRequired(
     if (method === 'GET') {
       await handleGET(res, team)
     } else if (method === 'POST') {
-      await handlePOST(req, res, team)
+      await handlePOST(req, res, session, team)
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }
@@ -65,6 +66,43 @@ const handleGET = async (res: NextApiResponse, team: Team) => {
   res.json(response)
 }
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    type: 'OAuth2',
+    user: 'noreply@green-analytics.com', // Your email address
+    serviceClient: process.env.GMAIL_CLIENT_ID,
+    privateKey: process.env.GMAIL_PRIVATE_KEY,
+    accessUrl: process.env.GMAIL_TOKEN_URL,
+  },
+})
+
+const sendEmail = async (to: string, subject: string, text: string) => {
+  try {
+    // Verify your transporter
+    await transporter.verify()
+
+    const mailOptions = {
+      from: '"Green-Analytics" <noreply@green-analytics.com>', // sender address
+      to, // receiver
+      subject, // Subject line
+      text, // plain text body
+      // We don't use html, because emails with only text has 80% higher open rate.
+    }
+
+    const info = await transporter.sendMail(mailOptions)
+
+    console.log(`Message sent: ${info.messageId}`)
+
+    return info
+  } catch (error) {
+    console.log(error)
+  }
+  return null
+}
+
 /**
  * Create invite handler
  * @param req The request
@@ -75,6 +113,7 @@ const handleGET = async (res: NextApiResponse, team: Team) => {
 const handlePOST = async (
   req: NextApiRequest,
   res: NextApiResponse,
+  session: Session,
   team: Team,
 ) => {
   const { invitations }: { invitations: Partial<TeamInvite>[] | undefined } =
@@ -104,6 +143,24 @@ const handlePOST = async (
   })
 
   // Send out the emails to the users that were invited.
+  await Promise.all(
+    invitations.map(async (invitation) => {
+      // Send individual email
+      if (!invitation.userEmail || !invitation.userName) {
+        return
+      }
+      const response = await sendEmail(
+        invitation.userEmail,
+        `Invitation to team: ${team.name}`,
+        `Hey ${invitation.userName}, 
+
+You have been invited by ${session.user.fullName} to join the team ${team.name}. To react to this invitation go to the following link: https://green-analytics.com/dashboard and create an account. 
+After you've created an account, the invitation will show up.`,
+      )
+
+      return response
+    }),
+  )
 
   res.json(response)
 }

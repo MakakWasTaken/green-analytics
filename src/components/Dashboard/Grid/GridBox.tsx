@@ -37,7 +37,7 @@ const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Typography level="h6" sx={{ marginBottom: 2 }}>
+          <Typography level="h4" sx={{ marginBottom: 2 }}>
             {label}
           </Typography>
           {helpLabel && (

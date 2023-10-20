@@ -16,10 +16,10 @@ export const Footer: FC = (): ReactElement => {
     >
       <Box sx={{ display: 'flex', margin: '0 128px' }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography color="primary" level="h6">
+          <Typography color="primary" level="h4">
             Green Analytics
           </Typography>
-          <Typography color="neutral" level="body2">
+          <Typography color="neutral" level="body-md">
             {`${new Date().getFullYear()} © Green Analytics`}
           </Typography>
         </Box>
@@ -32,10 +32,10 @@ export const Footer: FC = (): ReactElement => {
             alignItems: 'center',
           }}
         >
-          <Typography color="neutral" level="body2">
+          <Typography color="neutral" level="body-md">
             Terms of Service
           </Typography>
-          <Typography color="neutral" level="body2">
+          <Typography color="neutral" level="body-md">
             Privacy Policy
           </Typography>
         </Box>
