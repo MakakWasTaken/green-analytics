@@ -2,9 +2,9 @@
 import { Event, Scan, Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@src/utils/websiteScanner'
+import geoip from 'geoip-lite'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import requestCountry from 'request-country'
 
 const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
@@ -45,7 +45,11 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const country = requestCountry(req, 'US')
+  let country = 'US'
+
+  if (ip) {
+    country = geoip.lookup(ip)?.country ?? 'US'
+  }
 
   const token = req.headers.api_token as string | undefined
   if (!token) {
