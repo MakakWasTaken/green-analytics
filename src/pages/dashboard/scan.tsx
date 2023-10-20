@@ -1,6 +1,6 @@
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist'
 import OilBarrelIcon from '@mui/icons-material/OilBarrel'
-import { Box, CircularProgress, Grid, Typography } from '@mui/joy'
+import { Box, CircularProgress, Grid, Typography } from '@mui/material'
 import { Scan } from '@prisma/client'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import SimpleGrid, {

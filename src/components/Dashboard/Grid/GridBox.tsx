@@ -1,5 +1,5 @@
 import { Help } from '@mui/icons-material'
-import { Box, Grid, GridProps, Sheet, Tooltip, Typography } from '@mui/joy'
+import { Box, Grid, GridProps, Sheet, Tooltip, Typography } from '@mui/material'
 import { FC, PropsWithChildren } from 'react'
 
 export interface GridBoxProps {

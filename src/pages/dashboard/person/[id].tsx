@@ -1,5 +1,5 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
-import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/joy'
+import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/material'
 import { Event, Person, Property } from '@prisma/client'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import TeamHeader from '@src/components/TeamHeader'

@@ -1,5 +1,5 @@
 import createEmotionServer from '@emotion/server/create-instance'
-import { getInitColorSchemeScript } from '@mui/joy/styles'
+import { getInitColorSchemeScript } from '@mui/material/styles'
 import theme from '@src/styles/theme'
 import { createEmotionCache } from '@src/utils/createEmotionCache'
 import { AppType } from 'next/app'

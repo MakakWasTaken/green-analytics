@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, Typography } from '@mui/joy'
+import { Box, CircularProgress, Grid, Typography } from '@mui/material'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import SimpleGrid from '@src/components/SimpleGrid'
 import TeamHeader from '@src/components/TeamHeader'

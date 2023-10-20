@@ -10,7 +10,7 @@ import {
   Table,
   TextField,
   Typography,
-} from '@mui/joy'
+} from '@mui/material'
 import { Team, TeamInvite, User } from '@prisma/client'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { SettingsTab } from '@src/pages/settings'

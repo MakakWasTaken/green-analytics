@@ -1,6 +1,12 @@
 /* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
-import { Box, CircularProgress, Grid, Typography, useTheme } from '@mui/joy'
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import { Person, Property, Scan } from '@prisma/client'
 import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
 import HorizontalBarChart from '@src/components/Dashboard/Charts/HorizontalBarChart'

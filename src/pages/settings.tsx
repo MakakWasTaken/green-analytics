@@ -9,7 +9,7 @@ import {
   Tabs,
   Typography,
   tabClasses,
-} from '@mui/joy'
+} from '@mui/material'
 import { Team, User } from '@prisma/client'
 import AccountBox from '@src/components/Account/AccountBox'
 import AccountUpdateBox from '@src/components/Account/AccountUpdateBox'

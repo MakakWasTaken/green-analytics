@@ -1,7 +1,7 @@
 // Get all team members
 
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { Team } from '@prisma/client'
+import { Team } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 

@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button } from '@mui/joy'
+import { Box, BoxProps, Button } from '@mui/material'
 import { FC } from 'react'
 
 interface PaginationProps {

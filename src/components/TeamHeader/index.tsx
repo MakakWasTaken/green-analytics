@@ -11,7 +11,7 @@ import {
   Select,
   TextField,
   Typography,
-} from '@mui/joy'
+} from '@mui/material'
 import { Team } from '@prisma/client'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import { api } from '@src/utils/network'

@@ -1,4 +1,4 @@
-import { extendTheme } from '@mui/joy/styles'
+import { extendTheme } from '@mui/material/styles'
 import { poppins } from './font'
 
 export const themeDefinitions = {

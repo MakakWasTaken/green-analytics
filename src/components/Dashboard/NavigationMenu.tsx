@@ -1,4 +1,4 @@
-import { Box, List, ListItemButton } from '@mui/joy'
+import { Box, List, ListItemButton } from '@mui/material'
 import { useRouter } from 'next/router'
 
 interface Page {

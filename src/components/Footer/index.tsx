@@ -1,6 +1,6 @@
 // src/componetns/Footer.tsx
 
-import { Box, Typography } from '@mui/joy'
+import { Box, Typography } from '@mui/material'
 import { FC, ReactElement } from 'react'
 
 export const Footer: FC = (): ReactElement => {

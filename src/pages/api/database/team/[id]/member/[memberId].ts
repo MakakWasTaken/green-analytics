@@ -1,7 +1,7 @@
 // Get all team members
 
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { Team, TeamRole, User } from '@prisma/client'
+import { Team, TeamRole, User } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -73,12 +73,10 @@ const handlePUT = async (
 
   const teamRole = team.roles.find((role) => role.userId === memberId)
   if (teamRole?.role !== 'OWNER') {
-    res
-      .status(403)
-      .json({
-        ok: false,
-        message: 'You are not allowed to change the role of the owner',
-      })
+    res.status(403).json({
+      ok: false,
+      message: 'You are not allowed to change the role of the owner',
+    })
     return
   }
 

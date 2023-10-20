@@ -5,7 +5,7 @@ import {
   CircularProgress,
   Typography,
   useColorScheme,
-} from '@mui/joy'
+} from '@mui/material'
 import KeyFeatureBox from '@src/components/LandingPage/KeyFeatureBox'
 import Link from '@src/components/Link'
 import {

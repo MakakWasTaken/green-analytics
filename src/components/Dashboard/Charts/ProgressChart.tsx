@@ -1,4 +1,4 @@
-import { LinearProgress, Typography } from '@mui/joy'
+import { LinearProgress, Typography } from '@mui/material'
 import { poppins } from '@src/styles/font'
 import { ArcElement, Chart as ChartJS, defaults } from 'chart.js'
 import { FC } from 'react'

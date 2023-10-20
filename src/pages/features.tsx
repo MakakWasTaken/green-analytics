@@ -5,7 +5,7 @@ import {
   ListItem,
   ListItemContent,
   Typography,
-} from '@mui/joy'
+} from '@mui/material'
 import Link from '@src/components/Link'
 import { NextSeo } from 'next-seo'
 import { Suspense } from 'react'

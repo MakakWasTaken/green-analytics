@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/joy'
+import { Box, Button, Typography } from '@mui/material'
 import { FC, PropsWithChildren } from 'react'
 
 interface AccountBoxInterface {

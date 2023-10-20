@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Grid } from '@mui/joy'
+import { Button, CircularProgress, Grid } from '@mui/material'
 import { FC, useEffect, useMemo, useState } from 'react'
 import AccountBox from './AccountBox'
 import { AccountInput } from './AccountInput'

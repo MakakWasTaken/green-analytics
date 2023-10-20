@@ -14,7 +14,7 @@ import {
   Tabs,
   Tooltip,
   Typography,
-} from '@mui/joy'
+} from '@mui/material'
 import { Team, Website } from '@prisma/client'
 import SimpleGrid, {
   SimpleGridColumnDefinition,

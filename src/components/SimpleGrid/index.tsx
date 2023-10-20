@@ -10,8 +10,8 @@ import {
   Sheet,
   Table,
   Typography,
-} from '@mui/joy'
-import { SxProps } from '@mui/joy/styles/types'
+} from '@mui/material'
+import { SxProps } from '@mui/material/styles/types'
 import {
   CSSProperties,
   HTMLInputTypeAttribute,

@@ -1,4 +1,4 @@
-import { Box } from '@mui/joy'
+import { Box } from '@mui/material'
 import { NextSeo } from 'next-seo'
 
 const PricingPage = () => {

@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Grid, Table, Typography } from '@mui/joy'
+import { Box, CircularProgress, Grid, Table, Typography } from '@mui/material'
 import { Person } from '@prisma/client'
 import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import Pagination from '@src/components/Dashboard/Pagination'
