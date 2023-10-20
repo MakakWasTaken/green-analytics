@@ -1,6 +1,6 @@
 {
   "name": "green-analytics",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -22,6 +22,27 @@
   "resolutions": {
     "@mui/material": "npm:@mui/joy@latest"
   },
+  "publisher": "Markus Moltke",
+  "readme": "README.md",
+  "author": {
+    "name": "Markus Moltke"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MakakWasTaken/green-analytics.git"
+  },
+  "homepage": "https://green-analytics.com",
+  "bugs": {
+    "url": "https://github.com/MakakWasTaken/green-analytics/-/issues",
+    "email": "markus@green-analytics.com"
+  },
+  "contributors": [
+    {
+      "name": "Markus Moltke",
+      "email": "markus@green-analytics.com",
+      "url": "https://unknown-studios.com"
+    }
+  ],
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.2.0",
     "@emotion/cache": "^11.10.7",
