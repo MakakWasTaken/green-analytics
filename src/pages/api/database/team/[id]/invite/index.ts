@@ -38,9 +38,9 @@ export const handle = withApiAuthRequired(
     }
 
     if (method === 'GET') {
-      handleGET(res, team)
+      await handleGET(res, team)
     } else if (method === 'POST') {
-      handlePOST(req, res, team)
+      await handlePOST(req, res, team)
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }

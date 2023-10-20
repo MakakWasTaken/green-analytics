@@ -38,7 +38,7 @@ export const handle = withApiAuthRequired(
     }
 
     if (method === 'DELETE') {
-      handleDELETE(req, res, session, team)
+      await handleDELETE(req, res, session, team)
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }
