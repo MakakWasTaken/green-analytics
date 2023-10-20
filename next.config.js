@@ -14,9 +14,7 @@ const nextConfig = {
     styledComponents: true,
   },
   webpack: {
-    node: {
-      __dirname: true,
-    },
+    externals: ['geoip-lite'],
   },
 }
 
