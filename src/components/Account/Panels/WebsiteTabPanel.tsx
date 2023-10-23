@@ -14,6 +14,7 @@ import {
   Tabs,
   Tooltip,
   Typography,
+  useTheme,
 } from '@mui/material'
 import { Team, Website } from '@prisma/client'
 import SimpleGrid, {
@@ -28,6 +29,10 @@ import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
 import js from 'react-syntax-highlighter/dist/cjs/languages/hljs/javascript'
 import xml from 'react-syntax-highlighter/dist/cjs/languages/hljs/xml'
+import {
+  stackoverflowDark as darkTheme,
+  stackoverflowLight as lightTheme,
+} from 'react-syntax-highlighter/dist/cjs/styles/hljs'
 import { toast } from 'sonner'
 import useSWR from 'swr'
 import AccountBox from '../AccountBox'
@@ -37,6 +42,10 @@ SyntaxHighlighter.registerLanguage('xml', xml)
 SyntaxHighlighter.registerLanguage('bash', bash)
 
 const WebsiteTabPanel = () => {
+  // Layout
+  const theme = useTheme()
+
+  // Data
   const { selectedTeam, allTeams } = useContext(HeaderContext)
   const { user } = useUser()
   const { data, mutate: setData } = useSWR<Website[]>(
@@ -170,7 +179,7 @@ const WebsiteTabPanel = () => {
       >
         <ModalDialog
           size="lg"
-          sx={{ overflowY: 'scroll', width: { xs: '100%', md: '500px' } }}
+          sx={{ overflowY: 'scroll', minWidth: { xs: '100%', md: '500px' } }}
         >
           <ModalClose />
           <Typography level="h4">Website Setup</Typography>
@@ -185,7 +194,10 @@ const WebsiteTabPanel = () => {
                 <code>&lt;head&gt;</code> element. It should be the first thing
                 in the <code>&lt;head&gt;</code> tag.
               </Typography>
-              <SyntaxHighlighter language="xml">
+              <SyntaxHighlighter
+                style={theme.palette.mode === 'light' ? lightTheme : darkTheme}
+                language="xml"
+              >
                 {`<script
   async
   src="https://green-analytics.com/green-analytics.js"
@@ -195,13 +207,19 @@ const WebsiteTabPanel = () => {
             </TabPanel>
             <TabPanel value={1}>
               <Typography>Installation</Typography>
-              <SyntaxHighlighter language="bash">
+              <SyntaxHighlighter
+                style={theme.palette.mode === 'light' ? lightTheme : darkTheme}
+                language="bash"
+              >
                 {`yarn add green-analytics-js
 # or
 npm install green-analytics-js`}
               </SyntaxHighlighter>
               <Typography>Usage</Typography>
-              <SyntaxHighlighter language="javascript">
+              <SyntaxHighlighter
+                style={theme.palette.mode === 'light' ? lightTheme : darkTheme}
+                language="javascript"
+              >
                 {`import { initGA, setPerson } from 'green-analytics-js'
 
 // Initializes the analytics script

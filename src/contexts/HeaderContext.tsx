@@ -59,6 +59,7 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (internalSelectedTeam) {
       localStorage.setItem('selectedTeamId', internalSelectedTeam.id)
+      setSelectedWebsite(null)
     }
   }, [internalSelectedTeam])
 
