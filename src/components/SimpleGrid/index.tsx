@@ -195,6 +195,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         <Sheet>
           <Table
             sx={{
+              padding: 1,
               minHeight: '200px',
               ...sx,
               tableLayout: 'auto',

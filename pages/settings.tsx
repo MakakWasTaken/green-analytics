@@ -116,8 +116,12 @@ const UserPage = withPageAuthRequired(
                 [`& .${tabClasses.root}`]: {
                   bgcolor: 'transparent',
                   boxShadow: 'none',
+                  borderTopRightRadius: '10px',
+                  borderTopLeftRadius: '10px',
+                  transition: '0.2s',
                   '&:hover': {
-                    bgcolor: 'transparent',
+                    bgcolor:
+                      'var(--joy-palette-neutral-plainHoverBg, var(--joy-palette-neutral-200, #DDE7EE))',
                   },
                   [`&.${tabClasses.selected}`]: {
                     color: 'primary.plainColor',
