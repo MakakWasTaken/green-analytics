@@ -1,4 +1,10 @@
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
+import AccountBox from '@components/Account/AccountBox'
+import AccountUpdateBox from '@components/Account/AccountUpdateBox'
+import TeamTabPanel from '@components/Account/Panels/TeamTabPanel'
+import Websites from '@components/Account/Panels/WebsiteTabPanel'
+import TeamHeader from '@components/TeamHeader'
+import { HeaderContext } from '@contexts/HeaderContext'
 import {
   Box,
   Button,
@@ -11,13 +17,7 @@ import {
   tabClasses,
 } from '@mui/material'
 import { Team, User } from '@prisma/client'
-import AccountBox from '@src/components/Account/AccountBox'
-import AccountUpdateBox from '@src/components/Account/AccountUpdateBox'
-import TeamTabPanel from '@src/components/Account/Panels/TeamTabPanel'
-import Websites from '@src/components/Account/Panels/WebsiteTabPanel'
-import TeamHeader from '@src/components/TeamHeader'
-import { HeaderContext } from '@src/contexts/HeaderContext'
-import { api } from '@src/utils/network'
+import { api } from '@utils/network'
 import { NextSeo } from 'next-seo'
 import { useContext, useState } from 'react'
 import useSWR from 'swr'

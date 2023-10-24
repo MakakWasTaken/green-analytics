@@ -1,4 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
+import { HeaderContext } from '@contexts/HeaderContext'
 import {
   Autocomplete,
   Box,
@@ -12,10 +13,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { SettingsTab } from '@pages/settings'
 import { Team, TeamInvite, User } from '@prisma/client'
-import { HeaderContext } from '@src/contexts/HeaderContext'
-import { SettingsTab } from '@src/pages/settings'
-import { api } from '@src/utils/network'
+import { api } from '@utils/network'
 import { userAgent } from 'next/server'
 import React, { FC, useContext, useMemo, useState } from 'react'
 import { toast } from 'sonner'
@@ -23,6 +23,8 @@ import useSWR from 'swr'
 import { v4 } from 'uuid'
 import AccountBox from '../AccountBox'
 import AccountUpdateBox from '../AccountUpdateBox'
+import DeleteTeamModal from '../Modals/DeleteTeamModal'
+import TeamInviteModal from '../Modals/TeamInviteModal'
 
 const TeamTabPanel: FC = () => {
   // Context
@@ -37,15 +39,7 @@ const TeamTabPanel: FC = () => {
 
   // States
   const [inviteModalOpen, setInviteModalOpen] = useState(false)
-  const [modalInvitations, setModalInvitations] = useState<
-    Omit<TeamInvite, 'teamId'>[]
-  >([
-    {
-      id: v4(),
-      userName: '',
-      userEmail: '',
-    },
-  ])
+  const [deleteTeamModalOpen, setDeleteTeamModalOpen] = useState(false)
 
   // Update team function
   const updateTeam = async (value: Team) => {
@@ -62,51 +56,6 @@ const TeamTabPanel: FC = () => {
           setSelectedTeam(response.data)
 
           return 'Successfully updated team'
-        },
-      },
-    )
-  }
-
-  /**
-   * Close the invite modal
-   */
-  const handleCloseInviteModal = () => {
-    setInviteModalOpen(false)
-    setModalInvitations([
-      {
-        id: v4(),
-        userName: '',
-        userEmail: '',
-      },
-    ])
-  }
-
-  /**
-   * Submit the invite modal
-   * @returns void
-   */
-  const handleSubmitInviteModal = () => {
-    if (!selectedTeam) {
-      toast.error('Select a team')
-      return
-    }
-    if (modalInvitations.length === 0) {
-      toast.error('You need to invite at least one person')
-      return
-    }
-    toast.promise(
-      api.post<{ count: number }>(`database/team/${selectedTeam.id}/invite`, {
-        invitations: modalInvitations,
-      }),
-      {
-        loading: 'Inviting members..',
-        error: (err) => err.message || err,
-        success: (response) => {
-          updateInvitations()
-
-          handleCloseInviteModal()
-
-          return `Successfully invited ${response.data.count} members`
         },
       },
     )
@@ -160,101 +109,42 @@ const TeamTabPanel: FC = () => {
 
   return (
     <TabPanel value={SettingsTab.Team}>
-      {selectedTeam && (
-        <Modal open={inviteModalOpen} onClose={handleCloseInviteModal}>
-          <ModalDialog size="md">
-            <ModalClose />
-            <Typography level="h4">Invite new members</Typography>
-            {modalInvitations.map((invitation) => {
-              const onInvitationChange = (
-                newInvitation: Partial<TeamInvite>,
-              ) => {
-                setModalInvitations((prev) =>
-                  prev?.map((prevInvitation) =>
-                    prevInvitation.id === invitation.id
-                      ? { ...prevInvitation, ...newInvitation }
-                      : prevInvitation,
-                  ),
-                )
-              }
-
-              return (
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-                  <Input
-                    value={invitation.userName}
-                    sx={{ flex: 0.4 }}
-                    placeholder="Name"
-                    onChange={(e) =>
-                      onInvitationChange({
-                        userName: e.target.value,
-                      })
-                    }
-                  />
-                  <Input
-                    value={invitation.userEmail}
-                    sx={{ flex: 0.6 }}
-                    placeholder="Email"
-                    onChange={(e) =>
-                      onInvitationChange({
-                        userEmail: e.target.value,
-                      })
-                    }
-                  />
-                </Box>
-              )
-            })}
-            <Button
-              fullWidth
-              onClick={() => {
-                const newInvite: Omit<TeamInvite, 'teamId'> = {
-                  id: v4(),
-                  userName: '',
-                  userEmail: '',
-                }
-                setModalInvitations((prev) =>
-                  prev ? [...prev, newInvite] : [newInvite],
-                )
-              }}
-            >
-              Add additional invitation
-            </Button>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                mt: 2,
-              }}
-            >
-              <Button
-                color="neutral"
-                variant="soft"
-                onClick={handleCloseInviteModal}
-              >
-                Cancel
-              </Button>
-              <Button color="success" onClick={handleSubmitInviteModal}>
-                Submit
-              </Button>
-            </Box>
-          </ModalDialog>
-        </Modal>
-      )}
+      <DeleteTeamModal
+        open={deleteTeamModalOpen}
+        setOpen={setDeleteTeamModalOpen}
+      />
+      <TeamInviteModal
+        open={inviteModalOpen}
+        setOpen={setInviteModalOpen}
+        refreshInvitations={updateInvitations}
+      />
       <AccountUpdateBox
         label="Team Information"
         object={selectedTeam}
-        cells={[{ field: 'name', label: 'Name' }]}
-        onSave={updateTeam}
+        cells={[
+          {
+            field: 'name',
+            label: 'Name',
+            disabled: ownRole !== 'ADMIN' && ownRole !== 'OWNER',
+          },
+        ]}
+        onSave={
+          ownRole === 'ADMIN' || ownRole === 'OWNER' ? updateTeam : undefined
+        }
       />
       <AccountBox
         label="Team Members"
-        actionButton={{
-          label: 'Invite',
-          onClick: () => {
-            // Show modal to invite more members.
-            setInviteModalOpen(true)
-          },
-        }}
+        actionButton={
+          ownRole === 'ADMIN' || ownRole === 'OWNER'
+            ? {
+                label: 'Invite',
+                onClick: () => {
+                  // Show modal to invite more members.
+                  setInviteModalOpen(true)
+                },
+              }
+            : undefined
+        }
       >
         <Table>
           <thead>
@@ -315,6 +205,29 @@ const TeamTabPanel: FC = () => {
           </tbody>
         </Table>
       </AccountBox>
+
+      {ownRole === 'OWNER' && (
+        <AccountBox label="Owner Actions">
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Box>
+              <Typography>Delete this team</Typography>
+              <Typography>
+                This action cannot be undone. Be sure before you delete your
+                team.
+              </Typography>
+            </Box>
+            <Button color="danger" onClick={() => setDeleteTeamModalOpen(true)}>
+              Delete Team
+            </Button>
+          </Box>
+        </AccountBox>
+      )}
     </TabPanel>
   )
 }

@@ -1,4 +1,9 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
+import SimpleGrid, {
+  SimpleGridColumnDefinition,
+  SimpleGridRef,
+} from '@components/SimpleGrid'
+import { HeaderContext } from '@contexts/HeaderContext'
 import { ArrowForward, ArrowRight, Code, Refresh } from '@mui/icons-material'
 import {
   Box,
@@ -16,14 +21,9 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
+import { SettingsTab } from '@pages/settings'
 import { Team, Website } from '@prisma/client'
-import SimpleGrid, {
-  SimpleGridColumnDefinition,
-  SimpleGridRef,
-} from '@src/components/SimpleGrid'
-import { HeaderContext } from '@src/contexts/HeaderContext'
-import { SettingsTab } from '@src/pages/settings'
-import { api } from '@src/utils/network'
+import { api } from '@utils/network'
 import { useContext, useMemo, useRef, useState } from 'react'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'
@@ -96,28 +96,41 @@ const WebsiteTabPanel = () => {
     })
   }
 
-  const columns: SimpleGridColumnDefinition[] = [
-    { field: 'name', headerName: 'Name', editable: true },
-    { field: 'url', headerName: 'URL', type: 'url', editable: true },
-    {
-      field: 'token',
-      headerName: 'Setup',
-      renderCell: (value: string) => (
-        <Button onClick={() => setViewTokenDialog(value)}>
-          <Code />
-        </Button>
-      ),
-    },
-    {
-      field: 'rescan',
-      headerName: 'Rescan',
-      renderCell: (value: string, id) => (
-        <Button onClick={rescanWebsite(id)}>
-          <Refresh />
-        </Button>
-      ),
-    },
-  ]
+  // Get the user's role in the selected team
+  const userRole = useMemo(() => {
+    return selectedTeam?.roles.find((role) => role.userId === user?.sub)?.role
+  }, [selectedTeam, user])
+
+  const columns: SimpleGridColumnDefinition[] = useMemo(() => {
+    const tmpColumns: SimpleGridColumnDefinition[] = [
+      { field: 'name', headerName: 'Name', editable: true },
+      { field: 'url', headerName: 'URL', type: 'url', editable: true },
+      {
+        field: 'token',
+        headerName: 'Setup',
+        renderCell: (value: string) => (
+          <Button onClick={() => setViewTokenDialog(value)}>
+            <Code />
+          </Button>
+        ),
+      },
+    ]
+
+    // If the user is an admin/owner, allow them to rescan.
+    if (userRole === 'OWNER' || userRole === 'ADMIN') {
+      tmpColumns.push({
+        field: 'rescan',
+        headerName: 'Rescan',
+        renderCell: (_value, id) => (
+          <Button onClick={rescanWebsite(id)}>
+            <Refresh />
+          </Button>
+        ),
+      })
+    }
+
+    return tmpColumns
+  }, [userRole, rescanWebsite])
 
   const fixURL = (url: string): string => {
     // Get match from regex
@@ -166,10 +179,6 @@ const WebsiteTabPanel = () => {
       },
     )
   }
-
-  const userRole = useMemo(() => {
-    return selectedTeam?.roles.find((role) => role.userId === user?.sub)?.role
-  }, [selectedTeam, user])
 
   return (
     <TabPanel value={SettingsTab.Websites}>
@@ -237,120 +246,137 @@ setPerson({
           </Tabs>
         </ModalDialog>
       </Modal>
-      {userRole === 'ADMIN' ||
-        (userRole === 'OWNER' && (
-          <Modal
-            open={transferModalWebsite !== null}
-            onClose={handleTransferModalClose}
-          >
-            <ModalDialog>
-              <ModalClose />
-              <Typography level="h4">Transfer Website</Typography>
-              {/* Show other teams we are admins of (If we are not admin, we are not allowed to create website.*/}
-              <Select
-                value={selectedTransferTeam}
-                onChange={(_e, newValue) => {
-                  console.log(_e, newValue)
-                  setSelectedTransferTeam(
-                    transferTeamDestinations.find(
-                      (team) => team.id === newValue?.id,
-                    ),
-                  )
-                }}
+      {(userRole === 'ADMIN' || userRole === 'OWNER') && (
+        <Modal
+          open={transferModalWebsite !== null}
+          onClose={handleTransferModalClose}
+        >
+          <ModalDialog>
+            <ModalClose />
+            <Typography level="h4">Transfer Website</Typography>
+            {/* Show other teams we are admins of (If we are not admin, we are not allowed to create website.*/}
+            <Select
+              value={selectedTransferTeam}
+              onChange={(_e, newValue) => {
+                console.log(_e, newValue)
+                setSelectedTransferTeam(
+                  transferTeamDestinations.find(
+                    (team) => team.id === newValue?.id,
+                  ),
+                )
+              }}
+            >
+              {transferTeamDestinations?.map((team) => (
+                <Option key={team.id} value={team}>
+                  {team.name}
+                </Option>
+              ))}
+            </Select>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Button
+                color="danger"
+                variant="soft"
+                onClick={handleTransferModalClose}
               >
-                {transferTeamDestinations?.map((team) => (
-                  <Option key={team.id} value={team}>
-                    {team.name}
-                  </Option>
-                ))}
-              </Select>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Button
-                  color="danger"
-                  variant="soft"
-                  onClick={handleTransferModalClose}
-                >
-                  Cancel
-                </Button>
-                <Button color="success" onClick={submitTransferModal}>
-                  Submit
-                </Button>
-              </Box>
-            </ModalDialog>
-          </Modal>
-        ))}
+                Cancel
+              </Button>
+              <Button color="success" onClick={submitTransferModal}>
+                Submit
+              </Button>
+            </Box>
+          </ModalDialog>
+        </Modal>
+      )}
       <AccountBox
         label="Websites"
-        actionButton={{
-          label: 'Add',
-          onClick: () => {
-            console.log('Adding row', simpleGridRef)
-            if (!simpleGridRef.current) {
-              toast.error('Reference to grid not found')
-              return
-            }
-            simpleGridRef.current?.addRow()
-          },
-        }}
+        actionButton={
+          userRole === 'ADMIN' || userRole === 'OWNER'
+            ? {
+                label: 'Add',
+                onClick: () => {
+                  console.log('Adding row', simpleGridRef)
+                  if (!simpleGridRef.current) {
+                    toast.error('Reference to grid not found')
+                    return
+                  }
+                  simpleGridRef.current?.addRow()
+                },
+              }
+            : undefined
+        }
       >
         <SimpleGrid
           ref={simpleGridRef}
           rows={data ?? []}
           columns={columns}
-          onRowDelete={deleteWebsite}
-          onRowAdd={async (newRow: Website) => {
-            // For this grid we only allow editing the URL
-            newRow.url = fixURL(newRow.url)
+          onRowDelete={
+            userRole === 'ADMIN' || userRole === 'OWNER'
+              ? deleteWebsite
+              : undefined
+          }
+          onRowAdd={
+            userRole === 'ADMIN' || userRole === 'OWNER'
+              ? async (newRow: Website) => {
+                  // For this grid we only allow editing the URL
+                  newRow.url = fixURL(newRow.url)
 
-            toast.promise(
-              api.post<Website>('/database/website', {
-                name: newRow.name,
-                url: newRow.url,
-                teamId: selectedTeam?.id,
-              }),
-              {
-                loading: 'Adding website..',
-                error: (err) => err.message || err,
-                success: (response) => {
-                  setData((prev) =>
-                    prev ? [...prev, response.data] : [response.data],
+                  toast.promise(
+                    api.post<Website>('/database/website', {
+                      name: newRow.name,
+                      url: newRow.url,
+                      teamId: selectedTeam?.id,
+                    }),
+                    {
+                      loading: 'Adding website..',
+                      error: (err) => err.message || err,
+                      success: (response) => {
+                        setData((prev) =>
+                          prev ? [...prev, response.data] : [response.data],
+                        )
+                        return 'Website added'
+                      },
+                    },
                   )
-                  return 'Website added'
-                },
-              },
-            )
-          }}
-          onRowEdit={async (newRow: Website) => {
-            // For this grid we only allow editing the URL
-            newRow.url = fixURL(newRow.url)
-            toast.promise(
-              api.put<Website>(`/database/website/${newRow.id}`, {
-                name: newRow.name,
-                url: newRow.url,
-                teamId: selectedTeam?.id,
-              }),
-              {
-                loading: 'Updating website..',
-                error: (err) => err.message || err,
-                success: (response) => {
-                  const data = response.data
-                  setData((prev) =>
-                    prev
-                      ? prev.map((item) => (item.id === data.id ? data : item))
-                      : [data],
-                  )
+                }
+              : undefined
+          }
+          onRowEdit={
+            userRole === 'ADMIN' || userRole === 'OWNER'
+              ? async (newRow: Website) => {
+                  // For this grid we only allow editing the URL
+                  newRow.url = fixURL(newRow.url)
+                  toast.promise(
+                    api.put<Website>(`/database/website/${newRow.id}`, {
+                      name: newRow.name,
+                      url: newRow.url,
+                      teamId: selectedTeam?.id,
+                    }),
+                    {
+                      loading: 'Updating website..',
+                      error: (err) => err.message || err,
+                      success: (response) => {
+                        const data = response.data
+                        setData((prev) =>
+                          prev
+                            ? prev.map((item) =>
+                                item.id === data.id ? data : item,
+                              )
+                            : [data],
+                        )
 
-                  return 'Website updated'
-                },
-              },
-            )
-          }}
+                        return 'Website updated'
+                      },
+                    },
+                  )
+                }
+              : undefined
+          }
           additionalActions={
             userRole === 'ADMIN' || userRole === 'OWNER'
               ? (item: Website) => [

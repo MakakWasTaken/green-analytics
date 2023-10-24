@@ -1,6 +1,6 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import prisma from '@src/lib/prisma'
-import { scanWebsite } from '@src/utils/websiteScanner'
+import { scanWebsite } from '@utils/websiteScanner'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(

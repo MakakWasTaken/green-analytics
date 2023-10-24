@@ -1,9 +1,9 @@
+import NavigationMenu from '@components/Dashboard/NavigationMenu'
+import Pagination from '@components/Dashboard/Pagination'
+import TeamHeader from '@components/TeamHeader'
+import { HeaderContext } from '@contexts/HeaderContext'
 import { Box, CircularProgress, Grid, Table, Typography } from '@mui/material'
 import { Person } from '@prisma/client'
-import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
-import Pagination from '@src/components/Dashboard/Pagination'
-import TeamHeader from '@src/components/TeamHeader'
-import { HeaderContext } from '@src/contexts/HeaderContext'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { FC, useContext, useEffect, useState } from 'react'
@@ -36,7 +36,7 @@ const PersonsPage: FC = () => {
         <NavigationMenu />
         {loadingTeams && <CircularProgress />}
         {!loadingTeams && !selectedWebsite && (
-          <Typography level="h3">You need to select a team</Typography>
+          <Typography level="h3">You need to select a website</Typography>
         )}
         {!loadingTeams && selectedWebsite && (
           <Grid

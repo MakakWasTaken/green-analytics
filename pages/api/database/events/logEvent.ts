@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Event, Scan, Website } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
-import { scanWebsite } from '@src/utils/websiteScanner'
+import { scanWebsite } from '@utils/websiteScanner'
 import geoip from 'doc999tor-fast-geoip'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'

@@ -1,7 +1,7 @@
 import { SustainableWebDesign } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
-import { getPredictedCarbonIntensity } from '@src/utils/getPredictedCarbonIntensity'
-import { scanWebsite } from '@src/utils/websiteScanner'
+import { getPredictedCarbonIntensity } from '@utils/getPredictedCarbonIntensity'
+import { scanWebsite } from '@utils/websiteScanner'
 import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 

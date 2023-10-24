@@ -1,3 +1,5 @@
+import KeyFeatureBox from '@components/LandingPage/KeyFeatureBox'
+import Link from '@components/Link'
 import { AutoGraph, EmojiNature, LocalFlorist } from '@mui/icons-material'
 import {
   Box,
@@ -6,8 +8,6 @@ import {
   Typography,
   useColorScheme,
 } from '@mui/material'
-import KeyFeatureBox from '@src/components/LandingPage/KeyFeatureBox'
-import Link from '@src/components/Link'
 import {
   CategoryScale,
   Chart as ChartJS,

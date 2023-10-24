@@ -1,13 +1,13 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client'
+import { Layout } from '@components/Layout'
+import { HeaderProvider } from '@contexts/HeaderContext'
 import { CacheProvider, EmotionCache } from '@emotion/react'
-import { Layout } from '@src/components/Layout'
-import { HeaderProvider } from '@src/contexts/HeaderContext'
-import { api } from '@src/utils/network'
+import { createEmotionCache } from '@utils/createEmotionCache'
+import { api } from '@utils/network'
 import { NextSeo } from 'next-seo'
 import { AppProps } from 'next/app'
 import { Toaster, toast } from 'sonner'
 import { SWRConfig } from 'swr'
-import { createEmotionCache } from '../utils/createEmotionCache'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()

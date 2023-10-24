@@ -1,3 +1,4 @@
+import Link from '@components/Link'
 import {
   Box,
   CircularProgress,
@@ -6,7 +7,6 @@ import {
   ListItemContent,
   Typography,
 } from '@mui/material'
-import Link from '@src/components/Link'
 import { NextSeo } from 'next-seo'
 import { Suspense } from 'react'
 

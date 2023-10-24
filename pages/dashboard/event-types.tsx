@@ -1,8 +1,8 @@
+import NavigationMenu from '@components/Dashboard/NavigationMenu'
+import SimpleGrid from '@components/SimpleGrid'
+import TeamHeader from '@components/TeamHeader'
+import { HeaderContext } from '@contexts/HeaderContext'
 import { Box, CircularProgress, Grid, Typography } from '@mui/material'
-import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
-import SimpleGrid from '@src/components/SimpleGrid'
-import TeamHeader from '@src/components/TeamHeader'
-import { HeaderContext } from '@src/contexts/HeaderContext'
 import { NextSeo } from 'next-seo'
 import { useContext } from 'react'
 
@@ -18,7 +18,7 @@ const EventTypes = () => {
 
         {loadingTeams && <CircularProgress />}
         {!loadingTeams && !selectedWebsite && (
-          <Typography level="h3">You need to select a team</Typography>
+          <Typography level="h3">You need to select a website</Typography>
         )}
         {!loadingTeams && selectedWebsite && (
           <Grid

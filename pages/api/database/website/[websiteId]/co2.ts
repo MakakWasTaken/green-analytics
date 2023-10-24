@@ -1,8 +1,8 @@
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import { SustainableWebDesign } from '@makakwastaken/co2'
 import prisma from '@src/lib/prisma'
-import { countryISO3Mapping } from '@src/utils/countryISOMapping'
-import { getPredictedCarbonIntensity } from '@src/utils/getPredictedCarbonIntensity'
+import { countryISO3Mapping } from '@utils/countryISOMapping'
+import { getPredictedCarbonIntensity } from '@utils/getPredictedCarbonIntensity'
 import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 

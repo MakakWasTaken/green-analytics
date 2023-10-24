@@ -1,8 +1,5 @@
 import { Option, Select } from '@mui/material'
-import {
-  convertISO2ToName,
-  countryISO3Mapping,
-} from '@src/utils/countryISOMapping'
+import { convertISO2ToName, countryISO3Mapping } from '@utils/countryISOMapping'
 import { FC } from 'react'
 
 export interface CountrySelectProps {

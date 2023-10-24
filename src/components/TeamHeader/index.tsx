@@ -1,4 +1,5 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
+import { HeaderContext } from '@contexts/HeaderContext'
 import { Add } from '@mui/icons-material'
 import {
   Box,
@@ -13,8 +14,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Team } from '@prisma/client'
-import { HeaderContext } from '@src/contexts/HeaderContext'
-import { api } from '@src/utils/network'
+import { api } from '@utils/network'
 import { FC, useContext, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import AccountInput from '../Account/AccountInput'

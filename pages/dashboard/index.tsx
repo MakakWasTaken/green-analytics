@@ -1,5 +1,13 @@
 /* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
+import DoughnutChart from '@components/Dashboard/Charts/DoughnutChart'
+import HorizontalBarChart from '@components/Dashboard/Charts/HorizontalBarChart'
+import LineChart from '@components/Dashboard/Charts/LineChart'
+import ProgressChart from '@components/Dashboard/Charts/ProgressChart'
+import GridBox from '@components/Dashboard/Grid/GridBox'
+import NavigationMenu from '@components/Dashboard/NavigationMenu'
+import TeamHeader from '@components/TeamHeader'
+import { HeaderContext } from '@contexts/HeaderContext'
 import {
   Box,
   CircularProgress,
@@ -8,15 +16,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { Person, Property, Scan } from '@prisma/client'
-import DoughnutChart from '@src/components/Dashboard/Charts/DoughnutChart'
-import HorizontalBarChart from '@src/components/Dashboard/Charts/HorizontalBarChart'
-import LineChart from '@src/components/Dashboard/Charts/LineChart'
-import ProgressChart from '@src/components/Dashboard/Charts/ProgressChart'
-import GridBox from '@src/components/Dashboard/Grid/GridBox'
-import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
-import TeamHeader from '@src/components/TeamHeader'
-import { HeaderContext } from '@src/contexts/HeaderContext'
-import { getRandomColor } from '@src/utils/utils'
+import { getRandomColor } from '@utils/utils'
 import convert from 'convert'
 import { DateTime } from 'luxon'
 import { NextSeo } from 'next-seo'
@@ -235,7 +235,7 @@ const Dashboard = withPageAuthRequired(
           <NavigationMenu />
           {loadingTeams && <CircularProgress />}
           {!loadingTeams && !selectedWebsite && (
-            <Typography level="h3">You need to select a team</Typography>
+            <Typography level="h3">You need to select a website</Typography>
           )}
           {!loadingTeams && selectedWebsite && (
             <Grid
