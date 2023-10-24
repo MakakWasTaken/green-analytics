@@ -255,6 +255,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                               sx={{
                                 backgroundColor: 'transparent',
                                 padding: 1,
+                                color: (theme) => theme.palette.text.primary,
                               }}
                               onClick={() => setUpdateObject(row)}
                             >

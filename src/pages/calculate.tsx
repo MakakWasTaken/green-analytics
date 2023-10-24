@@ -66,6 +66,7 @@ const CalculatePage = () => {
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: 'var(--joy-palette-background-backdrop)',
+            borderRadius: 2,
           }}
         >
           {!result ? (
@@ -141,7 +142,6 @@ const CalculatePage = () => {
             </>
           )}
         </Box>
-        NNB
       </Box>
     </Box>
   )

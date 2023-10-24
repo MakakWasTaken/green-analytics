@@ -357,7 +357,10 @@ setPerson({
                   <Tooltip title="Transfer">
                     <Button
                       variant="plain"
-                      color="neutral"
+                      sx={{
+                        backgroundColor: 'transparent',
+                        color: (theme) => theme.palette.text.primary,
+                      }}
                       onClick={() => {
                         // Show transfer modal
                         setTransferModalWebsite(item)
