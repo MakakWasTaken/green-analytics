@@ -51,6 +51,11 @@ const handleDELETE = async (
   }
 
   // Delete the team
+  await prisma.team.delete({
+    where: {
+      id: teamId,
+    },
+  })
 
   res.json({ ok: true, message: 'Successfully deleted team' })
 }

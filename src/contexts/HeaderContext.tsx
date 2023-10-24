@@ -84,6 +84,7 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
           return
         }
       }
+      localStorage.setItem('selectedTeamId', allTeams[0].id)
       setSelectedTeam(allTeams[0] || null)
     }
   }, [allTeams])
