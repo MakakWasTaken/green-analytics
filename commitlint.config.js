@@ -3,8 +3,10 @@
  */
 module.exports = {
   extends: ['@commitlint/config-conventional'],
-  parserOpts: {
-    headerPattern: /^(:\w*:) (\w*)(?:\((\w*)\))?: (.*)/,
-    headerCorrespondence: ['emoji', 'type', 'scope', 'subject'],
+  parserPreset: {
+    parserOpts: {
+      headerPattern: /^(:\w*:) (\w*)(?:\((\w*)\))?: (.*)/,
+      headerCorrespondence: ['emoji', 'type', 'scope', 'subject'],
+    },
   },
 }
