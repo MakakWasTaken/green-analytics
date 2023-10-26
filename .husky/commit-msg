@@ -58,4 +58,4 @@ echo "$updated_content" > "$file_path"
 
 echo $updated_content
 
-yarn commitlint --verbose --print-config --edit $1
+yarn commitlint --verbose --edit $1
