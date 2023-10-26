@@ -258,20 +258,20 @@ export const Header: FC = () => {
         ))}
       </Box>
 
+      <IconButton
+        variant="plain"
+        sx={{
+          margin: 1,
+        }}
+        aria-label="GitHub repository"
+        onClick={() =>
+          window.open('https://github.com/MakakWasTaken/green-analytics')
+        }
+      >
+        <GitHub />
+      </IconButton>
       {user ? (
         <>
-          <IconButton
-            variant="plain"
-            sx={{
-              margin: 1,
-            }}
-            aria-label="GitHub repository"
-            onClick={() =>
-              window.open('https://github.com/MakakWasTaken/green-analytics')
-            }
-          >
-            <GitHub />
-          </IconButton>
           <IconButton
             onClick={handleToggleUserMenu}
             sx={{ width: '40px', height: '40px', p: 0, borderRadius: '50vh' }}
@@ -303,18 +303,6 @@ export const Header: FC = () => {
         </>
       ) : (
         <>
-          <IconButton
-            variant="plain"
-            sx={{
-              margin: 1,
-            }}
-            aria-label="GitHub repository"
-            onClick={() =>
-              window.open('https://github.com/MakakWasTaken/green-analytics')
-            }
-          >
-            <GitHub />
-          </IconButton>
           <Button
             variant="solid"
             onClick={() => onPageClick(settings[0])}
