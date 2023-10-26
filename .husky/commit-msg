@@ -1,5 +1,61 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
-. "$(dirname "$0")/common.sh"
 
-yarn commitlint --edit $1
+# Check if a file path is provided as the first argument
+if [ -z "$1" ]; then
+  echo "Usage: $0 <file_path>"
+  exit 1
+fi
+
+# Specify the map
+declare -A emoji_map=(
+  ["feat"]=":sparkles:"
+  ["fix"]=":bug:"
+  ["docs"]=":memo:"
+  ["style"]=":lipstick:"
+  ["refactor"]=":recycle:"
+  ["perf"]=":zap:"
+  ["test"]=":white_check_mark:"
+  ["chore"]=":truck:"
+  ["revert"]=":rewind:"
+  ["wip"]=":construction:"
+  ["build"]=":construction_worker:"
+  ["ci"]=":green_heart:"
+)
+
+# Get the file path
+file_path="$1"
+
+# Read the contents of the file
+content=$(<"$file_path")
+
+# Extract the first word from the content
+first_word=$(echo "$content" | awk '{print $1}' | sed 's/:$//')
+
+# Check if the first word is in the map
+if [ -n "${emoji_map[$first_word]}" ]; then
+  prefix="${emoji_map[$first_word]}"
+else
+  array_string=""
+  for key in "${!emoji_map[@]}"; do
+    if [[ "$array_string" == "" ]]; then
+      array_string="$key:"
+    else
+      array_string="$array_string, $key:"
+    fi
+  done
+  echo "Extension $first_word not found in the map. Valid prefixes are: $array_string"
+  exit 1
+fi
+
+echo $content
+
+# Prepend the prefix to the content
+updated_content="${prefix} $content"
+
+# Write the updated content back to the file
+echo "$updated_content" > "$file_path"
+
+echo $updated_content
+
+yarn commitlint --verbose --print-config --edit $1
