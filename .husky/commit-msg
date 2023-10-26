@@ -48,4 +48,4 @@ updated_content="${prefix} $content"
 # Write the updated content back to the file
 echo "$updated_content" > "$file_path"
 
-yarn commitlint --config commitlint.config.js --edit $1
+yarn commitlint --edit $1
