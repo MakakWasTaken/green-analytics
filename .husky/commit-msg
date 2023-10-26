@@ -48,14 +48,10 @@ else
   exit 1
 fi
 
-echo $content
-
 # Prepend the prefix to the content
 updated_content="${prefix} $content"
 
 # Write the updated content back to the file
 echo "$updated_content" > "$file_path"
-
-echo $updated_content
 
 yarn commitlint --verbose --edit $1
