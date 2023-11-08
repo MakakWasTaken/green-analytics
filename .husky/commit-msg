@@ -1,6 +1,9 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# This file should be located in .husky/commit-msg 
+# Create using `npx husky add .husky/commit-msg`
+
 # Specify the map
 declare -A emoji_map=(
   ["feat"]=":sparkles:"
@@ -15,6 +18,8 @@ declare -A emoji_map=(
   ["wip"]=":construction:"
   ["build"]=":construction_worker:"
   ["ci"]=":green_heart:"
+  ["upgrade"]=":arrow_up:"
+  ["downgrade"]=":arrow_down:"
 )
 
 # Get the file path
