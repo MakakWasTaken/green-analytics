@@ -10,5 +10,11 @@
     "pages/api/database/website/**/scan.ts": {
       "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cleanup",
+      "schedule": "0 10 * * *"
+    }
+  ]
 }
