@@ -18,15 +18,21 @@ const handle = withApiAuthRequired(
       return
     }
 
+    if (!req.query.websiteId) {
+      res.status(400).json({ error: 'Missing websiteId' })
+      return
+    }
+
     if (method === 'GET') {
       const person = await prisma.person.findFirst({
         where: {
           id: req.query.id as string,
           website: {
+            id: req.query.websiteId as string,
             team: {
               users: {
                 some: {
-                  id: session?.user.sub,
+                  id: session.user.sub,
                 },
               },
             },

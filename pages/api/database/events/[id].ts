@@ -30,13 +30,16 @@ const handleGET = async (
   res: NextApiResponse,
   session: Session,
 ) => {
-  const includePersons = req.query.includePersons === 'true'
   try {
+    if (!req.query.id) {
+      res.status(400).json({ error: 'Missing id' })
+      return
+    }
     if (!req.query.websiteId) {
       res.status(400).json({ error: 'Missing websiteId' })
       return
     }
-    const events = await prisma.event.findMany({
+    const events = await prisma.event.findFirst({
       where: {
         website: {
           id: req.query.websiteId as string,
@@ -48,31 +51,8 @@ const handleGET = async (
             },
           },
         },
-        type: req.query.type as string,
-        createdAt: req.query.start
-          ? {
-              gte: DateTime.fromISO(req.query.start as string).toJSDate(),
-            }
-          : undefined,
+        id: req.query.id as string,
       },
-      select: includePersons
-        ? {
-            id: true,
-            personId: true,
-            person: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-            createdAt: true,
-          }
-        : {
-            id: true,
-            personId: true,
-            createdAt: true,
-          },
     })
     res.status(200).json(events)
   } catch (error) {

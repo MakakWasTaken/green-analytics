@@ -5,7 +5,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req
-
   const session = await getSession(req, res)
 
   if (!session) {
@@ -14,8 +13,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   switch (method) {
-    case 'GET':
+    case 'GET': {
       return handleGET(req, res, session)
+    }
     default:
       res.setHeader('Allow', ['GET', 'POST'])
       res.status(405).end(`Method ${method} Not Allowed`)
@@ -32,16 +32,9 @@ const handleGET = async (
       res.status(400).json({ error: 'Missing websiteId' })
       return
     }
-
-    const propertyTypes = req.query.type as string
-
-    const propertyTypeSplit = propertyTypes.split(',')
-
-    const properties = await prisma.property.findMany({
+    const result = await prisma.event.findMany({
+      distinct: 'type',
       where: {
-        key: {
-          in: propertyTypeSplit,
-        },
         website: {
           id: req.query.websiteId as string,
           team: {
@@ -52,19 +45,13 @@ const handleGET = async (
             },
           },
         },
-        createdAt: req.query.start
-          ? {
-              gte: DateTime.fromISO(req.query.start as string).toJSDate(),
-            }
-          : undefined,
-      },
-      select: {
-        id: true,
-        key: true,
-        value: true,
+        createdAt: {
+          gte: DateTime.utc().minus({ month: 3 }).toJSDate(), // Get event types for the past 3 months.
+        },
       },
     })
-    res.status(200).json(properties)
+
+    res.status(200).json(result.map((event) => event.type))
   } catch (error) {
     res.status(500).json({ error })
   }

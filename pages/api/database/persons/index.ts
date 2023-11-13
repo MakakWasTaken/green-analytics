@@ -13,50 +13,69 @@ export const handle = withApiAuthRequired(
       res.status(401).json({ ok: false, message: 'Unauthorized' })
       return
     }
-
-    const website = await prisma.website.findFirst({
-      where: {
-        id: req.query.websiteId as string,
-        team: {
-          users: {
-            some: {
-              id: session?.user.sub,
-            },
-          },
-        },
-      },
-    })
-
-    if (!website) {
-      res.status(401).json({ ok: false, message: 'Website not found' })
+    if (!req.query.websiteId) {
+      res.status(400).json({ error: 'Missing websiteId' })
       return
     }
 
     if (method === 'GET') {
       // Get all persons for this website, use pagination
       if (req.query.page) {
-        const persons = await prisma.person.findMany({
-          where: {
-            websiteId: website.id as string,
-          },
-          skip: req.query.page
-            ? Number.parseInt(req.query.page as string) * 20
-            : 0,
-          take: 20,
-          orderBy: [{ email: 'desc' }, { name: 'desc' }, { createdAt: 'desc' }],
-        })
-        const count = await prisma.person.count({
-          where: {
-            websiteId: website.id as string,
-          },
-        })
+        const [persons, count] = await Promise.all([
+          prisma.person.findMany({
+            where: {
+              website: {
+                id: req.query.websiteId as string,
+                team: {
+                  users: {
+                    some: {
+                      id: session.user.sub,
+                    },
+                  },
+                },
+              },
+            },
+            skip: req.query.page
+              ? Number.parseInt(req.query.page as string) * 20
+              : 0,
+            take: 20,
+            orderBy: [
+              { email: 'desc' },
+              { name: 'desc' },
+              { createdAt: 'desc' },
+            ],
+          }),
+          prisma.person.count({
+            where: {
+              website: {
+                id: req.query.websiteId as string,
+                team: {
+                  users: {
+                    some: {
+                      id: session.user.sub,
+                    },
+                  },
+                },
+              },
+            },
+          }),
+        ])
 
         res.json({ persons, count })
       } else {
         // Get all persons for this website
         const persons = await prisma.person.findMany({
           where: {
-            websiteId: website.id as string,
+            website: {
+              id: req.query.websiteId as string,
+              team: {
+                users: {
+                  some: {
+                    id: session.user.sub,
+                  },
+                },
+              },
+            },
           },
           orderBy: [{ email: 'desc' }, { name: 'desc' }, { createdAt: 'desc' }],
         })

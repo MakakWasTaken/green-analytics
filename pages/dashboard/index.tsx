@@ -111,11 +111,16 @@ const Dashboard = withPageAuthRequired(
       const filteredProperties = properties.filter((p) => p.key === propertyKey)
       for (const filteredProperty of filteredProperties) {
         if (filteredProperty) {
-          const value = eventsByProperty.get(filteredProperty.value)
+          const key =
+            filteredProperty.value.endsWith('/') &&
+            filteredProperty.value !== '/'
+              ? filteredProperty.value.slice(0, -1)
+              : filteredProperty.value
+          const value = eventsByProperty.get(key)
           if (value) {
-            eventsByProperty.set(filteredProperty.value, value + 1)
+            eventsByProperty.set(key, value + 1)
           } else {
-            eventsByProperty.set(filteredProperty.value, 1)
+            eventsByProperty.set(key, 1)
           }
         }
       }

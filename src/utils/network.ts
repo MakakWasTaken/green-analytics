@@ -18,7 +18,7 @@ api.interceptors.response.use(undefined, (error) => {
 
   if (error instanceof AxiosError) {
     return Promise.reject(
-      error.response?.data?.message ||
+      error.response?.data?.error ||
         error.status ||
         error.cause ||
         error.message,

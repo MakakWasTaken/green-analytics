@@ -26,7 +26,7 @@ export const GAApp = (props: GAAppProps) => {
         fetcher: (resource, init) =>
           api.get(resource, init).then((res) => res.data),
         onErrorRetry: (error) => {
-          toast.error(error.response?.data?.message || error.message || error)
+          toast.error(error.message || error)
         },
       }}
     >
