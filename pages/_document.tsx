@@ -25,6 +25,16 @@ export const GADocument = ({ emotionStyleTags }: GADocumentProps) => {
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="emotion-insertion-point" content="" />
         {emotionStyleTags}
+        <style
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          dangerouslySetInnerHTML={{
+            __html: `
+        h1,h2,h3 {
+          scroll-margin-top: 75px;
+        }
+        `,
+          }}
+        />
       </Head>
       <body>
         {getInitColorSchemeScript({ defaultMode: 'system' })}

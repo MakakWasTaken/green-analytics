@@ -54,3 +54,10 @@ export const toTitleCase = (str: string): string => {
     .replace(/\s+/g, ' ')
     .trim()
 }
+
+export const titleToMarkdownId = (str: string) => {
+  return str
+    .toLowerCase()
+    .replaceAll(' ', '-')
+    .replaceAll(/[^\w-]/g, '')
+}

@@ -73,7 +73,6 @@ const TableOfContents: FC = () => {
   }, [])
 
   const currentPagePrefix = useMemo(() => {
-    console.log(router.pathname)
     if (!toc) {
       return undefined
     }
@@ -103,7 +102,6 @@ const TableOfContents: FC = () => {
 
   useEffect(() => {
     // Determine what path should be expanded.
-    console.log(currentPagePrefix)
     setExpanded(currentPagePrefix)
   }, [currentPagePrefix])
 
