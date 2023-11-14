@@ -90,14 +90,6 @@ const FeaturesPage = () => {
           </ListItem>
           <ListItem>
             <ListItemContent>
-              <Typography fontWeight="bold">Additional data sources</Typography>
-              <Typography level="body-md">
-                Allows for additional data sources
-              </Typography>
-            </ListItemContent>
-          </ListItem>
-          <ListItem>
-            <ListItemContent>
               <Typography fontWeight="bold">
                 Additional tools for data collection
               </Typography>

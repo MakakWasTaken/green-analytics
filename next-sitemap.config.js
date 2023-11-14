@@ -2,5 +2,5 @@
 module.exports = {
   siteUrl: process.env.SITE_URL || 'https://green-analytics.com',
   generateRobotsTxt: true, // (optional)
-  // ...other options
+  exclude: ['/dashboard*', '/settings'],
 }
