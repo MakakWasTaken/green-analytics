@@ -1,5 +1,6 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client'
 import { Layout } from '@components/Layout'
+import MDXContent from '@components/MDXContent'
 import { HeaderProvider } from '@contexts/HeaderContext'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import { createEmotionCache } from '@utils/createEmotionCache'
@@ -52,7 +53,11 @@ export const GAApp = (props: GAAppProps) => {
         <HeaderProvider>
           <CacheProvider value={emotionCache}>
             <Layout>
-              <Component {...pageProps} />
+              {Component.displayName === 'MDXContent' ? (
+                <MDXContent Component={Component} pageProps={pageProps} />
+              ) : (
+                <Component {...pageProps} />
+              )}
               <Toaster richColors />
             </Layout>
           </CacheProvider>

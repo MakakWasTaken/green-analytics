@@ -69,7 +69,7 @@ const UserPage = withPageAuthRequired(
       <Box
         sx={{ margin: { xs: 0, sm: 0, md: 8 }, my: { xs: 4, sm: 4, md: 0 } }}
       >
-        <NextSeo title="Settings" />
+        <NextSeo title="Settings" noindex />
         <TeamHeader />
         <Box sx={{ alignItems: 'center', display: 'flex' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

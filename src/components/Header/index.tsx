@@ -38,6 +38,7 @@ export const Header: FC = () => {
     { label: 'Features', href: '/features' },
     { label: 'Calculate', href: '/calculate' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Documentation', href: '/docs' },
   ]
   const settings: Page[] = user
     ? [
