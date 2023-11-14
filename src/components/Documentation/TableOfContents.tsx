@@ -80,7 +80,7 @@ const TableOfContents: FC = () => {
       level: ToCLevel,
       prefix: string,
     ): string | undefined => {
-      if (level.link && router.pathname.includes(level.link)) {
+      if (level.link && router.pathname === level.link) {
         // Remove last character, because it is a faulty dot.
         return prefix.slice(0, -1)
       }
@@ -139,7 +139,7 @@ const TableOfContents: FC = () => {
             borderRadius: 8,
             backgroundColor: (theme) =>
               formattedPrefix === currentPagePrefix
-                ? theme.palette.primary[900]
+                ? theme.palette.divider
                 : undefined,
           }}
           href={tocLevel.link}
