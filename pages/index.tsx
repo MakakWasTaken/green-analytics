@@ -63,7 +63,7 @@ export const Home: FC = () => {
               }}
             >
               Green Analytics is an analytics tool that is built on top of{' '}
-              <Link href="https://sustainablewebdesign.org/">
+              <Link fontWeight={600} href="https://sustainablewebdesign.org/">
                 {"SWD's model"}
               </Link>
               . The tool allows you to do basis analytics on your website and
@@ -247,8 +247,10 @@ export const Home: FC = () => {
                 hyphens: 'auto',
               }}
             >
-              This solution is developed by Markus Moltke, from the
-              <Link href="https://unknown-studios.com">Unknown Studios</Link>{' '}
+              This solution is developed by Markus Moltke, from the{' '}
+              <Link fontWeight={600} href="https://unknown-studios.com">
+                Unknown Studios
+              </Link>{' '}
               team. <br />
               <br />
               Unknown Studios is a small team of developers, designers and

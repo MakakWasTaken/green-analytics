@@ -57,7 +57,7 @@ export const Header: FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
+    setAnchorElNav((prev) => (prev ? null : event.currentTarget))
   }
   const handleToggleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser((prev) => (prev ? null : event.currentTarget))
@@ -72,6 +72,8 @@ export const Header: FC = () => {
   }
 
   const onPageClick = (page: Page) => {
+    handleCloseNavMenu()
+    handleCloseUserMenu()
     if (page.func) {
       page.func()
     } else if (page.href) {
@@ -141,6 +143,7 @@ export const Header: FC = () => {
         padding: '0 1rem',
         alignItems: 'center',
       }}
+      id="menu-appbar"
     >
       {/* INVITATION MODAL */}
       {invitations && invitations.length > 0 && (

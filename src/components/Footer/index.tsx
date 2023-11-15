@@ -14,9 +14,9 @@ export const Footer: FC = (): ReactElement => {
         paddingBottom: '1rem',
       }}
     >
-      <Box sx={{ display: 'flex', margin: '0 128px' }}>
+      <Box sx={{ display: 'flex', margin: { xs: '0 12px', md: '0 128px' } }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography color="primary" level="h4">
+          <Typography color="primary" level="title-md">
             Green Analytics
           </Typography>
           <Typography color="neutral" level="body-md">

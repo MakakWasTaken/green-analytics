@@ -1,7 +1,7 @@
-import { extendTheme } from '@mui/material/styles'
+import { CssVarsThemeOptions, extendTheme } from '@mui/material/styles'
 import { poppins } from './font'
 
-export const themeDefinitions = {
+export const themeDefinitions: CssVarsThemeOptions = {
   colorSchemes: {
     light: {
       palette: {
@@ -16,9 +16,16 @@ export const themeDefinitions = {
           700: '#346d34',
           800: '#2c602c',
           900: '#1f481f',
+          mainChannel: '15 61 28',
+          solidBg: '#346d34',
+          plainColor: '#346d34',
         },
         background: {
           body: '#f5faf5',
+        },
+        neutral: {
+          darkChannel: '151 173 157',
+          mainChannel: '49 56 51',
         },
       },
     },
@@ -35,6 +42,8 @@ export const themeDefinitions = {
           700: '#347b39',
           800: '#2a6930',
           900: '#1f4e1f',
+          mainChannel: '153 232 163',
+          solidBg: '#2a6930',
         },
         background: {
           body: '#0c180d',

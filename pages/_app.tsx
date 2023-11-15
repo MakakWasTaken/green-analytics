@@ -39,10 +39,6 @@ export const GAApp = (props: GAAppProps) => {
             sizes: '192x192',
           },
           {
-            rel: 'manifest',
-            href: '/manifest.json',
-          },
-          {
             rel: 'preconnect',
             href: 'https://log.cookieyes.com',
           },
