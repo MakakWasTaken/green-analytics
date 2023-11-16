@@ -121,7 +121,6 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
           // Loop through columns with editable and set default value
           const row: any = { [idField]: v4(), ...defaultRow }
           if (!defaultRow) {
-            console.log(defaultRow)
             for (const column of columns) {
               if (column.editable) {
                 row[column.field] = ''

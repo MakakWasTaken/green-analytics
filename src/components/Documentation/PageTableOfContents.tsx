@@ -52,7 +52,11 @@ const PageTableOfContents: FC<PageTableOfContentsProps> = ({ mainContent }) => {
     return (
       <Box>
         {items.map((item) => (
-          <Link sx={{ width: '100%', pl: item.indent }} href={item.link}>
+          <Link
+            key={`${item.link}ptoc`}
+            sx={{ width: '100%', pl: item.indent }}
+            href={item.link}
+          >
             {item.name}
           </Link>
         ))}

@@ -31,7 +31,9 @@ async function generateTableOfContents(dir) {
       }
     }
 
-    section.items = section.items.sort((a) => (a.name === 'overview' ? -1 : 1))
+    section.items = section.items
+      .sort((a) => (a.items ? 1 : -1))
+      .sort((a) => (a.name === 'overview' ? -1 : 1))
 
     return section
   }

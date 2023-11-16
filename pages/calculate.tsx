@@ -106,7 +106,7 @@ const CalculatePage = () => {
                   try {
                     setPageviews(parseInt(e.target.value))
                   } catch (err) {
-                    console.log(err)
+                    console.error(err)
                   }
                 }}
               />

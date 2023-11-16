@@ -258,7 +258,6 @@ setPerson({
             <Select
               value={selectedTransferTeam}
               onChange={(_e, newValue) => {
-                console.log(_e, newValue)
                 setSelectedTransferTeam(
                   transferTeamDestinations.find(
                     (team) => team.id === newValue?.id,

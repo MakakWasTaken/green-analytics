@@ -1,14 +1,14 @@
 import bundleAnalyzer from '@next/bundle-analyzer'
 import MDX from '@next/mdx'
-import recma from 'recma-mdx-displayname'
+import recmaDisplayname from 'recma-mdx-displayname'
+import recmaNextjsStaticProps from 'recma-nextjs-static-props'
 import rehypeHighlight from 'rehype-highlight'
-import rehypeToc from 'rehype-toc'
 import emoji from 'remark-emoji'
 
 const withMDX = MDX({
   extension: /\.(md|mdx)$/,
   options: {
-    recmaPlugins: [recma],
+    recmaPlugins: [recmaDisplayname, recmaNextjsStaticProps],
     rehypePlugins: [rehypeHighlight],
     remarkPlugins: [emoji],
   },

@@ -113,6 +113,7 @@ const TableOfContents: FC = () => {
     if (tocLevel.items) {
       return (
         <ListItemButton
+          key={formattedPrefix}
           sx={{
             m: 0,
             borderRadius: 8,
@@ -133,6 +134,7 @@ const TableOfContents: FC = () => {
     if (tocLevel.link) {
       return (
         <ListItemButton
+          key={formattedPrefix}
           component="a"
           sx={{
             m: 0,
@@ -149,7 +151,7 @@ const TableOfContents: FC = () => {
       )
     }
 
-    return <ListItemContent>{name}</ListItemContent>
+    return <ListItemContent key={formattedPrefix}>{name}</ListItemContent>
   }
 
   const handleToCLevel = (
@@ -157,7 +159,7 @@ const TableOfContents: FC = () => {
     prefix?: string,
   ): JSX.Element | null => {
     return (
-      <Box key={prefix ?? 'toc-ground-level'}>
+      <>
         {tocLevels.map((tocLevel, index) => {
           const formattedPrefix =
             prefix !== undefined ? `${prefix}${index + 1}` : `${index + 1}`
@@ -165,7 +167,8 @@ const TableOfContents: FC = () => {
           return (
             <>
               <ListItem
-                key={`${formattedPrefix}-${name}`}
+                id={`listitem-${formattedPrefix}`}
+                key={`listitem-${formattedPrefix}`}
                 sx={{
                   p: 0,
                 }}
@@ -191,17 +194,15 @@ const TableOfContents: FC = () => {
             </>
           )
         })}
-      </Box>
+      </>
     )
   }
 
-  return (
-    <List aria-label="Documentation table of contents">
-      {loading || !toc?.items ? (
-        <CircularProgress />
-      ) : (
-        handleToCLevel(toc.items)
-      )}
+  return loading || !toc?.items ? (
+    <CircularProgress key="toc-loading" />
+  ) : (
+    <List key="toc" aria-label="Documentation table of contents">
+      {handleToCLevel(toc.items)}
     </List>
   )
 }

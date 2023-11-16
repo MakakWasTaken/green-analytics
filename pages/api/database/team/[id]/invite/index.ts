@@ -100,7 +100,7 @@ const sendEmail = async (to: string, subject: string, text: string) => {
 
     return info
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
   return null
 }

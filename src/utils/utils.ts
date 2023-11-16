@@ -46,7 +46,7 @@ export const getRandomColor = (numberOfColors: number): string[] => {
  * @returns The converted string
  */
 export const toTitleCase = (str: string): string => {
-  const s = str.replace(/([A-Z])/g, ' $1').trim()
+  const s = str.trim()
   return s
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
