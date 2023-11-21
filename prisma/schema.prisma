@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
-  directUrl    = env("DIRECT_URL")
   relationMode = "prisma"
 }
 
@@ -58,15 +57,16 @@ model TeamInvite {
 }
 
 model Website {
-  id         String     @id @default(uuid())
+  id         String      @id @default(uuid())
   name       String
   url        String
-  token      String     @unique @default(uuid()) // The token is used to authenticate the website
-  team       Team?      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  token      String      @unique @default(uuid()) // The token is used to authenticate the website
+  team       Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   teamId     String?
   events     Event[]
   persons    Person[]
   properties Property[]
+  dashboards Dashboard[]
 
   scans Scan[]
 
@@ -148,4 +148,35 @@ model Property {
   @@index([websiteId])
   @@index([personId])
   @@index([eventId])
+}
+
+// Dashboard
+
+model Dashboard {
+  id   String @id @default(uuid())
+  name String
+
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  websiteId String
+
+  cells DashboardCell[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([websiteId])
+}
+
+model DashboardCell {
+  id String @id @default(uuid())
+
+  dashboard   Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  dashboardId String
+
+  content Json @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dashboardId])
 }

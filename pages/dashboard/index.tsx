@@ -4,6 +4,7 @@ import DoughnutChart from '@components/Dashboard/Charts/DoughnutChart'
 import HorizontalBarChart from '@components/Dashboard/Charts/HorizontalBarChart'
 import LineChart from '@components/Dashboard/Charts/LineChart'
 import ProgressChart from '@components/Dashboard/Charts/ProgressChart'
+import CellGridBox from '@components/Dashboard/Grid/CellGridBox'
 import GridBox from '@components/Dashboard/Grid/GridBox'
 import NavigationMenu from '@components/Dashboard/NavigationMenu'
 import TeamHeader from '@components/TeamHeader'
@@ -248,6 +249,7 @@ const Dashboard = withPageAuthRequired(
               spacing={2}
               sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1 }}
             >
+              <CellGridBox cell={}/>
               <GridBox md={4} label="Page Views">
                 <Typography level="h1">
                   {

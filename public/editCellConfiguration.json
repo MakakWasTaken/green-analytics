@@ -1,0 +1,540 @@
+{
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomnom.fremsyn.net/dashboard_configuration_schema.json",
+  "title": "Dashboard Configuration",
+  "description": "The configuration schema for dashboards cell configurations",
+  "type": "object",
+  "$defs": {
+    "operators": {
+      "enum": [
+        "startsWith",
+        "endsWith",
+        "notContains",
+        "contains",
+        "equals",
+        "isNot",
+        "isEmpty",
+        "isNotEmpty",
+        "onOrAfter",
+        "after",
+        "before",
+        "onOrBefore"
+      ]
+    }
+  },
+  "properties": {
+    "label": {
+      "title": "Label",
+      "description": "The label that will be shown in the header of the cell.",
+      "type": "string"
+    },
+    "data": {
+      "title": "Data Configuration",
+      "description": "This configuration describes where the data for the cell will come from and what it will contain.",
+      "type": "object",
+      "properties": {
+        "source": {
+          "title": "Source of information",
+          "description": "The source of the data that is going to be used in this cell.",
+          "type": "string",
+          "enum": [
+            "database/reading",
+            "database/document"
+          ]
+        },
+        "method": {
+          "title": "HTTP Method",
+          "description": "The HTTP method used for requested data in this component. The default is post.",
+          "default": "post",
+          "type": "string",
+          "enum": [
+            "get",
+            "post"
+          ]
+        },
+        "filters": {
+          "title": "Filters",
+          "description": "The filters that are going to be applied to the data source fetching.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "operator": {
+                "title": "Operator",
+                "description": "The operator that will be used to filter the data source fetching.",
+                "$ref": "#/$defs/operators"
+              },
+              "value": {
+                "title": "Value",
+                "description": "The value that helps make up the filter that is going to be used.",
+                "type": [
+                  "string",
+                  "integer"
+                ]
+              }
+            },
+            "required": [
+              "column",
+              "operator",
+              "value"
+            ]
+          },
+          "minItems": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "database/reading"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "filters": {
+                "title": "Filters",
+                "description": "The filters that will be used to get the data from the source",
+                "items": {
+                  "properties": {
+                    "column": {
+                      "$ref": "#/$defs/readingColumns"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "database/document"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "filters": {
+                "title": "Filters",
+                "description": "The filters that will be used to get the data from the source",
+                "items": {
+                  "properties": {
+                    "column": {
+                      "$ref": "#/$defs/documentColumns"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "required": [
+        "source"
+      ]
+    },
+    "cellType": {
+      "title": "Cell Type",
+      "description": "The type of cell",
+      "type": "string",
+      "enum": [
+        "string",
+        "number",
+        "chart",
+        "datagrid"
+      ]
+    },
+    "layout": {
+      "title": "Layout",
+      "description": "The layout of the dashboard cell",
+      "type": "object",
+      "properties": {
+        "width": {
+          "title": "Width",
+          "description": "The width of the cell. This is based on a 12-width system.",
+          "enum": [
+            "auto",
+            4,
+            6,
+            8,
+            12
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "label",
+    "data",
+    "cellType"
+  ],
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "cellType": {
+            "const": "chart"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "configuration": {
+            "properties": {
+              "chartType": {
+                "title": "Chart Type",
+                "description": "The type of chart that this cell will use to display the data.",
+                "enum": [
+                  "pie",
+                  "line",
+                  "bar"
+                ]
+              },
+              "aggregateFunction": {
+                "title": "Aggregate Function",
+                "description": "The function that will be used to aggregate numbers with the same groupBy/xAxis",
+                "enum": [
+                  "COUNT",
+                  "SUM"
+                ]
+              }
+            },
+            "required": [
+              "aggregateFunction",
+              "chartType"
+            ]
+          }
+        },
+        "if": {
+          "properties": {
+            "configuration": {
+              "properties": {
+                "aggregateFunction": {
+                  "const": "COUNT"
+                }
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "configuration": {
+              "properties": {
+                "groupBy": {
+                  "title": "Group By",
+                  "description": "Can either be a column or it can be a path using dot-notation in the information. If it is information, prefix it by using DocumentInformation. An example could be DocumentInformation.accepted.",
+                  "type": [
+                    "string",
+                    "object"
+                  ],
+                  "pattern": "[A-z0-9\\-.]"
+                }
+              },
+              "if": {
+                "properties": {
+                  "groupBy": {
+                    "type": "object"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "groupBy": {
+                    "$comment": "If the group by is an object, set the correct properties",
+                    "properties": {
+                      "column": {
+                        "title": "Column",
+                        "description": "The column to group by",
+                        "type": "string",
+                        "pattern": "[A-z0-9\\-.]"
+                      },
+                      "format": {
+                        "title": "Format",
+                        "description": "The format of the group by cell",
+                        "enum": [
+                          "string",
+                          "number",
+                          "date",
+                          "time",
+                          "datetime"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "column"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "groupBy"
+              ]
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "configuration": {
+              "properties": {
+                "xAxis": {
+                  "title": "X Axis",
+                  "description": "Can either be a column or it can be a path using dot-notation in the information. If it is information, prefix it by using DocumentInformation. An example could be DocumentInformation.accepted.",
+                  "type": [
+                    "string",
+                    "object"
+                  ],
+                  "pattern": "[A-z0-9\\-.]"
+                },
+                "yAxis": {
+                  "title": "Y Axis",
+                  "description": "Can either be a column or it can be a path using dot-notation in the information. If it is information, prefix it by using DocumentInformation. An example could be DocumentInformation.accepted.",
+                  "type": "string",
+                  "pattern": "[A-z0-9\\-.]"
+                }
+              },
+              "if": {
+                "properties": {
+                  "xAxis": {
+                    "type": "object"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "xAxis": {
+                    "$comment": "If the X axis is an object, set the correct properties",
+                    "properties": {
+                      "column": {
+                        "title": "X Axis",
+                        "description": "Can either be a column or it can be a path using dot-notation in the information. If it is information, prefix it by using DocumentInformation. An example could be DocumentInformation.accepted.",
+                        "type": "string",
+                        "pattern": "[A-z0-9\\-.]"
+                      },
+                      "format": {
+                        "title": "Format",
+                        "description": "The type of value that is represented in the column. This is used to format the string for display in the charts",
+                        "default": "string",
+                        "enum": [
+                          "string",
+                          "number",
+                          "date",
+                          "time",
+                          "datetime"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "column"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "xAxis",
+                "yAxis"
+              ]
+            }
+          }
+        },
+        "required": [
+          "configuration"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cellType": {
+            "const": "datagrid"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "configuration": {
+            "title": "Configuration",
+            "description": "The configuration for the datagrid.",
+            "type": "object",
+            "properties": {
+              "columns": {
+                "title": "Columns",
+                "description": "The columns that are going to be in the datagrid.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "title": "Field",
+                      "description": "What field to render in the table. Must exist in the db response.",
+                      "type": "string"
+                    },
+                    "width": {
+                      "title": "Width",
+                      "description": "The width of the column in pixels",
+                      "type": "number"
+                    },
+                    "formatString": {
+                      "title": "Format String",
+                      "description": "Use @ to insert the value",
+                      "type": "string",
+                      "pattern": ".*@.*"
+                    },
+                    "headerName": {
+                      "title": "Header Name",
+                      "description": "An optional header name. The Field value will be used if this is not provided.",
+                      "type": "string"
+                    },
+                    "type": {
+                      "title": "Type",
+                      "description": "The type of data contained in this cell.",
+                      "default": "string",
+                      "enum": [
+                        "string",
+                        "number",
+                        "boolean",
+                        "date",
+                        "dateTime",
+                        "meteringpoint",
+                        "plant"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ]
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "columns"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "data": {
+                  "properties": {
+                    "source": {
+                      "const": "database/reading"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "title": "Configuration",
+                  "description": "Configuration for the current cell. The content of this is dependent on the cellType",
+                  "properties": {
+                    "columns": {
+                      "title": "Columns",
+                      "description": "The columns that will be shown in the datagrid.",
+                      "items": {
+                        "properties": {
+                          "field": {
+                            "title": "Field",
+                            "description": "One of the columns in the Reading table.",
+                            "$ref": "#/$defs/readingColumns"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "data": {
+                  "properties": {
+                    "source": {
+                      "const": "database/document"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "configuration": {
+                  "title": "Configuration",
+                  "description": "Configuration for the current cell. The content of this is dependent on the cellType",
+                  "properties": {
+                    "columns": {
+                      "title": "Columns",
+                      "description": "The columns that will be shown in the datagrid.",
+                      "items": {
+                        "properties": {
+                          "field": {
+                            "title": "Field",
+                            "description": "Can either be a column or it can be a path using dot-notation in the information. If it is information, prefix it by using DocumentInformation. An example could be DocumentInformation.accepted.",
+                            "type": "string",
+                            "pattern": "[A-z0-9\\-.]"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "required": [
+          "configuration"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cellType": {
+            "const": "number"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "configuration": {
+            "title": "Configuration",
+            "description": "Configuration for the current cell. The content of this is dependent on the cellType",
+            "type": "object",
+            "properties": {
+              "aggregateFunction": {
+                "title": "Aggregate Function",
+                "description": "The type of operation that will be used to aggregate the numbers.",
+                "enum": [
+                  "MAX",
+                  "SUM",
+                  "COUNT"
+                ]
+              },
+              "formatString": {
+                "title": "Format String",
+                "description": "Use @ to insert the value",
+                "type": "string",
+                "pattern": ".*@.*"
+              }
+            },
+            "required": [
+              "aggregateFunction"
+            ]
+          }
+        },
+        "required": [
+          "configuration"
+        ]
+      }
+    }
+  ]
+}

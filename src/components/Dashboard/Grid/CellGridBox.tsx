@@ -8,37 +8,37 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { FC, PropsWithChildren } from 'react'
+import { DashboardCell } from '@prisma/client'
+import { FC, PropsWithChildren, useMemo } from 'react'
 
-export interface GridBoxProps {
-  label: string
-  helpLabel?: string
-  sx?: GridProps['sx']
-  xs?: GridProps['xs']
-  md?: GridProps['md']
-  lg?: GridProps['lg']
+export interface CellGridBoxProps {
+  cell: DashboardCell
+  setEditCell: (cell: DashboardCell) => void
 }
 
-const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
-  label,
-  helpLabel,
-  children,
-  ...rest
-}) => {
+const CellGridBox: FC<CellGridBoxProps> = ({ cell, setEditCell }) => {
   const onEditClicked = () => {
-    // TODO: Implement method
+    setEditCell(cell)
   }
+
+  const cellContent = useMemo(
+    () => JSON.parse(cell.content as string),
+    [cell.content],
+  )
+
+  const view = useMemo(() => {
+    const tmpView: JSX.Element | null = null
+
+    return tmpView
+  }, [cellContent])
 
   return (
     <Grid
-      xs={rest.xs ?? 12} // Full width
-      md={rest.md} // Full width
-      lg={rest.lg} // Full width
+      xs={12} // Full width
+      md={cellContent.layout?.width ?? 4}
     >
       <Sheet
         sx={{
-          ...rest.sx,
-
           backgroundColor: 'var(--joy-palette-background-surface)',
           color: 'var(--joy-palette-text-tertiary)',
           border: (theme) => `1px solid ${theme.palette.divider}`,
@@ -58,7 +58,7 @@ const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
             }}
           >
             <Typography level="h4" sx={{ marginBottom: 2 }}>
-              {label}
+              {cellContent.label}
             </Typography>
             <IconButton
               sx={{ width: '40px', height: '40px', borderRadius: '20px' }}
@@ -67,20 +67,22 @@ const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
               <Edit />
             </IconButton>
           </Box>
-          {helpLabel && (
+          {cellContent.helpLabel && (
             <Tooltip
               title={
-                <span style={{ whiteSpace: 'pre-line' }}>{helpLabel}</span>
+                <span style={{ whiteSpace: 'pre-line' }}>
+                  {cellContent.helpLabel}
+                </span>
               }
             >
               <Help sx={{ margin: 0.75 }} />
             </Tooltip>
           )}
         </Box>
-        {children}
+        {view}
       </Sheet>
     </Grid>
   )
 }
 
-export default GridBox
+export default CellGridBox
