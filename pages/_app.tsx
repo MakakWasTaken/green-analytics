@@ -7,7 +7,7 @@ import { AppProps } from 'next/app'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { SWRConfig } from 'swr'
-import { createEmotionCache } from '../utils/createEmotionCache'
+import { createEmotionCache } from '../src/utils/createEmotionCache'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()

@@ -16,8 +16,8 @@ import SimpleGrid, {
   SimpleGridRef,
 } from '@src/components/SimpleGrid'
 import { HeaderContext } from '@src/contexts/HeaderContext'
-import { AccountPage } from '@src/pages/account'
 import { api } from '@src/utils/network'
+import { AccountPage } from 'pages/account'
 import { useContext, useRef, useState } from 'react'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import bash from 'react-syntax-highlighter/dist/cjs/languages/hljs/bash'

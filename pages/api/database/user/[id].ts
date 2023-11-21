@@ -2,7 +2,7 @@
 
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../../../lib/prisma'
+import prisma from '../../../../src/lib/prisma'
 
 export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {

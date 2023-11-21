@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-
     "target": "es2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -17,15 +20,35 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@src/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
-      "@pages/*": ["./src/pages/*"],
-      "@models/*": ["./src/models/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@hooks/*": ["./src/hooks/*"],
-      "@contexts/*": ["./src/contexts/*"]
+      "@src/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@pages/*": [
+        "pages/*"
+      ],
+      "@models/*": [
+        "./src/models/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@contexts/*": [
+        "./src/contexts/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

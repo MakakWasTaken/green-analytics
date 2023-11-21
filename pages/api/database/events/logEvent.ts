@@ -168,7 +168,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
       skipDuplicates: true,
     })
 
-    res.json({ ok: true })
+    res.json({ ok: true, message: 'Succesfully logged event' })
   } else {
     res.status(405).json({ ok: false, message: 'Method Not Allowed' })
   }

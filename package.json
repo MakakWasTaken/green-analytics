@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap",
+    "postbuild": "next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/index.js ./public/green-analytics.js",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "prettier . --write && next lint",
@@ -28,7 +28,7 @@
     "@mui/joy": "^5.0.0-alpha.75",
     "@mui/material": "npm:@mui/joy@latest",
     "@next/bundle-analyzer": "^13.3.4",
-    "@prisma/client": "^5.1.1",
+    "@prisma/client": "^5.6.0",
     "axios": "^1.3.5",
     "chart.js": "^4.2.1",
     "convert": "^4.12.0",
@@ -71,7 +71,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "prettier": "^2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
-    "prisma": "^5.1.1",
+    "prisma": "^5.6.0",
     "typescript": "^5.0.3"
   }
 }
