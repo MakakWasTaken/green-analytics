@@ -39,3 +39,7 @@ next-env.d.ts
 # lighthouse
 .lighthouseci
 
+# Will be generated postbuild
+sitemap*.xml
+robots.txt
+green-analytics.js
