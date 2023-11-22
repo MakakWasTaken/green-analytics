@@ -52,7 +52,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
     ref,
   ) => {
     // eslint-disable-next-line func-call-spacing
-    const [updateObject, setUpdateObject] = useState<null | (typeof rows)[0]>(
+    const [updateObject, setUpdateObject] = useState<null | typeof rows[0]>(
       null,
     )
 
@@ -72,7 +72,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
       }
     }
 
-    const handleRowEdit = async (row: (typeof rows)[0]) => {
+    const handleRowEdit = async (row: typeof rows[0]) => {
       try {
         setUpdating(true)
         if (onRowEdit) {
@@ -84,7 +84,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
       }
     }
 
-    const handleRowAdd = async (row: (typeof rows)[0]) => {
+    const handleRowAdd = async (row: typeof rows[0]) => {
       try {
         setUpdating(true)
         if (onRowAdd) {
@@ -103,15 +103,16 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         addRow: (defaultRow?: any) => {
           // Loop through columns with editable and set default value
           const row: any = { [idField]: v4(), ...defaultRow }
-          !defaultRow &&
-            columns.forEach((column) => {
+          if (!defaultRow) {
+            for (const column of columns) {
               if (column.editable) {
                 row[column.field] = ''
               }
-            })
+            }
+          }
         },
       }),
-      [],
+      [columns, idField],
     )
 
     return (
@@ -125,7 +126,10 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                 <>
                   {columns.map((column, index) => {
                     return !column.hidden && column.editable ? (
-                      <FormControl key={index} sx={{ mt: 2 }}>
+                      <FormControl
+                        key={`${column.field}-control`}
+                        sx={{ mt: 2 }}
+                      >
                         <FormLabel>
                           {column.headerName || column.field}
                         </FormLabel>
@@ -176,7 +180,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
             }}
           >
             <thead>
-              <tr>
+              <tr key="header">
                 {columns.map((column, index) => {
                   return !column.hidden ? (
                     <th
@@ -186,7 +190,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                       }}
-                      key={index}
+                      key={column.field}
                     >
                       {column.headerName || column.field}
                     </th>
@@ -203,11 +207,11 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, index) => (
-                <tr key={index}>
+              {rows.map((row) => (
+                <tr key={row.id}>
                   {columns.map((column, index) => {
                     return !column.hidden ? (
-                      <td key={index}>
+                      <td key={column.field}>
                         {column.renderCell
                           ? column.renderCell(row?.[column.field], row[idField])
                           : row[column.field]}

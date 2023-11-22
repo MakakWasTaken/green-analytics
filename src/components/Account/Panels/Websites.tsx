@@ -34,7 +34,7 @@ SyntaxHighlighter.registerLanguage('bash', bash)
 const Websites = () => {
   const { selectedTeam } = useContext(HeaderContext)
   const { data, mutate: setData } = useSWR<Website[]>(
-    selectedTeam ? '/database/website/getAll?teamId=' + selectedTeam.id : null,
+    selectedTeam ? `/database/website/getAll?teamId=${selectedTeam.id}` : null,
   )
   const [viewTokenDialog, setViewTokenDialog] = useState<string | null>(null)
   const simpleGridRef = useRef<SimpleGridRef>(null)
@@ -46,7 +46,7 @@ const Websites = () => {
           'Are you sure you want to delete this item? This cannot be undone.',
         )
       ) {
-        const response = await api.delete('/database/website/' + id)
+        const response = await api.delete(`/database/website/${id}`)
         toast.success(response.data.message || 'Successfully deleted website')
       }
     } catch (error: any) {
@@ -56,7 +56,7 @@ const Websites = () => {
 
   const rescanWebsite = (id: string) => async () => {
     try {
-      const response = await api.post('/database/website/' + id + '/scan')
+      const response = await api.post(`/database/website/${id}/scan`)
       toast.success(response.data.message || 'Successfully scanned website')
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || error)
@@ -183,7 +183,7 @@ setPerson({
           onRowEdit={async (newRow: Website) => {
             // For this grid we only allow editing the URL
             newRow.url = fixURL(newRow.url)
-            await api.put<Website>('/database/website/' + newRow.id, {
+            await api.put<Website>(`/database/website/${newRow.id}`, {
               name: newRow.name,
               url: newRow.url,
             })

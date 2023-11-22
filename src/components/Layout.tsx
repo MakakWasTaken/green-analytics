@@ -16,7 +16,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    if (user && user.sub) {
+    if (user?.sub) {
       setPerson({
         id: user.sub,
         name: user.name || undefined,

@@ -166,7 +166,7 @@ const UserPage = withPageAuthRequired(
                 onSave={updateUser}
               />
             </TabPanel>
-            <TabPanel value={AccountPage.Privacy}></TabPanel>
+            <TabPanel value={AccountPage.Privacy}>Coming soon..</TabPanel>
             <TabPanel value={AccountPage.Team}>
               <AccountUpdateBox
                 label="Team Information"

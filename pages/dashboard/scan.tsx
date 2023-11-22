@@ -74,7 +74,7 @@ const ScanPage: FC = () => {
             onError={(e) => {
               e.currentTarget.style.display = 'none'
             }}
-            alt={value + ' flag'}
+            alt={`${value} flag`}
           />
           {value}
         </div>

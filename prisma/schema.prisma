@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
-  directUrl    = env("DIRECT_URL")
   relationMode = "prisma"
 }
 
@@ -46,17 +45,17 @@ model TeamRole {
 }
 
 model Website {
-  id      String   @id @default(uuid())
-  name    String
-  url     String
-  token   String   @unique @default(uuid()) // The token is used to authenticate the website
-  team    Team?     @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  teamId  String?
-  events  Event[]
-  persons Person[]
+  id         String     @id @default(uuid())
+  name       String
+  url        String
+  token      String     @unique @default(uuid()) // The token is used to authenticate the website
+  team       Team?      @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teamId     String?
+  events     Event[]
+  persons    Person[]
   properties Property[]
 
-  scans   Scan[]
+  scans Scan[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -65,23 +64,23 @@ model Website {
 }
 
 model Scan {
-  id         String     @id @default(uuid())
-  url      String   
+  id  String @id @default(uuid())
+  url String
 
-  website    Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  websiteId  String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  websiteId String
 
-  green           Boolean
-  transferSize    Float @default(0.0)
-  contentSize     Float @default(0.0)
-  countryCode     String @default("DNK")
-  co2Intensity    Float @default(0.0)
+  green        Boolean
+  transferSize Float   @default(0.0)
+  contentSize  Float   @default(0.0)
+  countryCode  String  @default("DNK")
+  co2Intensity Float   @default(0.0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([websiteId])
   @@unique([websiteId, url], name: "domainWebsiteUnique")
+  @@index([websiteId])
 }
 
 model Person {
@@ -122,10 +121,10 @@ model Property {
   key   String
   value String
 
-  event    Event? @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
-  eventId  String?
-  person   Person? @relation("PersonProperty", fields: [personId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
-  personId String?
+  event     Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
+  eventId   String?
+  person    Person? @relation("PersonProperty", fields: [personId], references: [id], onDelete: Cascade, onUpdate: Cascade) // 0-to-1 relation
+  personId  String?
   website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId String
 
@@ -133,7 +132,6 @@ model Property {
   updatedAt DateTime @updatedAt
 
   @@unique([personId, key]) // Ensure that each person can only have one property per key
-
   @@index([websiteId])
   @@index([personId])
   @@index([eventId])

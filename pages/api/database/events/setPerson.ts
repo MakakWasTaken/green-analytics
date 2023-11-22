@@ -36,7 +36,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const origin = req.headers.origin || req.headers.host || ''
   const originURL = new URL(
-    origin.startsWith('http') ? origin : 'https://' + origin,
+    origin.startsWith('http') ? origin : `https://${origin}`,
   )
   // Check that the origin of the request matches the given url
   if (

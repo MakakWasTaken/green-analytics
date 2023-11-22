@@ -93,7 +93,7 @@ export const getPredictedCarbonIntensity = async (
         cleanDeadline: string | number | Date
       }
     } = {}
-    Object.keys(countrySeperated).forEach((countryKey) => {
+    for (const countryKey in countrySeperated) {
       const data = countrySeperated[countryKey]
 
       const prediction = linearRegressionThroughLastPoint(data, month, year)
@@ -109,7 +109,7 @@ export const getPredictedCarbonIntensity = async (
           cleanDeadline,
         }
       }
-    })
+    }
 
     return finalEmissionData
   }

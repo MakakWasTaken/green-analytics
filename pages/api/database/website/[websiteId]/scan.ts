@@ -1,4 +1,4 @@
-import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
+import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@src/utils/websiteScanner'
 import { DateTime } from 'luxon'
@@ -8,9 +8,7 @@ export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {
     const method = req.method
 
-    const websiteId = req.query.websiteId as string
-
-    if (!websiteId) {
+    if (!req.query.websiteId) {
       res.status(400).json({
         ok: false,
         message: 'Missing websiteId',
@@ -29,62 +27,83 @@ export const handle = withApiAuthRequired(
       return
     }
 
-    switch (method) {
-      case 'GET':
-        try {
-          const scans = await prisma.scan.findMany({
-            where: {
-              websiteId,
-              createdAt: req.query.start
-                ? {
-                    gte: DateTime.fromISO(req.query.start as string).toJSDate(),
-                  }
-                : undefined,
-            },
-          })
-          res.status(200).json(scans)
-        } catch (error) {
-          res.status(500).json({ error })
-        }
-        break
-      case 'POST':
-        // Get the website
-
-        // This action requires the user to be admin or owner (The action requires a lot of server power, so we don't want users to abuse it)
-
-        const website = await prisma.website.findFirst({
-          where: {
-            id: websiteId,
-            team: {
-              roles: {
-                some: {
-                  userId: session?.user.sub,
-                  role: {
-                    in: ['ADMIN', 'OWNER'],
-                  },
-                },
-              },
-            },
-          },
-        })
-
-        if (!website) {
-          res.status(404).json({
-            ok: false,
-            message: 'Website not found',
-          })
-          return
-        }
-
-        await scanWebsite(website)
-
-        res.json({ ok: true })
-        break
-      default:
+    try {
+      if (req.method === 'GET') {
+        await handleGET(req, res, session)
+      } else if (req.method === 'POST') {
+      } else {
         res.setHeader('Allow', ['POST'])
         res.status(405).end(`Method ${method} Not Allowed`)
+      }
+    } catch (error) {
+      res.status(500).json({ error })
     }
   },
 )
+
+const handleGET = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  session: Session,
+) => {
+  const scans = await prisma.scan.findMany({
+    where: {
+      website: {
+        id: req.query.websiteId as string,
+        team: {
+          roles: {
+            some: {
+              userId: session?.user.sub,
+            },
+          },
+        },
+      },
+      createdAt: req.query.start
+        ? {
+            gte: DateTime.fromISO(req.query.start as string).toJSDate(),
+          }
+        : undefined,
+    },
+  })
+  res.status(200).json(scans)
+}
+
+const handlePOST = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  session: Session,
+) => {
+  // Get the website
+
+  // This action requires the user to be admin or owner (The action requires a lot of server power, so we don't want users to abuse it)
+
+  const website = await prisma.website.findFirst({
+    where: {
+      id: req.query.websiteId as string,
+      team: {
+        roles: {
+          some: {
+            userId: session?.user.sub,
+            role: {
+              in: ['ADMIN', 'OWNER'],
+            },
+          },
+        },
+      },
+    },
+  })
+
+  if (!website) {
+    res.status(404).json({
+      ok: false,
+      message: 'Website not found',
+    })
+    return
+  }
+
+  await scanWebsite(website)
+
+  res.json({ ok: true })
+}
 
 export default handle

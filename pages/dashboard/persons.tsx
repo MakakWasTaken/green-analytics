@@ -6,7 +6,7 @@ import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { FC, useContext, useEffect, useState } from 'react'
+import { FC, KeyboardEvent, useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 const PersonsPage: FC = () => {
@@ -15,6 +15,7 @@ const PersonsPage: FC = () => {
 
   const [page, setPage] = useState(0)
   const [count, setCount] = useState(0)
+  const [highlighted, setHighlighted] = useState(0)
 
   const { data } = useSWR<{ persons: Person[]; count: number }>(
     selectedWebsite
@@ -24,9 +25,20 @@ const PersonsPage: FC = () => {
 
   useEffect(() => {
     if (data?.count) {
-      setCount(data.count)
+      setCount(data?.count)
     }
   }, [data?.count])
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTableRowElement>) => {
+    console.log(e.code, e.key)
+    if (e.code === '40') {
+      // Down arrow
+      setHighlighted((prev) => Math.max(0, prev - 1))
+    } else if (e.code === '38') {
+      // Up arrow
+      setHighlighted((prev) => Math.max(0, prev - 1))
+    }
+  }
 
   return (
     <Box sx={{ margin: 8 }}>
@@ -52,12 +64,17 @@ const PersonsPage: FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.persons?.map((person) => (
+                {data?.persons?.map((person, index) => (
                   <tr
                     onClick={() =>
                       router.push(`/dashboard/person/${person.id}`)
                     }
+                    style={{
+                      border:
+                        index === highlighted ? '2px solid black' : undefined,
+                    }}
                     key={person.id}
+                    onKeyDown={handleKeyDown}
                   >
                     <td>{person.id}</td>
                     <td>{person.name}</td>

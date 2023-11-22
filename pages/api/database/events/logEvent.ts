@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Event, Scan, Website } from '@prisma/client/edge'
+import { Event, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@src/utils/websiteScanner'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -16,11 +16,11 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // If the website has not been updated in two weeks. (Meaning its scans has not been updated in two weeks)
   let alreadyScanned =
     website.updatedAt >= twoWeeksAgo || website.scans.length === 0
-  website.scans.forEach((scan) => {
+  for (const scan of website.scans) {
     if (scan.updatedAt >= twoWeeksAgo) {
       alreadyScanned = true
     }
-  })
+  }
 
   if (!alreadyScanned) {
     await scanWebsite(website)
@@ -74,7 +74,10 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   if (!website) {
-    res.status(403).json({ ok: false, message: `Website not found: ${formattedEventUrl}, this can also be caused by an invalid token.` })
+    res.status(403).json({
+      ok: false,
+      message: `Website not found: ${formattedEventUrl}, this can also be caused by an invalid token.`,
+    })
     return
   }
 
@@ -145,7 +148,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         key: property,
         value: userProperties[property].toString(),
         personId: req.body.personId || req.body.sessionId,
-        websiteId: website!.id,
+        websiteId: website.id,
       })),
       skipDuplicates: true,
     })
