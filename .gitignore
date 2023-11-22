@@ -43,3 +43,4 @@ next-env.d.ts
 sitemap*.xml
 robots.txt
 green-analytics.js
+docs-toc.json
