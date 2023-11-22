@@ -74,25 +74,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   if (!website) {
-    res.status(403).json({ ok: false, message: 'Website not found' })
-    return
-  }
-
-  const origin = req.headers.origin || req.headers.host || ''
-  const originURL = new URL(
-    origin.startsWith('http') ? origin : 'https://' + origin,
-  )
-  // Check that the origin of the request matches the given url
-  if (
-    website.url !== originURL.host &&
-    originURL.host !== 'green-analytics.com'
-  ) {
-    res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
-    return
-  }
-
-  if (!website) {
-    res.status(403).json({ ok: false, message: 'Website not found' })
+    res.status(403).json({ ok: false, message: `Website not found: ${formattedEventUrl}, this can also be caused by an invalid token.` })
     return
   }
 
