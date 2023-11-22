@@ -185,7 +185,7 @@ const Dashboard = withPageAuthRequired(
             .toFormat('MMM d') || ''
         const dateSet = new Set<string>()
 
-        for (const event of previousMonthEvents) {
+        for (const event of previousMonthEvents ?? []) {
           const eventDate = DateTime.fromISO(event.createdAt as any).toFormat(
             'MMM d',
           )
@@ -211,7 +211,7 @@ const Dashboard = withPageAuthRequired(
       const returningUsers = new Set<string>()
       const totalUsers = new Array<string>()
 
-      for (const event of previousMonthEvents) {
+      for (const event of previousMonthEvents ?? []) {
         if (event.personId) {
           totalUsers.push(event.personId)
           returningUsers.add(event.personId)

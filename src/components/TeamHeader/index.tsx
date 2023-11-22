@@ -23,6 +23,7 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
         paddingBottom: 2,
         paddingTop: 2,
         marginBottom: 2,
+        gap: 2,
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
       }}
     >

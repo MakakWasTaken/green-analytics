@@ -11,11 +11,6 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  if (!req.query.id) {
-    res.status(400).json({ ok: false, message: 'Missing id' })
-    return
-  }
-
   try {
     if (req.method === 'GET') {
       await handleGET(req, res, session)
