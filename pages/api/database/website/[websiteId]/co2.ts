@@ -117,8 +117,9 @@ export const handle = withApiAuthRequired(
             ),
           ]),
         ]).filter((countryCode) => countryCode !== undefined) as string[]
-        const predictedCarbonIntensities =
-          await getPredictedCarbonIntensity(countrySet)
+        const predictedCarbonIntensities = await getPredictedCarbonIntensity(
+          countrySet,
+        )
 
         for (const scan of website.scans) {
           for (const pageview of pageviews) {

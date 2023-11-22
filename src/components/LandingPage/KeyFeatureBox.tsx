@@ -1,4 +1,4 @@
-import { Box, SvgIconProps, Typography } from '@mui/joy'
+import { Box, SvgIconProps, Typography } from '@mui/material'
 import { FC, ReactElement, cloneElement, useMemo } from 'react'
 
 interface KeyFeatureBoxProps {

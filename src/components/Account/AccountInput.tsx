@@ -4,7 +4,7 @@ import {
   FormLabel,
   Input,
   InputProps,
-} from '@mui/joy'
+} from '@mui/material'
 import { FC } from 'react'
 
 export interface AccountInputProps extends InputProps {

@@ -1,6 +1,5 @@
-// Get all team members
-
-import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
+import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
+import { Team, TeamRole } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -11,6 +10,15 @@ export const handle = withApiAuthRequired(
     const teamId = req.query.id as string
 
     const session = await getSession(req, res)
+
+    if (!session) {
+      res.status(401).json({
+        ok: false,
+        message: 'You need to be authenticated to perform this action',
+      })
+      return
+    }
+
     const team = await prisma.team.findFirst({
       where: { id: teamId, users: { some: { id: session?.user.sub } } },
       include: {
@@ -20,45 +28,47 @@ export const handle = withApiAuthRequired(
       },
     })
 
+    if (!team) {
+      res.status(404).json({ ok: false, message: 'Team not found' })
+      return
+    }
+
     if (method === 'GET') {
-      // Get own teamId, because we only allow the user to fetch members of their own team
-
-      if (!team) {
-        res.status(404).json({ ok: false, message: 'Team not found' })
-        return
-      }
-
       res.json(team)
     } else if (method === 'PUT') {
-      // If the user is trying to update the team info, we need to check if they are the team leader
-      const teamRole = await prisma.teamRole.findFirst({
-        where: {
-          teamId,
-          userId: session?.user.sub,
-          role: 'OWNER',
-        },
-      })
-      if (!teamRole) {
-        res
-          .status(401)
-          .json({ ok: false, message: 'You do not have the right permissions' })
-        return
-      }
-
-      const { name } = req.body
-
-      const updatedTeam = await prisma.team.update({
-        where: { id: teamId },
-        data: {
-          name,
-        },
-      })
-
-      res.json(updatedTeam)
+      await handlePUT(req, res, session, team)
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }
   },
 )
+
+const handlePUT = async (
+  req: NextApiRequest,
+  res: NextApiResponse,
+  session: Session,
+  team: Team & { roles: TeamRole[] },
+) => {
+  const role = team.roles.find((role) => role.userId === session.user.sub)
+
+  // If the user is trying to update the team info, we need to check if they are the owner/admin
+  if (!role || (role.role !== 'ADMIN' && role.role !== 'OWNER')) {
+    res
+      .status(401)
+      .json({ ok: false, message: 'You do not have the right permissions' })
+    return
+  }
+
+  const { name } = req.body
+
+  const updatedTeam = await prisma.team.update({
+    where: { id: team.id },
+    data: {
+      name,
+    },
+  })
+
+  res.json(updatedTeam)
+}
 
 export default handle

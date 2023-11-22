@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Event, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
-import { scanWebsite } from '@src/utils/websiteScanner'
+import { scanWebsite } from '@utils/websiteScanner'
+import geoip from 'doc999tor-fast-geoip'
 import { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import requestCountry from 'request-country'
 
 const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
@@ -45,7 +45,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  const country = requestCountry(req, 'US')
+  let country = 'US'
+
+  if (ip) {
+    // Get the country from the IP
+    country = (await geoip.lookup(ip))?.country ?? 'US'
+  }
 
   const token = req.headers.api_token as string | undefined
   if (!token) {
@@ -62,7 +67,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   // If it is, allow it
   const urlRegex = /^(?:\w+?:\/\/)?([A-z0-9.\-:]+).*/g
   const urlMatch = urlRegex.exec(req.body.event.website.url)
-  const formattedEventUrl = urlMatch ? urlMatch[1] : req.body.event.website.url
+  let formattedEventUrl: string = urlMatch
+    ? urlMatch[1]
+    : req.body.event.website.url
+
+  // Ignore www subdomain
+  formattedEventUrl = formattedEventUrl.replaceAll('www.', '')
   const website = await prisma.website.findFirst({
     where: {
       token,
@@ -155,7 +165,9 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.json({ ok: true, message: 'Succesfully logged event' })
   } else {
-    res.status(405).json({ ok: false, message: 'Method Not Allowed' })
+    res
+      .status(405)
+      .json({ ok: false, message: `Method '${method}' not allowed` })
   }
 }
 

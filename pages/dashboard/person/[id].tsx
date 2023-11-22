@@ -1,26 +1,30 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
-import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/joy'
+import NavigationMenu from '@components/Dashboard/NavigationMenu'
+import TeamHeader from '@components/TeamHeader'
+import { HeaderContext } from '@contexts/HeaderContext'
+import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/material'
 import { Event, Person, Property } from '@prisma/client'
-import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
-import TeamHeader from '@src/components/TeamHeader'
 import { DateTime } from 'luxon'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
+import { useContext } from 'react'
 import useSWR from 'swr'
 
 const PersonPage = withPageAuthRequired(() => {
+  const { selectedWebsite, loadingTeams } = useContext(HeaderContext)
+
   const router = useRouter()
   const { id } = router.query
 
   const { data } = useSWR<Person & { events: Event[]; properties: Property[] }>(
-    id ? `/database/persons/${id}` : null,
+    selectedWebsite && id
+      ? `/database/persons/${id}?websiteId=${selectedWebsite.id}`
+      : null,
   )
 
   return (
     <Box sx={{ margin: 8 }}>
-      <Head>
-        <title>Green Analytics | Person</title>
-      </Head>
+      <NextSeo title="Dashboard - Person" />
       <TeamHeader selectWebsite />
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
         <NavigationMenu />

@@ -2,7 +2,7 @@ import { useUser } from '@auth0/nextjs-auth0/client'
 import { Team, TeamRole, User, Website } from '@prisma/client'
 import * as React from 'react'
 import { FC, useEffect, useState } from 'react'
-import useSWR from 'swr'
+import useSWR, { KeyedMutator } from 'swr'
 
 type ContextState = {
   allTeams: Team[] | undefined // Will be undefined if not logged in
@@ -17,25 +17,29 @@ type ContextState = {
   setSelectedTeam: React.Dispatch<React.SetStateAction<Team | null>>
   selectedWebsite: Website | null
   setSelectedWebsite: React.Dispatch<React.SetStateAction<Website | null>>
+  reloadTeams: KeyedMutator<Team[]>
+  loadingTeams: boolean
 }
 
 export const HeaderContext = React.createContext<ContextState>({
   allTeams: [],
   selectedTeam: null,
-  setSelectedTeam: () => {
-    // do nothing
-  },
+  setSelectedTeam: () => {},
   selectedWebsite: null,
-  setSelectedWebsite: () => {
-    // do nothing
+  setSelectedWebsite: () => {},
+  reloadTeams: async (d) => {
+    return undefined
   },
+  loadingTeams: false,
 })
 
 export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const { user } = useUser()
-  const { data: allTeams } = useSWR<Team[]>(
-    user ? '/database/team/getAll' : null,
-  )
+  const {
+    data: allTeams,
+    mutate: reloadTeams,
+    isLoading: loadingTeams,
+  } = useSWR<Team[]>(user ? '/database/team/getAll' : null)
   const [internalSelectedTeam, setSelectedTeam] = useState<Team | null>(null)
   const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null)
   const { data: selectedTeam } = useSWR<
@@ -55,6 +59,7 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     if (internalSelectedTeam) {
       localStorage.setItem('selectedTeamId', internalSelectedTeam.id)
+      setSelectedWebsite(null)
     }
   }, [internalSelectedTeam])
 
@@ -79,6 +84,7 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
           return
         }
       }
+      localStorage.setItem('selectedTeamId', allTeams[0].id)
       setSelectedTeam(allTeams[0] || null)
     }
   }, [allTeams])
@@ -111,6 +117,8 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
         setSelectedTeam,
         selectedWebsite,
         setSelectedWebsite,
+        reloadTeams,
+        loadingTeams,
       }}
     >
       {children}

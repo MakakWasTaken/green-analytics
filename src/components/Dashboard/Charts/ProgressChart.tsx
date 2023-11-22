@@ -1,4 +1,4 @@
-import { LinearProgress, Typography } from '@mui/joy'
+import { LinearProgress, Typography } from '@mui/material'
 import { poppins } from '@src/styles/font'
 import { ArcElement, Chart as ChartJS, defaults } from 'chart.js'
 import { FC } from 'react'
@@ -24,7 +24,7 @@ const ProgressChart: FC<ProgressChartProps> = ({
   return (
     <GridBox {...rest} sx={{ paddingBottom: 0, ...rest.sx }}>
       {mainLabel && <Typography level="h2">{mainLabel}</Typography>}
-      {subLabel && <Typography level="h5">{subLabel}</Typography>}
+      {subLabel && <Typography level="h4">{subLabel}</Typography>}
       <div
         style={{
           position: 'relative',

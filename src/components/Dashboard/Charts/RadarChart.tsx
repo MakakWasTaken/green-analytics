@@ -1,7 +1,7 @@
 import { poppins } from '@src/styles/font'
 import {
-  ChartData,
   Chart as ChartJS,
+  ChartData,
   RadialLinearScale,
   defaults,
 } from 'chart.js'

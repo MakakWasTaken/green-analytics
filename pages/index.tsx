@@ -1,3 +1,5 @@
+import KeyFeatureBox from '@components/LandingPage/KeyFeatureBox'
+import Link from '@components/Link'
 import { AutoGraph, EmojiNature, LocalFlorist } from '@mui/icons-material'
 import {
   Box,
@@ -5,9 +7,7 @@ import {
   CircularProgress,
   Typography,
   useColorScheme,
-} from '@mui/joy'
-import KeyFeatureBox from '@src/components/LandingPage/KeyFeatureBox'
-import Link from '@src/components/Link'
+} from '@mui/material'
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -15,7 +15,7 @@ import {
   LinearScale,
   PointElement,
 } from 'chart.js'
-import Head from 'next/head'
+import { NextSeo } from 'next-seo'
 import { FC, Suspense } from 'react'
 import { Line } from 'react-chartjs-2'
 
@@ -26,13 +26,10 @@ export const Home: FC = () => {
 
   return (
     <Suspense fallback={<CircularProgress />}>
-      <Head>
-        <title>Green Analytics</title>
-        <meta
-          name="description"
-          content="Green Analytics is an analytics tool that is built on top of SWD's model. The tool allows you to do basis analytics on your website and provide your company with insights into your carbon emissions."
-        />
-      </Head>
+      <NextSeo
+        title="Home"
+        description="Green Analytics is an analytics tool that is built on top of SWD's model. The tool allows you to do basis analytics on your website and provide your company with insights into your carbon emissions."
+      />
       <Box
         sx={{
           margin: { xs: '0 3vw', md: '0 20vw' },
@@ -66,7 +63,7 @@ export const Home: FC = () => {
               }}
             >
               Green Analytics is an analytics tool that is built on top of{' '}
-              <Link href="https://sustainablewebdesign.org/">
+              <Link fontWeight={600} href="https://sustainablewebdesign.org/">
                 {"SWD's model"}
               </Link>
               . The tool allows you to do basis analytics on your website and
@@ -250,8 +247,10 @@ export const Home: FC = () => {
                 hyphens: 'auto',
               }}
             >
-              This solution is developed by Markus Moltke, from the
-              <Link href="https://unknown-studios.com">Unknown Studios</Link>{' '}
+              This solution is developed by Markus Moltke, from the{' '}
+              <Link fontWeight={600} href="https://unknown-studios.com">
+                Unknown Studios
+              </Link>{' '}
               team. <br />
               <br />
               Unknown Studios is a small team of developers, designers and

@@ -1,15 +1,21 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
+import { HeaderContext } from '@contexts/HeaderContext'
 import { GitHub } from '@mui/icons-material'
 import MenuIcon from '@mui/icons-material/Menu'
-import Box from '@mui/joy/Box'
-import Button from '@mui/joy/Button'
-import IconButton from '@mui/joy/IconButton'
-import Menu from '@mui/joy/Menu'
-import MenuItem from '@mui/joy/MenuItem'
-import Typography from '@mui/joy/Typography'
+import { Modal, ModalDialog } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Typography from '@mui/material/Typography'
+import { Team, TeamInvite } from '@prisma/client'
+import { api } from '@utils/network'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { FC, useState } from 'react'
+import { FC, useContext, useState } from 'react'
+import { toast } from 'sonner'
+import useSWR from 'swr'
 import Logo from '../../../public/logo192.png'
 import Link from '../Link'
 
@@ -22,14 +28,21 @@ interface Page {
 export const Header: FC = () => {
   const { user } = useUser()
 
+  const { reloadTeams } = useContext(HeaderContext)
+
+  const { data: invitations, mutate: setInvitations } = useSWR<
+    (TeamInvite & { team: Team })[]
+  >(user ? 'database/team/invitations' : null)
+
   const pages: Page[] = [
     { label: 'Features', href: '/features' },
     { label: 'Calculate', href: '/calculate' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Documentation', href: '/docs' },
   ]
   const settings: Page[] = user
     ? [
-        { label: 'Account', href: '/account' },
+        { label: 'Settings', href: '/settings' },
         { label: 'Dashboard', href: '/dashboard' },
         {
           label: 'Logout',
@@ -44,10 +57,10 @@ export const Header: FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget)
+    setAnchorElNav((prev) => (prev ? null : event.currentTarget))
   }
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
+  const handleToggleUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser((prev) => (prev ? null : event.currentTarget))
   }
 
   const handleCloseNavMenu = () => {
@@ -59,6 +72,8 @@ export const Header: FC = () => {
   }
 
   const onPageClick = (page: Page) => {
+    handleCloseNavMenu()
+    handleCloseUserMenu()
     if (page.func) {
       page.func()
     } else if (page.href) {
@@ -66,6 +81,50 @@ export const Header: FC = () => {
     } else {
       throw new Error('Page must have either href or func')
     }
+  }
+
+  const acceptInvite = (invite: TeamInvite & { team: Team }) => {
+    toast.promise(
+      api.post('database/team/invitations/accept', {
+        id: invite.id,
+      }),
+      {
+        loading: 'Accepting invite..',
+        error: (err) => err.message || err,
+        success: (response) => {
+          reloadTeams()
+
+          // Remove the invitation from the array.
+          setInvitations((prev) =>
+            prev?.filter((invitation) => invitation.id !== invite.id),
+          )
+
+          return response.data.message
+        },
+      },
+    )
+  }
+
+  const declineInvite = (invite: TeamInvite & { team: Team }) => {
+    toast.promise(
+      api.post('database/team/invitations/decline', {
+        id: invite.id,
+      }),
+      {
+        loading: 'Declining invite..',
+        error: (err) => err.message || err,
+        success: (response) => {
+          reloadTeams()
+
+          // Remove the invitation from the array.
+          setInvitations((prev) =>
+            prev?.filter((invitation) => invitation.id !== invite.id),
+          )
+
+          return response.data.message
+        },
+      },
+    )
   }
 
   return (
@@ -84,9 +143,43 @@ export const Header: FC = () => {
         padding: '0 1rem',
         alignItems: 'center',
       }}
+      id="menu-appbar"
     >
+      {/* INVITATION MODAL */}
+      {invitations && invitations.length > 0 && (
+        <Modal open={invitations.length > 0}>
+          <ModalDialog>
+            <Typography level="h4">
+              Invitation to {invitations[0].team?.name}
+            </Typography>
+            <Typography level="body-md">
+              You have been invited to join the team {invitations[0].team?.name}
+            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Button
+                color="danger"
+                onClick={() => declineInvite(invitations[0])}
+              >
+                Decline
+              </Button>
+              <Button
+                color="success"
+                onClick={() => acceptInvite(invitations[0])}
+              >
+                Accept
+              </Button>
+            </Box>
+          </ModalDialog>
+        </Modal>
+      )}
       <Link
-        level="h6"
+        level="h4"
         href="/"
         sx={{
           mr: 2,
@@ -133,7 +226,7 @@ export const Header: FC = () => {
         </Menu>
       </Box>
       <Link
-        level="h5"
+        level="h4"
         href="/"
         sx={{
           mr: 2,
@@ -169,22 +262,22 @@ export const Header: FC = () => {
         ))}
       </Box>
 
+      <IconButton
+        variant="plain"
+        sx={{
+          margin: 1,
+        }}
+        aria-label="GitHub repository"
+        onClick={() =>
+          window.open('https://github.com/MakakWasTaken/green-analytics')
+        }
+      >
+        <GitHub />
+      </IconButton>
       {user ? (
         <>
           <IconButton
-            variant="plain"
-            sx={{
-              margin: 1,
-            }}
-            aria-label="GitHub repository"
-            onClick={() =>
-              window.open('https://github.com/MakakWasTaken/green-analytics')
-            }
-          >
-            <GitHub />
-          </IconButton>
-          <IconButton
-            onClick={handleOpenUserMenu}
+            onClick={handleToggleUserMenu}
             sx={{ width: '40px', height: '40px', p: 0, borderRadius: '50vh' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -214,18 +307,6 @@ export const Header: FC = () => {
         </>
       ) : (
         <>
-          <IconButton
-            variant="plain"
-            sx={{
-              margin: 1,
-            }}
-            aria-label="GitHub repository"
-            onClick={() =>
-              window.open('https://github.com/MakakWasTaken/green-analytics')
-            }
-          >
-            <GitHub />
-          </IconButton>
           <Button
             variant="solid"
             onClick={() => onPageClick(settings[0])}

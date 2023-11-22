@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 export const api = axios.create({
   baseURL:
@@ -9,4 +9,21 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+})
+
+api.interceptors.response.use(undefined, (error) => {
+  if (axios.isCancel(error)) {
+    return Promise.reject(error.message)
+  }
+
+  if (error instanceof AxiosError) {
+    return Promise.reject(
+      error.response?.data?.error ||
+        error.status ||
+        error.cause ||
+        error.message,
+    )
+  }
+
+  return Promise.reject(error.message)
 })

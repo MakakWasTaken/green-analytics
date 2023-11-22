@@ -3,6 +3,9 @@
   "organizeImports": {
     "enabled": true
   },
+  "files": {
+    "ignoreUnknown": true
+  },
   "formatter": {
     "ignore": ["public/**", "coverage/**", "node_modules/**", ".next/**"],
     "enabled": true,

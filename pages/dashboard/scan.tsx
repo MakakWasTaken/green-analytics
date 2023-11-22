@@ -1,15 +1,13 @@
+import NavigationMenu from '@components/Dashboard/NavigationMenu'
+import SimpleGrid, { SimpleGridColumnDefinition } from '@components/SimpleGrid'
+import TeamHeader from '@components/TeamHeader'
+import { HeaderContext } from '@contexts/HeaderContext'
 import LocalFloristIcon from '@mui/icons-material/LocalFlorist'
 import OilBarrelIcon from '@mui/icons-material/OilBarrel'
-import { Box, Grid } from '@mui/joy'
+import { Box, CircularProgress, Grid, Typography } from '@mui/material'
 import { Scan } from '@prisma/client'
-import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
-import SimpleGrid, {
-  SimpleGridColumnDefinition,
-} from '@src/components/SimpleGrid'
-import TeamHeader from '@src/components/TeamHeader'
-import { HeaderContext } from '@src/contexts/HeaderContext'
-import { countryISO2Mapping } from '@src/utils/countryISOMapping'
-import Head from 'next/head'
+import { countryISO2Mapping } from '@utils/countryISOMapping'
+import { NextSeo } from 'next-seo'
 import { FC, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -18,7 +16,7 @@ import useSWR from 'swr'
  * @returns
  */
 const ScanPage: FC = () => {
-  const { selectedWebsite } = useContext(HeaderContext)
+  const { selectedWebsite, loadingTeams } = useContext(HeaderContext)
 
   const { data } = useSWR<Scan[]>(
     selectedWebsite ? `/database/website/${selectedWebsite.id}/scan` : null,
@@ -110,19 +108,23 @@ const ScanPage: FC = () => {
 
   return (
     <Box sx={{ margin: 8 }}>
-      <Head>
-        <title>Green Analytics | Dashboard - Scan Results</title>
-      </Head>
+      <NextSeo title="Dashboard - Scan Results" />
       <TeamHeader selectWebsite />
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
         <NavigationMenu />
-        <Grid
-          container
-          spacing={2}
-          sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1, overflowX: 'scroll' }}
-        >
-          <SimpleGrid rows={dataWithTotal} columns={columns} />
-        </Grid>
+        {loadingTeams && <CircularProgress />}
+        {!loadingTeams && !selectedWebsite && (
+          <Typography level="h3">You need to select a website</Typography>
+        )}
+        {!loadingTeams && selectedWebsite && (
+          <Grid
+            container
+            spacing={2}
+            sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1, overflowX: 'scroll' }}
+          >
+            <SimpleGrid rows={dataWithTotal} columns={columns} />
+          </Grid>
+        )}
       </Box>
     </Box>
   )

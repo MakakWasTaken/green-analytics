@@ -77,7 +77,33 @@ export const handle = withApiAuthRequired(
       }
 
       // Update the website
-      const { name, url } = req.body
+      const { name, url, teamId } = req.body
+
+      // If teamId is defined we also need to verify that the user is an admin in the other team
+      if (teamId) {
+        const destinationTeamIdVerification = await prisma.team.findFirst({
+          where: {
+            id: teamId,
+            roles: {
+              some: {
+                userId: session?.user.sub,
+                role: {
+                  in: ['ADMIN', 'OWNER'],
+                },
+              },
+            },
+          },
+        })
+
+        if (!destinationTeamIdVerification) {
+          res.status(403).json({
+            ok: false,
+            message:
+              'You do not have the right permissions in the destination team.',
+          })
+          return
+        }
+      }
 
       const result = await prisma.website.update({
         where: {
@@ -86,6 +112,7 @@ export const handle = withApiAuthRequired(
         data: {
           name,
           url,
+          teamId,
         },
       })
 

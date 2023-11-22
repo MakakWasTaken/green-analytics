@@ -1,5 +1,5 @@
-import MuiLink, { LinkProps as MuiLinkProps } from '@mui/joy/Link'
-import { styled } from '@mui/joy/styles'
+import MuiLink, { LinkProps as MuiLinkProps } from '@mui/material/Link'
+import { styled } from '@mui/material/styles'
 import { clsx } from 'clsx'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { useRouter } from 'next/router'
@@ -114,6 +114,10 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       <NextLinkComposed
         className={className}
         ref={ref}
+        style={{
+          textDecoration: 'none',
+          ...other.style,
+        }}
         {...nextjsProps}
         {...other}
       />

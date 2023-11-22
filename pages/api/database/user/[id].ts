@@ -1,8 +1,8 @@
 // GET, UPDATE, DELETE
 
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
+import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
-import prisma from '../../../../src/lib/prisma'
 
 export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {

@@ -1,5 +1,5 @@
 import { Help } from '@mui/icons-material'
-import { Box, Grid, GridProps, Sheet, Tooltip, Typography } from '@mui/joy'
+import { Box, Grid, GridProps, Sheet, Tooltip, Typography } from '@mui/material'
 import { FC, PropsWithChildren } from 'react'
 
 export interface GridBoxProps {
@@ -37,7 +37,7 @@ const GridBox: FC<PropsWithChildren<GridBoxProps>> = ({
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Typography level="h6" sx={{ marginBottom: 2 }}>
+          <Typography level="h4" sx={{ marginBottom: 2 }}>
             {label}
           </Typography>
           {helpLabel && (

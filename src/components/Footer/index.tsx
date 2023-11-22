@@ -1,6 +1,6 @@
 // src/componetns/Footer.tsx
 
-import { Box, Typography } from '@mui/joy'
+import { Box, Typography } from '@mui/material'
 import { FC, ReactElement } from 'react'
 
 export const Footer: FC = (): ReactElement => {
@@ -14,12 +14,12 @@ export const Footer: FC = (): ReactElement => {
         paddingBottom: '1rem',
       }}
     >
-      <Box sx={{ display: 'flex', margin: '0 128px' }}>
+      <Box sx={{ display: 'flex', margin: { xs: '0 12px', md: '0 128px' } }}>
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography color="primary" level="h6">
+          <Typography color="primary" level="title-md">
             Green Analytics
           </Typography>
-          <Typography color="neutral" level="body2">
+          <Typography color="neutral" level="body-md">
             {`${new Date().getFullYear()} © Green Analytics`}
           </Typography>
         </Box>
@@ -32,10 +32,10 @@ export const Footer: FC = (): ReactElement => {
             alignItems: 'center',
           }}
         >
-          <Typography color="neutral" level="body2">
+          <Typography color="neutral" level="body-md">
             Terms of Service
           </Typography>
-          <Typography color="neutral" level="body2">
+          <Typography color="neutral" level="body-md">
             Privacy Policy
           </Typography>
         </Box>

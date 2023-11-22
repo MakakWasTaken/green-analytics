@@ -1,7 +1,7 @@
 import createEmotionServer from '@emotion/server/create-instance'
-import { getInitColorSchemeScript } from '@mui/joy/styles'
+import { getInitColorSchemeScript } from '@mui/material/styles'
 import theme from '@src/styles/theme'
-import { createEmotionCache } from '@src/utils/createEmotionCache'
+import { createEmotionCache } from '@utils/createEmotionCache'
 import { AppType } from 'next/app'
 import Document, {
   DocumentContext,
@@ -25,6 +25,16 @@ export const GADocument = ({ emotionStyleTags }: GADocumentProps) => {
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="emotion-insertion-point" content="" />
         {emotionStyleTags}
+        <style
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          dangerouslySetInnerHTML={{
+            __html: `
+        h1,h2,h3 {
+          scroll-margin-top: 75px;
+        }
+        `,
+          }}
+        />
       </Head>
       <body>
         {getInitColorSchemeScript({ defaultMode: 'system' })}
@@ -76,7 +86,7 @@ GADocument.getInitialProps = async (ctx: DocumentContext) => {
     })
 
   const initialProps = await Document.getInitialProps(ctx)
-  // This is important. It prevents Emotion to render invalid HTML.
+  // This is important.
   // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
   const emotionStyles = extractCriticalToChunks(initialProps.html)
   const emotionStyleTags = emotionStyles.styles.map((style) => (

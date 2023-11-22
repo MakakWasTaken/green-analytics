@@ -1,11 +1,12 @@
-import { Box, Button, Typography } from '@mui/joy'
-import { AccountInput } from '@src/components/Account/AccountInput'
-import CountrySelect from '@src/components/Calculate/CountrySelect'
-import { countryISO3Mapping } from '@src/utils/countryISOMapping'
-import { api } from '@src/utils/network'
+import { AccountInput } from '@components/Account/AccountInput'
+import CountrySelect from '@components/Calculate/CountrySelect'
+import { Box, Button, Typography } from '@mui/material'
+import { countryISO3Mapping } from '@utils/countryISOMapping'
+import { api } from '@utils/network'
 import convert from 'convert'
+import { NextSeo } from 'next-seo'
 import { useState } from 'react'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface CalculateResult {
   co2perPageview: number
@@ -46,6 +47,10 @@ const CalculatePage = () => {
 
   return (
     <Box>
+      <NextSeo
+        title="Calculate"
+        description="Calculate the carbon footprint of a website"
+      />
       <Box
         sx={{
           display: 'flex',
@@ -61,6 +66,7 @@ const CalculatePage = () => {
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: 'var(--joy-palette-background-backdrop)',
+            borderRadius: 2,
           }}
         >
           {!result ? (
@@ -100,7 +106,7 @@ const CalculatePage = () => {
                   try {
                     setPageviews(parseInt(e.target.value))
                   } catch (err) {
-                    console.log(err)
+                    console.error(err)
                   }
                 }}
               />

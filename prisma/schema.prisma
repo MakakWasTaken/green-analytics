@@ -21,13 +21,14 @@ model User {
 }
 
 model Team {
-  id        String     @id @default(uuid())
+  id        String       @id @default(uuid())
   name      String
-  users     User[]     @relation("TeamUser")
+  users     User[]       @relation("TeamUser")
   websites  Website[]
   roles     TeamRole[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  invites   TeamInvite[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 // Define the TeamRole model, which represents the many-to-many relationship
@@ -41,6 +42,17 @@ model TeamRole {
   teamId String
 
   @@unique([userId, teamId]) // Ensure that each user can only have one role per team
+  @@index([teamId])
+}
+
+model TeamInvite {
+  id        String @id @default(uuid())
+  userName  String
+  userEmail String
+  team      Team   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teamId    String
+
+  @@unique([userEmail, teamId]) // Ensure that each user can only have one role per team
   @@index([teamId])
 }
 

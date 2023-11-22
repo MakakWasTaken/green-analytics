@@ -2,8 +2,8 @@ import { poppins } from '@src/styles/font'
 import {
   BarElement,
   CategoryScale,
-  ChartData,
   Chart as ChartJS,
+  ChartData,
   Legend,
   LineElement,
   LinearScale,

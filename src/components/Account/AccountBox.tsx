@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/joy'
+import { Box, Button, Typography } from '@mui/material'
 import { FC, PropsWithChildren } from 'react'
 
 interface AccountBoxInterface {
@@ -23,8 +23,8 @@ const AccountBox: FC<PropsWithChildren<AccountBoxInterface>> = ({
     >
       <Box
         sx={{
-          width: { xs: '100%', md: '70%' },
-          padding: { xs: '1rem', md: '2rem' },
+          width: { sm: '100%', md: '85%', lg: '70%' },
+          padding: { sm: '1rem', md: '2rem' },
           margin: 1,
           borderRadius: 16,
           border: (theme) => `1px solid ${theme.palette.divider}`,

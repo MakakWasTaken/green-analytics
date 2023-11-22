@@ -10,8 +10,8 @@ import {
   Sheet,
   Table,
   Typography,
-} from '@mui/joy'
-import { SxProps } from '@mui/joy/styles/types'
+} from '@mui/material'
+import { SxProps } from '@mui/material/styles/types'
 import {
   CSSProperties,
   HTMLInputTypeAttribute,
@@ -19,6 +19,7 @@ import {
   useImperativeHandle,
   useState,
 } from 'react'
+import { toast } from 'sonner'
 import { v4 } from 'uuid'
 
 export interface SimpleGridColumnDefinition {
@@ -40,6 +41,7 @@ interface SimpleGridProps<T = any> {
   onRowAdd?: (row: T) => Promise<void>
   idField?: string
   sx?: SxProps
+  additionalActions?: (row: T) => JSX.Element[]
 }
 
 export type SimpleGridRef = {
@@ -48,7 +50,16 @@ export type SimpleGridRef = {
 
 const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
   (
-    { rows, columns, onRowEdit, onRowDelete, onRowAdd, idField = 'id', sx },
+    {
+      rows,
+      columns,
+      onRowEdit,
+      onRowDelete,
+      onRowAdd,
+      idField = 'id',
+      sx,
+      additionalActions,
+    },
     ref,
   ) => {
     // eslint-disable-next-line func-call-spacing
@@ -67,6 +78,8 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         if (onRowDelete) {
           await onRowDelete(id)
         }
+      } catch (err: any) {
+        toast.error(err.message || err)
       } finally {
         setDeleting(undefined)
       }
@@ -79,6 +92,8 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
           await onRowEdit(row)
         }
         setUpdateObject(null)
+      } catch (err: any) {
+        toast.error(err.message || err)
       } finally {
         setUpdating(false)
       }
@@ -91,6 +106,8 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
           await onRowAdd(row)
         }
         setUpdateObject(null)
+      } catch (err: any) {
+        toast.error(err.message || err)
       } finally {
         setUpdating(false)
       }
@@ -110,6 +127,9 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
               }
             }
           }
+
+          // Set the new row as the updateObject to show the creation modal
+          setUpdateObject(row)
         },
       }),
       [columns, idField],
@@ -118,9 +138,12 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
     return (
       <>
         {(onRowAdd || onRowEdit) && (
-          <Modal open={updateObject} onClose={() => setUpdateObject(null)}>
+          <Modal
+            open={updateObject !== null}
+            onClose={() => setUpdateObject(null)}
+          >
             <ModalDialog>
-              <ModalClose />
+              <ModalClose onClick={() => setUpdateObject(null)} />
               <Typography>Edit Row</Typography>
               {updateObject && (
                 <>
@@ -174,6 +197,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         <Sheet>
           <Table
             sx={{
+              padding: 1,
               minHeight: '200px',
               ...sx,
               tableLayout: 'auto',
@@ -234,6 +258,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                               sx={{
                                 backgroundColor: 'transparent',
                                 padding: 1,
+                                color: (theme) => theme.palette.text.primary,
                               }}
                               onClick={() => setUpdateObject(row)}
                             >
@@ -253,6 +278,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                             <Delete />
                           </Button>
                         )}
+                        {additionalActions?.(row).map((action) => action)}
                       </td>
                     ) : null
                   }
