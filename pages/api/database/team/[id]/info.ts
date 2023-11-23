@@ -1,5 +1,3 @@
-// Get all team members
-
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import { Team, TeamRole } from '@prisma/client'
 import prisma from '@src/lib/prisma'

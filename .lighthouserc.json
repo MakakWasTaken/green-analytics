@@ -3,9 +3,7 @@
     "collect": {
       "startServerCommand": "yarn start",
       "startServerReadyPattern": "started server",
-      "url": [
-        "http://localhost:3000"
-      ],
+      "url": ["http://localhost:3000"],
       "numberOfRuns": 1,
       "settings": {
         "preset": "desktop"

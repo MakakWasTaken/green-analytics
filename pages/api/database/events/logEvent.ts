@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Event, Scan, Website } from '@prisma/client/edge'
+import { Event, Scan, Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@utils/websiteScanner'
 import geoip from 'doc999tor-fast-geoip'
@@ -84,26 +84,10 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   if (!website) {
-    res.status(403).json({ ok: false, message: 'Website not found' })
-    return
-  }
-
-  let origin = req.headers.origin || req.headers.host || ''
-  origin = origin.replaceAll('www.', '')
-  const originURL = new URL(
-    origin.startsWith('http') ? origin : `https://${origin}`,
-  )
-  // Check that the origin of the request matches the given url
-  if (
-    website.url !== originURL.host &&
-    originURL.host !== 'green-analytics.com'
-  ) {
-    res.status(403).json({ ok: false, message: `Invalid origin ${origin}` })
-    return
-  }
-
-  if (!website) {
-    res.status(403).json({ ok: false, message: 'Website not found' })
+    res.status(403).json({
+      ok: false,
+      message: `Website not found: ${formattedEventUrl}, this can also be caused by an invalid token.`,
+    })
     return
   }
 
@@ -174,12 +158,12 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         key: property,
         value: userProperties[property].toString(),
         personId: req.body.personId || req.body.sessionId,
-        websiteId: website?.id,
+        websiteId: website.id,
       })),
       skipDuplicates: true,
     })
 
-    res.json({ ok: true })
+    res.json({ ok: true, message: 'Succesfully logged event' })
   } else {
     res
       .status(405)

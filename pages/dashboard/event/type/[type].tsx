@@ -59,6 +59,7 @@ const EventTypePage = withPageAuthRequired(() => {
                     </thead>
                     <tbody>
                       {data?.events?.map((event) => (
+                        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
                         <tr
                           key={event.id}
                           onClick={() =>
