@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 
 export const api = axios.create({
-  baseURL: `${process.env.SITE_URL ?? 'https://green-analytics.com'}/api`,
+  baseURL: '/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
