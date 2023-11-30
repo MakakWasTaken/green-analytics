@@ -227,6 +227,43 @@ export const Home: FC = () => {
             sx={{
               margin: '50px 0',
               padding: 8,
+              borderRadius: 32,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Typography level="h2">Climate Contributions</Typography>
+            <Typography
+              sx={{
+                padding: '25px 0',
+                textAlign: 'justify',
+                hyphens: 'auto',
+              }}
+            >
+              While we try to help companies better understand their emissions
+              we would also like to help companies reduce their emissions. This
+              it currently being achieved by donating a part of our revenue to
+              carbon projects. Our current contribution is set to 2%. We also
+              look for new projects can help furthen our carbon emission
+              reductions.
+            </Typography>
+            <Box>
+              <Link
+                variant="solid"
+                sx={{
+                  padding: '6px 16px',
+                  borderRadius: 8,
+                }}
+                href="https://climate.stripe.com/Xe5VdV"
+              >
+                Learn more
+              </Link>
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              margin: '50px 0',
+              padding: 8,
               backgroundColor: 'var(--joy-palette-background-backdrop)',
               borderRadius: 32,
               display: 'flex',

@@ -14,7 +14,7 @@ model User {
   name      String?
   picture   String?
   // A user can be part of multiple teams
-  teams     Team[]     @relation("TeamUser")
+  teams     Team[]   
   roles     TeamRole[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -23,7 +23,7 @@ model User {
 model Team {
   id        String       @id @default(uuid())
   name      String
-  users     User[]       @relation("TeamUser")
+  users     User[]   
   websites  Website[]
   roles     TeamRole[]
   invites   TeamInvite[]
