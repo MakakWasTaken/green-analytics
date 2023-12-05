@@ -10,12 +10,14 @@ export const handle = withApiAuthRequired(
 
     const session = await getSession(req, res)
 
-    const userId = session?.user.sub
-
-    if (!userId) {
-      res.status(401).json({ ok: false, message: 'You are not logged in' })
+    if (!session) {
+      res.status(401).json({
+        ok: false,
+        message: 'Not authenticated',
+      })
       return
     }
+
     if (!teamId) {
       res.status(400).json({
         ok: false,
@@ -33,7 +35,7 @@ export const handle = withApiAuthRequired(
       const teamRole = await prisma.teamRole.findFirst({
         where: {
           teamId,
-          userId: session.user?.sub,
+          userId: session.user.sub,
           role: {
             in: ['ADMIN', 'OWNER'],
           },

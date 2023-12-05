@@ -1,21 +1,18 @@
-import { useUser } from '@auth0/nextjs-auth0/client'
 import { HeaderContext } from '@contexts/HeaderContext'
 import { Add } from '@mui/icons-material'
 import {
   Box,
   Button,
-  CircularProgress,
   Modal,
   ModalClose,
   ModalDialog,
   Option,
   Select,
-  TextField,
   Typography,
 } from '@mui/material'
 import { Team } from '@prisma/client'
 import { api } from '@utils/network'
-import { FC, useContext, useMemo, useState } from 'react'
+import { FC, useContext, useState } from 'react'
 import { toast } from 'sonner'
 import AccountInput from '../Account/AccountInput'
 
@@ -109,9 +106,7 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
         </ModalDialog>
       </Modal>
 
-      {!allTeams || !selectedTeam ? (
-        <CircularProgress />
-      ) : (
+      {!allTeams || !selectedTeam ? null : (
         <>
           {selectWebsite && selectedWebsite && (
             <Select

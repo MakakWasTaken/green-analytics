@@ -19,10 +19,10 @@ export const handle = withApiAuthRequired(
     // This action requires the user to be logged in
     const session = await getSession(req, res)
 
-    if (!session?.user.sub) {
+    if (!session) {
       res.status(401).json({
         ok: false,
-        message: 'Unauthorized',
+        message: 'Not authenticated',
       })
       return
     }
@@ -54,7 +54,7 @@ const handleGET = async (
         team: {
           roles: {
             some: {
-              userId: session?.user.sub,
+              userId: session.user.sub,
             },
           },
         },
@@ -84,7 +84,7 @@ const handlePOST = async (
       team: {
         roles: {
           some: {
-            userId: session?.user.sub,
+            userId: session.user.sub,
             role: {
               in: ['ADMIN', 'OWNER'],
             },

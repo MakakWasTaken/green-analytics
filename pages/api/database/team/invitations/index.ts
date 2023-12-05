@@ -35,7 +35,7 @@ const handleGET = async (
   // Find all teams where we are a user
   const invites = await prisma.teamInvite.findMany({
     where: {
-      userEmail: session?.user.email,
+      userEmail: session.user.email,
     },
     include: {
       team: true,

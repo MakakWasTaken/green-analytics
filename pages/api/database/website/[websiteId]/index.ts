@@ -9,6 +9,14 @@ export const handle = withApiAuthRequired(
     const websiteId = req.query.websiteId as string
     const session = await getSession(req, res)
 
+    if (!session) {
+      res.status(401).json({
+        ok: false,
+        message: 'Not authenticated',
+      })
+      return
+    }
+
     // Add delete method
     if (method === 'DELETE') {
       // Check if the website exists and the user is allowed to delete it
@@ -21,7 +29,7 @@ export const handle = withApiAuthRequired(
           team: {
             roles: {
               some: {
-                userId: session?.user.sub,
+                userId: session.user.sub,
                 role: {
                   in: ['ADMIN', 'OWNER'],
                 },
@@ -59,7 +67,7 @@ export const handle = withApiAuthRequired(
           team: {
             roles: {
               some: {
-                userId: session?.user.sub,
+                userId: session.user.sub,
                 role: {
                   in: ['ADMIN', 'OWNER'],
                 },
@@ -86,7 +94,7 @@ export const handle = withApiAuthRequired(
             id: teamId,
             roles: {
               some: {
-                userId: session?.user.sub,
+                userId: session.user.sub,
                 role: {
                   in: ['ADMIN', 'OWNER'],
                 },

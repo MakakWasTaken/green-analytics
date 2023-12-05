@@ -38,7 +38,7 @@ const handleGET = async (
         team: {
           users: {
             some: {
-              id: session?.user.sub,
+              id: session.user.sub,
             },
           },
         },

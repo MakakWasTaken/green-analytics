@@ -73,6 +73,7 @@
     "green-analytics-js": "^1.0.12",
     "highlight.js": "^11.9.0",
     "luxon": "^3.4.4",
+    "micro": "^10.0.1",
     "next": "14.0.3",
     "next-seo": "^6.1.0",
     "next-sitemap": "^4.2.3",

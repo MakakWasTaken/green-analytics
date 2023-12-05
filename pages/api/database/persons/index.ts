@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'

@@ -1,5 +1,6 @@
 // src/componetns/Footer.tsx
 
+import Link from '@components/Link'
 import { Box, Typography } from '@mui/material'
 import { FC, ReactElement } from 'react'
 
@@ -32,12 +33,12 @@ export const Footer: FC = (): ReactElement => {
             alignItems: 'center',
           }}
         >
-          <Typography color="neutral" level="body-md">
+          <Link href="/policies/terms" color="neutral" level="body-md">
             Terms of Service
-          </Typography>
-          <Typography color="neutral" level="body-md">
+          </Link>
+          <Link href="/policies/privacy" color="neutral" level="body-md">
             Privacy Policy
-          </Typography>
+          </Link>
         </Box>
       </Box>
     </Box>

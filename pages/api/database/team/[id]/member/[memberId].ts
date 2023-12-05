@@ -12,7 +12,7 @@ export const handle = withApiAuthRequired(
     const teamId = req.query.id as string
 
     const session = await getSession(req, res)
-    if (!session?.user.sub) {
+    if (!session) {
       res.status(401).json({ ok: false, message: 'You are not logged in' })
       return
     }

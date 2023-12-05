@@ -16,7 +16,7 @@ import {
   PointElement,
 } from 'chart.js'
 import { NextSeo } from 'next-seo'
-import { FC, Suspense } from 'react'
+import { FC } from 'react'
 import { Line } from 'react-chartjs-2'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement)
@@ -25,7 +25,7 @@ export const Home: FC = () => {
   const colorScheme = useColorScheme()
 
   return (
-    <Suspense fallback={<CircularProgress />}>
+    <>
       <NextSeo
         title="Home"
         description="Green Analytics is an analytics tool that is built on top of SWD's model. The tool allows you to do basis analytics on your website and provide your company with insights into your carbon emissions."
@@ -299,7 +299,7 @@ export const Home: FC = () => {
           </Box>
         </Box>
       </Box>
-    </Suspense>
+    </>
   )
 }
 
