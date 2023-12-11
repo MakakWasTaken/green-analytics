@@ -1,7 +1,7 @@
 // Get all team members
 
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
-import { Team, TeamInvite } from '@prisma/client/edge'
+import { TeamInvite } from '@prisma/client/edge'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 import nodemailer from 'nodemailer'
@@ -13,7 +13,7 @@ export const handle = withApiAuthRequired(
     const teamId = req.query.id as string
 
     const session = await getSession(req, res)
-    if (!session?.user.sub) {
+    if (!session) {
       res.status(401).json({ ok: false, message: 'You are not logged in' })
       return
     }
@@ -99,7 +99,7 @@ const sendEmail = async (to: string, subject: string, text: string) => {
     console.log(`Message sent: ${info.messageId}`)
 
     return info
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
   }
   return null

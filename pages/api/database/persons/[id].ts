@@ -38,7 +38,7 @@ const handleGET = async (
         team: {
           users: {
             some: {
-              id: session?.user.sub,
+              id: session.user.sub,
             },
           },
         },
@@ -52,9 +52,6 @@ const handleGET = async (
       },
       properties: {
         distinct: 'key',
-        orderBy: {
-          createdAt: 'desc',
-        },
       },
     },
   })

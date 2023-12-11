@@ -8,7 +8,15 @@ export const handle = withApiAuthRequired(
 
     const session = await getSession(req, res)
 
-    const userId = session?.user.sub
+    if (!session) {
+      res.status(401).json({
+        ok: false,
+        message: 'Not authenticated',
+      })
+      return
+    }
+
+    const userId = session.user.sub
     const teamId = req.query.teamId as string
 
     // Check if user is part of the defined team

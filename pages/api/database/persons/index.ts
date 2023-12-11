@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -14,7 +13,7 @@ export const handle = withApiAuthRequired(
       return
     }
     if (!req.query.websiteId) {
-      res.status(400).json({ error: 'Missing websiteId' })
+      res.status(400).json({ ok: false, message: 'Missing websiteId' })
       return
     }
 

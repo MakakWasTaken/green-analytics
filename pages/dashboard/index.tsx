@@ -16,18 +16,23 @@ import {
   useTheme,
 } from '@mui/material'
 import { Person, Property, Scan } from '@prisma/client'
+import { api } from '@utils/network'
 import { getRandomColor } from '@utils/utils'
 import convert from 'convert'
 import { DateTime } from 'luxon'
 import { NextSeo } from 'next-seo'
-import { useContext, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import Stripe from 'stripe'
 import useSWR from 'swr'
 
 const Dashboard = withPageAuthRequired(
   () => {
     const theme = useTheme()
 
-    const { selectedWebsite, loadingTeams } = useContext(HeaderContext)
+    const { selectedTeam, selectedWebsite, loadingTeams } =
+      useContext(HeaderContext)
 
     const { data: previousMonthEvents } = useSWR<
       { id: string; personId: string; person: Person; createdAt: Date }[]
@@ -60,6 +65,35 @@ const Dashboard = withPageAuthRequired(
         ? `/database/persons/count?websiteId=${selectedWebsite.id}`
         : null,
     )
+
+    const successUpgrade = useSearchParams().get('successUpgrade')
+    const [upgradeMessageShown, setUpgradeMessageShown] = useState(false)
+
+    const showUpgradeNotification = useCallback(async () => {
+      if (selectedTeam && !upgradeMessageShown) {
+        const planId = selectedTeam?.subscription?.planId
+
+        if (planId) {
+          const response = await api.get<Stripe.Plan>(
+            `/database/plans/${planId}`,
+          )
+          const plan = response.data
+          toast.success(
+            `Succesfully upgraded subscription to ${
+              (plan.product as Stripe.Product).name
+            }`,
+          )
+        }
+        setUpgradeMessageShown(true)
+      }
+    }, [upgradeMessageShown, selectedTeam])
+
+    // Check if the team was succesfully upgraded
+    useEffect(() => {
+      if (successUpgrade === 'true') {
+        showUpgradeNotification()
+      }
+    }, [successUpgrade, showUpgradeNotification])
 
     const thisWeekDays = new Array(7).fill(0).map((_, i) => {
       const datetime = DateTime.now().startOf('week').plus({ days: i })
@@ -301,8 +335,8 @@ const Dashboard = withPageAuthRequired(
                         ctx.chart.data.labels?.[ctx.dataIndex] === today
                           ? 3
                           : ctx.active
-                          ? 5
-                          : 1,
+                            ? 5
+                            : 1,
                       pointHitRadius: 10,
                       cubicInterpolationMode: 'monotone',
                       data: extractEventsByDay(
@@ -322,8 +356,8 @@ const Dashboard = withPageAuthRequired(
                         ctx.chart.data.labels?.[ctx.dataIndex] === today
                           ? 3
                           : ctx.active
-                          ? 5
-                          : 1,
+                            ? 5
+                            : 1,
                       pointHitRadius: 10,
                       cubicInterpolationMode: 'monotone',
                       data: extractEventsByDay(
@@ -384,8 +418,8 @@ const Dashboard = withPageAuthRequired(
                         ctx.chart.data.labels?.[ctx.dataIndex] === today
                           ? 3
                           : ctx.active
-                          ? 5
-                          : 1,
+                            ? 5
+                            : 1,
                       pointHitRadius: 10,
                       cubicInterpolationMode: 'monotone',
                       data: Object.values(activeUsers),

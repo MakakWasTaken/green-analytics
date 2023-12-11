@@ -39,13 +39,20 @@ export const handle = withApiAuthRequired(
 
       // Get the website with scans
       const session = await getSession(req, res)
+      if (!session) {
+        res.status(401).json({
+          ok: false,
+          message: 'Not authenticated',
+        })
+        return
+      }
       const website = await prisma.website.findFirst({
         where: {
           id: websiteId,
           team: {
             users: {
               some: {
-                id: session?.user.sub,
+                id: session.user.sub,
               },
             },
           },
