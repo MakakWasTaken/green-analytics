@@ -13,7 +13,7 @@ export const handle = withApiAuthRequired(
       return
     }
     if (!req.query.websiteId) {
-      res.status(400).json({ error: 'Missing websiteId' })
+      res.status(400).json({ ok: false, message: 'Missing websiteId' })
       return
     }
 

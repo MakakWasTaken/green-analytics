@@ -36,8 +36,10 @@ export const handle = withApiAuthRequired(
         res.setHeader('Allow', ['POST'])
         res.status(405).end(`Method ${method} Not Allowed`)
       }
-    } catch (error) {
-      res.status(500).json({ error })
+    } catch (error: any) {
+      res
+        .status(500)
+        .json({ ok: false, message: error.message ?? error.name ?? error })
     }
   },
 )

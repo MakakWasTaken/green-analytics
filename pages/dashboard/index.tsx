@@ -335,8 +335,8 @@ const Dashboard = withPageAuthRequired(
                         ctx.chart.data.labels?.[ctx.dataIndex] === today
                           ? 3
                           : ctx.active
-                          ? 5
-                          : 1,
+                            ? 5
+                            : 1,
                       pointHitRadius: 10,
                       cubicInterpolationMode: 'monotone',
                       data: extractEventsByDay(
@@ -356,8 +356,8 @@ const Dashboard = withPageAuthRequired(
                         ctx.chart.data.labels?.[ctx.dataIndex] === today
                           ? 3
                           : ctx.active
-                          ? 5
-                          : 1,
+                            ? 5
+                            : 1,
                       pointHitRadius: 10,
                       cubicInterpolationMode: 'monotone',
                       data: extractEventsByDay(
@@ -418,8 +418,8 @@ const Dashboard = withPageAuthRequired(
                         ctx.chart.data.labels?.[ctx.dataIndex] === today
                           ? 3
                           : ctx.active
-                          ? 5
-                          : 1,
+                            ? 5
+                            : 1,
                       pointHitRadius: 10,
                       cubicInterpolationMode: 'monotone',
                       data: Object.values(activeUsers),

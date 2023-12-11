@@ -30,11 +30,11 @@ const handleGET = async (
   try {
     const type = req.query.type as string
     if (!type) {
-      res.status(400).json({ error: 'Missing type' })
+      res.status(400).json({ ok: false, message: 'Missing type' })
       return
     }
     if (!req.query.websiteId) {
-      res.status(400).json({ error: 'Missing websiteId' })
+      res.status(400).json({ ok: false, message: 'Missing websiteId' })
       return
     }
     const [events, count] = await Promise.all([
@@ -84,8 +84,10 @@ const handleGET = async (
       events,
       count: count,
     })
-  } catch (error) {
-    res.status(500).json({ error })
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ ok: false, message: error.message ?? error.name ?? error })
   }
 }
 

@@ -1,8 +1,7 @@
+import { getSession } from '@auth0/nextjs-auth0'
+import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getServerSession } from 'next-auth'
 import Stripe from 'stripe'
-import prisma from '../_base'
-import { authOptions } from '../auth/[...nextauth]'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET ?? '', {
   typescript: true,
@@ -15,7 +14,7 @@ const SITE_URL =
     : 'http://localhost:3000'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const session = await getServerSession(req, res, authOptions)
+  const session = await getSession(req, res)
 
   if (!session) {
     res.status(401).json({
@@ -43,12 +42,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         some: {
           roles: {
             some: {
-              userId: session.user.id,
+              userId: session.user.sub,
               teamId: selectedTeamId,
               role: 'Admin',
             },
           },
-          id: session.user.id,
+          id: session.user.sub,
         },
       },
     },

@@ -83,18 +83,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         },
       })
       console.log(`Events: ${events.count}`)
-      // Delete all properties that are older than 3 months. They are obsolete.
-      const properties = await prisma.property.deleteMany({
-        where: {
-          updatedAt: {
-            lte: retentionDateTime.toJSDate(),
-          },
-          website: {
-            teamId: team.id,
-          },
-        },
-      })
-      console.log(`Properties: ${properties.count}`)
       // If for some reason the website has not been scanned for 3 months. Delete the scan. (This means that the site was not visited in 3 months)
       const scans = await prisma.scan.deleteMany({
         where: {

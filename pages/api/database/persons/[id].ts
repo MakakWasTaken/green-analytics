@@ -52,9 +52,6 @@ const handleGET = async (
       },
       properties: {
         distinct: 'key',
-        orderBy: {
-          createdAt: 'desc',
-        },
       },
     },
   })
