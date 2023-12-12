@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/index.js ./public/green-analytics.js",
+    "postbuild": "next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/bundle.js ./public/green-analytics.js",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "lint": "biome format --write . && biome lint --apply .",
+    "lint": "biome format --write --no-errors-on-unmatched . && biome lint --apply --no-errors-on-unmatched .",
     "lint:staged": "lint-staged",
     "db:update": "prisma db push && prisma generate",
     "postinstall": "prisma generate",
@@ -18,8 +18,8 @@
     "prebuild": "node ./scripts/wiki-toc.mjs"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "biome lint --apply",
-    "*.{js,jsx,ts,tsx|json}": "biome format --write"
+    "*.{js,jsx,ts,tsx}": "biome lint --apply --no-errors-on-unmatched",
+    "*.{js,jsx,ts,tsx|json}": "biome format --write --no-errors-on-unmatched"
   },
   "sideEffects": false,
   "resolutions": {
@@ -70,7 +70,7 @@
     "convert": "^4.14.0",
     "doc999tor-fast-geoip": "^1.1.178",
     "google-auth-library": "^9.1.0",
-    "green-analytics-js": "^1.0.14",
+    "green-analytics-js": "^1.0.15",
     "highlight.js": "^11.9.0",
     "luxon": "^3.4.4",
     "micro": "^10.0.1",
