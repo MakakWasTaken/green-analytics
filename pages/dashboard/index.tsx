@@ -1,4 +1,3 @@
-/* eslint-disable func-call-spacing */
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import DoughnutChart from '@components/Dashboard/Charts/DoughnutChart'
 import HorizontalBarChart from '@components/Dashboard/Charts/HorizontalBarChart'
@@ -128,7 +127,6 @@ const Dashboard = withPageAuthRequired(
     //   const eventsByType = new Map<string, number>()
     //   events.forEach((event) => {
     //     if (eventsByType.has(event.type)) {
-    //       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     //       eventsByType.set(event.type, eventsByType.get(event.type)! + 1)
     //     } else {
     //       eventsByType.set(event.type, 1)

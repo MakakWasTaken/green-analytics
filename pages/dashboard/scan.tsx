@@ -8,6 +8,7 @@ import { Box, CircularProgress, Grid, Typography } from '@mui/material'
 import { Scan } from '@prisma/client'
 import { countryISO2Mapping } from '@utils/countryISOMapping'
 import { NextSeo } from 'next-seo'
+import Image from 'next/image'
 import { FC, useContext, useMemo } from 'react'
 import useSWR from 'swr'
 
@@ -58,24 +59,21 @@ const ScanPage: FC = () => {
       field: 'countryCode',
       headerName: 'Country',
       renderCell: (value: string) => (
-        <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+        <Box>
+          <Image
             loading="lazy"
-            width="20"
+            height={17}
+            width={20}
             src={`https://flagcdn.com/w20/${countryISO2Mapping[
               value
             ]?.toLowerCase()}.png`}
-            srcSet={`https://flagcdn.com/w40/${countryISO2Mapping[
-              value
-            ]?.toLowerCase()}.png 2x`}
             onError={(e) => {
               e.currentTarget.style.display = 'none'
             }}
             alt={`${value} flag`}
-          />
+          />{' '}
           {value}
-        </div>
+        </Box>
       ),
     },
     {

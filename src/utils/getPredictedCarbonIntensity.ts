@@ -71,7 +71,6 @@ export const getPredictedCarbonIntensity = async (
     }[]
   } = {}
   for (const row of response.data.rows) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [rowCountry, year, value, latestYear, coalDeadline, cleanDeadline] =
       row
 
