@@ -62,7 +62,6 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
     },
     ref,
   ) => {
-    // eslint-disable-next-line func-call-spacing
     const [updateObject, setUpdateObject] = useState<null | typeof rows[0]>(
       null,
     )

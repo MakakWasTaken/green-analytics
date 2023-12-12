@@ -1,25 +1,22 @@
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
-import AccountBox from '@components/Account/AccountBox'
 import AccountUpdateBox from '@components/Account/AccountUpdateBox'
 import TeamTabPanel from '@components/Account/Panels/TeamTabPanel'
 import Websites from '@components/Account/Panels/WebsiteTabPanel'
 import TeamHeader from '@components/TeamHeader'
-import { HeaderContext } from '@contexts/HeaderContext'
 import {
   Box,
-  Button,
   Tab,
   TabList,
   TabPanel,
-  Table,
   Tabs,
   Typography,
   tabClasses,
 } from '@mui/material'
-import { Team, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import { api } from '@utils/network'
 import { NextSeo } from 'next-seo'
-import { useContext, useState } from 'react'
+import Image from 'next/image'
+import { useState } from 'react'
 import useSWR from 'swr'
 
 export enum SettingsTab {
@@ -72,8 +69,7 @@ const UserPage = withPageAuthRequired(
         <NextSeo title="Settings" noindex />
         <TeamHeader />
         <Box sx={{ alignItems: 'center', display: 'flex' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             width={80}
             height={80}
             style={{

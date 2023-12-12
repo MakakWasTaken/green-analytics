@@ -280,8 +280,7 @@ export const Header: FC = () => {
             onClick={handleToggleUserMenu}
             sx={{ width: '40px', height: '40px', p: 0, borderRadius: '50vh' }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               width={40}
               height={40}
               style={{ borderRadius: '50vh' }}

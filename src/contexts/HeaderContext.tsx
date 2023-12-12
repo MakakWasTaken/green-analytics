@@ -45,7 +45,6 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
   const [internalSelectedTeam, setSelectedTeam] = useState<Team | null>(null)
   const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null)
   const { data: selectedTeam } = useSWR<
-    // eslint-disable-next-line func-call-spacing
     | (Team & {
         users: User[]
         roles: TeamRole[]

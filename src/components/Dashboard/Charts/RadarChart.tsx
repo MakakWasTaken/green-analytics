@@ -1,7 +1,7 @@
 import { poppins } from '@src/styles/font'
 import {
-  Chart as ChartJS,
   ChartData,
+  Chart as ChartJS,
   RadialLinearScale,
   defaults,
 } from 'chart.js'
@@ -10,7 +10,7 @@ import { Radar } from 'react-chartjs-2'
 import GridBox, { GridBoxProps } from '../Grid/GridBox'
 
 defaults.font.family = poppins.style.fontFamily
-defaults.font.weight = '500'
+defaults.font.weight = 500
 
 ChartJS.register(RadialLinearScale)
 
