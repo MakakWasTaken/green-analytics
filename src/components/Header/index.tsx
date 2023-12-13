@@ -32,7 +32,7 @@ export const Header: FC = () => {
 
   const { data: invitations, mutate: setInvitations } = useSWR<
     (TeamInvite & { team: Team })[]
-  >(user ? 'database/team/invitations' : null)
+  >(user ? 'team/invitations' : null)
 
   const pages: Page[] = [
     { label: 'Features', href: '/features' },

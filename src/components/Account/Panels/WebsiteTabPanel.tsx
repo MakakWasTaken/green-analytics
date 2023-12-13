@@ -4,7 +4,7 @@ import SimpleGrid, {
   SimpleGridRef,
 } from '@components/SimpleGrid'
 import { HeaderContext } from '@contexts/HeaderContext'
-import { ArrowForward, ArrowRight, Code, Refresh } from '@mui/icons-material'
+import { ArrowForward, Code, Refresh } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -49,7 +49,7 @@ const WebsiteTabPanel = () => {
   const { selectedTeam, allTeams } = useContext(HeaderContext)
   const { user } = useUser()
   const { data, mutate: setData } = useSWR<Website[]>(
-    selectedTeam ? `/database/website/getAll?teamId=${selectedTeam.id}` : null,
+    selectedTeam ? `website/getAll?teamId=${selectedTeam.id}` : null,
   )
   const [viewTokenDialog, setViewTokenDialog] = useState<string | null>(null)
   const [transferModalWebsite, setTransferModalWebsite] =
@@ -326,7 +326,7 @@ setPerson({
                   newRow.url = fixURL(newRow.url)
 
                   toast.promise(
-                    api.post<Website>('/database/website', {
+                    api.post<Website>('website', {
                       name: newRow.name,
                       url: newRow.url,
                       teamId: selectedTeam?.id,

@@ -53,12 +53,12 @@ const pageInfo: PageInfo[] = [
 const UserPage = withPageAuthRequired(
   () => {
     const { user: authUser } = useUser()
-    const { data: user, mutate: setUser } = useSWR<User>('/database/user/own')
+    const { data: user, mutate: setUser } = useSWR<User>('user/own')
 
     const [index, setIndex] = useState(SettingsTab.General)
 
     const updateUser = async (value: User) => {
-      const user = await api.put<User>('/database/user/own', value)
+      const user = await api.put<User>('user/own', value)
       setUser(user.data)
     }
 

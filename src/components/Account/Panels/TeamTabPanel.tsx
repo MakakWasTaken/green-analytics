@@ -1,26 +1,12 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
 import { HeaderContext } from '@contexts/HeaderContext'
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Input,
-  Modal,
-  ModalClose,
-  ModalDialog,
-  TabPanel,
-  Table,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { Box, Button, TabPanel, Table, Typography } from '@mui/material'
 import { SettingsTab } from '@pages/settings'
-import { Team, TeamInvite, User } from '@prisma/client'
+import { Team, TeamInvite } from '@prisma/client'
 import { api } from '@utils/network'
-import { userAgent } from 'next/server'
-import React, { FC, useContext, useMemo, useState } from 'react'
+import { FC, useContext, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import useSWR from 'swr'
-import { v4 } from 'uuid'
 import AccountBox from '../AccountBox'
 import AccountUpdateBox from '../AccountUpdateBox'
 import DeleteTeamModal from '../Modals/DeleteTeamModal'
@@ -34,7 +20,7 @@ const TeamTabPanel: FC = () => {
   const { selectedTeam, setSelectedTeam, reloadTeams } =
     useContext(HeaderContext)
   const { data: invitations, mutate: updateInvitations } = useSWR<TeamInvite[]>(
-    selectedTeam ? `database/team/${selectedTeam.id}/invite` : null,
+    selectedTeam ? `team/${selectedTeam.id}/invite` : null,
   )
 
   // States

@@ -18,7 +18,7 @@ const PersonPage = withPageAuthRequired(() => {
 
   const { data } = useSWR<Person & { events: Event[]; properties: Property[] }>(
     selectedWebsite && id
-      ? `/database/persons/${id}?websiteId=${selectedWebsite.id}`
+      ? `persons/${id}?websiteId=${selectedWebsite.id}`
       : null,
   )
 

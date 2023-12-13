@@ -40,16 +40,12 @@ declare global {
 }
 
 const PricingPage = () => {
-  const {
-    data: user,
-    isLoading,
-    mutate: setUser,
-  } = useSWR<User>('/database/user/own')
+  const { data: user, isLoading, mutate: setUser } = useSWR<User>('user/own')
   const { selectedTeam } = useContext(HeaderContext)
 
   const { data: plans, isLoading: plansLoading } = useSWR<{
     [key: string]: Stripe.Plan[]
-  }>('database/plans')
+  }>('plans')
 
   const router = useRouter()
 

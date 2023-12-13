@@ -5,7 +5,6 @@ import NavigationMenu from '@src/components/Dashboard/NavigationMenu'
 import Pagination from '@src/components/Dashboard/Pagination'
 import TeamHeader from '@src/components/TeamHeader'
 import { HeaderContext } from '@src/contexts/HeaderContext'
-import { NextSeo } from 'next-seo'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, KeyboardEvent, useContext, useEffect, useState } from 'react'
@@ -21,7 +20,7 @@ const PersonsPage: FC = () => {
 
   const { data } = useSWR<{ persons: Person[]; count: number }>(
     selectedWebsite
-      ? `/database/persons?websiteId=${selectedWebsite.id}&page=${page}`
+      ? `persons?websiteId=${selectedWebsite.id}&page=${page}`
       : null,
   )
 

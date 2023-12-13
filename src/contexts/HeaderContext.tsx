@@ -41,7 +41,7 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
     data: allTeams,
     mutate: reloadTeams,
     isLoading: loadingTeams,
-  } = useSWR<Team[]>(user ? '/database/team' : null)
+  } = useSWR<Team[]>(user ? 'team' : null)
   const [internalSelectedTeam, setSelectedTeam] = useState<Team | null>(null)
   const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null)
   const { data: selectedTeam } = useSWR<
@@ -52,11 +52,7 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
         subscription?: TeamSubscription
       })
     | null
-  >(
-    internalSelectedTeam
-      ? `/database/team/${internalSelectedTeam.id}/info`
-      : null,
-  )
+  >(internalSelectedTeam ? `team/${internalSelectedTeam.id}/info` : null)
 
   const queryTeamId = useSearchParams().get('teamid')
 

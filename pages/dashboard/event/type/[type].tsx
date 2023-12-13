@@ -1,11 +1,10 @@
-import { count } from 'console'
 import { withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import NavigationMenu from '@components/Dashboard/NavigationMenu'
 import Pagination from '@components/Dashboard/Pagination'
 import TeamHeader from '@components/TeamHeader'
 import { HeaderContext } from '@contexts/HeaderContext'
 import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/material'
-import { Event, Person, Property } from '@prisma/client'
+import { Event } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -23,7 +22,7 @@ const EventTypePage = withPageAuthRequired(() => {
 
   const { data } = useSWR<{ events: Event[]; count: number }>(
     selectedWebsite && type
-      ? `/database/events/types/${type}?websiteId=${selectedWebsite.id}`
+      ? `events/types/${type}?websiteId=${selectedWebsite.id}`
       : null,
   )
 

@@ -20,7 +20,7 @@ const ScanPage: FC = () => {
   const { selectedWebsite, loadingTeams } = useContext(HeaderContext)
 
   const { data } = useSWR<Scan[]>(
-    selectedWebsite ? `/database/website/${selectedWebsite.id}/scan` : null,
+    selectedWebsite ? `website/${selectedWebsite.id}/scan` : null,
   )
 
   const columns: SimpleGridColumnDefinition[] = [

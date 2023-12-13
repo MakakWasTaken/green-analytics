@@ -3,7 +3,7 @@ import NavigationMenu from '@components/Dashboard/NavigationMenu'
 import TeamHeader from '@components/TeamHeader'
 import { HeaderContext } from '@contexts/HeaderContext'
 import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/material'
-import { Event, Person, Property } from '@prisma/client'
+import { Event } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -17,7 +17,7 @@ const EventPage = withPageAuthRequired(() => {
 
   const { data } = useSWR<Event>(
     selectedWebsite && id
-      ? `/database/events/${id}?websiteId=${selectedWebsite.id}`
+      ? `events/${id}?websiteId=${selectedWebsite.id}`
       : null,
   )
 

@@ -1,6 +1,4 @@
 import NavigationMenu from '@components/Dashboard/NavigationMenu'
-import Pagination from '@components/Dashboard/Pagination'
-import SimpleGrid from '@components/SimpleGrid'
 import TeamHeader from '@components/TeamHeader'
 import { HeaderContext } from '@contexts/HeaderContext'
 import {
@@ -12,10 +10,9 @@ import {
   Table,
   Typography,
 } from '@mui/material'
-import { Person } from 'green-analytics-js'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { KeyboardEvent, useContext, useEffect, useState } from 'react'
+import { KeyboardEvent, useContext, useState } from 'react'
 import useSWR from 'swr'
 
 const EventTypes = () => {
@@ -24,9 +21,7 @@ const EventTypes = () => {
   const [highlighted, setHighlighted] = useState(0)
 
   const { data } = useSWR<Event['type'][]>(
-    selectedWebsite
-      ? `/database/events/types?websiteId=${selectedWebsite.id}`
-      : null,
+    selectedWebsite ? `events/types?websiteId=${selectedWebsite.id}` : null,
   )
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTableRowElement>) => {
