@@ -118,7 +118,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
     },
   })
 
-  res.json({ ok: true })
+  res.json({ ok: true, message: 'Succesfully set person' })
 }
 
 export default handle

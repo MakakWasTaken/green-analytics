@@ -1,6 +1,12 @@
 // lib/prisma.ts
-import { PrismaClient } from '@prisma/client/edge'
+import { PrismaClient } from '@prisma/client'
 
-const prisma: PrismaClient = new PrismaClient()
+const prisma: PrismaClient = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+})
 
 export default prisma

@@ -62,7 +62,6 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
     },
     ref,
   ) => {
-    // eslint-disable-next-line func-call-spacing
     const [updateObject, setUpdateObject] = useState<null | typeof rows[0]>(
       null,
     )
@@ -149,7 +148,10 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                 <>
                   {columns.map((column, index) => {
                     return !column.hidden && column.editable ? (
-                      <FormControl key={column.field} sx={{ mt: 2 }}>
+                      <FormControl
+                        key={`${column.field}-control`}
+                        sx={{ mt: 2 }}
+                      >
                         <FormLabel>
                           {column.headerName || column.field}
                         </FormLabel>
@@ -201,8 +203,8 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
             }}
           >
             <thead>
-              <tr>
-                {columns.map((column) => {
+              <tr key="header">
+                {columns.map((column, index) => {
                   return !column.hidden ? (
                     <th
                       style={{
@@ -228,8 +230,8 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, index) => (
-                <tr key={`row-${index}`}>
+              {rows.map((row) => (
+                <tr key={row.id}>
                   {columns.map((column, index) => {
                     return !column.hidden ? (
                       <td key={column.field}>

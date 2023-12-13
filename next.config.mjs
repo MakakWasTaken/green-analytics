@@ -86,6 +86,15 @@ const nextConfig = {
     // Enables the styled-components SWC transform
     styledComponents: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'flagcdn.com',
+      },
+      { hostname: 'play.google.com' },
+      { hostname: 'lh3.googleusercontent.com' },
+    ],
+  },
 }
 
 const withBundleAnalyzer = bundleAnalyzer({

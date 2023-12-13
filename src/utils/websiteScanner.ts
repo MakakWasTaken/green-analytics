@@ -1,5 +1,5 @@
 import { hosting } from '@makakwastaken/co2'
-import { Website } from '@prisma/client/edge'
+import { Website } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import axios from 'axios'
 import { countryISO3Mapping } from './countryISOMapping'

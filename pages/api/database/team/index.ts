@@ -3,7 +3,14 @@
 import { Session, getSession } from '@auth0/nextjs-auth0'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { v4 } from 'uuid'
+import Stripe from 'stripe'
+
+const STRIPE_SECRET = process.env.STRIPE_SECRET ?? ''
+
+const stripe = new Stripe(STRIPE_SECRET, {
+  apiVersion: '2023-10-16',
+  typescript: true,
+})
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   const method = req.method
@@ -28,13 +35,25 @@ const handlePOST = async (
   res: NextApiResponse,
   session: Session,
 ) => {
+  if (!req.body.name) {
+    res.status(400).json({
+      ok: false,
+      message: 'name not defined',
+    })
+    return
+  }
   // The number of teams should be depending on the plan that the user has.
-  // TODO: Implement plans.
+  // When a team is create, start by creating a stripe customer for it.
+  const stripeCustomer = await stripe.customers.create({
+    name: req.body.name,
+    email: session.user.email,
+  })
 
   // Create the new team.
   const team = await prisma.team.create({
     data: {
       name: req.body.name,
+      stripeCustomerId: stripeCustomer.id,
       users: {
         connect: {
           id: session.user.sub,
@@ -62,7 +81,7 @@ const handleGET = async (
     where: {
       users: {
         some: {
-          id: session?.user.sub,
+          id: session.user.sub,
         },
       },
     },

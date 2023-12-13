@@ -8,16 +8,14 @@ import {
   Typography,
 } from '@mui/material'
 import { NextSeo } from 'next-seo'
-import { Suspense } from 'react'
 
 const FeaturesPage = () => {
   return (
-    <Suspense fallback={<CircularProgress />}>
+    <>
       <NextSeo
         title="Calculate"
         description="This page describes the features of the analytics tool."
       />
-
       <Box
         sx={{
           margin: { xs: '0 3vw', md: '0 20vw' },
@@ -117,7 +115,7 @@ const FeaturesPage = () => {
           Github Project
         </Link>
       </Box>
-    </Suspense>
+    </>
   )
 }
 

@@ -1,11 +1,11 @@
 import { poppins } from '@src/styles/font'
-import { ArcElement, Chart as ChartJS, ChartData, defaults } from 'chart.js'
+import { ArcElement, ChartData, Chart as ChartJS, defaults } from 'chart.js'
 import { FC } from 'react'
 import { Doughnut } from 'react-chartjs-2'
 import GridBox, { GridBoxProps } from '../Grid/GridBox'
 
 defaults.font.family = poppins.style.fontFamily
-defaults.font.weight = '500'
+defaults.font.weight = 500
 
 ChartJS.register(ArcElement)
 

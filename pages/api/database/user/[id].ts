@@ -13,9 +13,17 @@ export const handle = withApiAuthRequired(
     const userId = req.query.id as string
     const session = await getSession(req, res)
 
+    if (!session) {
+      res.status(401).json({
+        ok: false,
+        message: 'Not authenticated',
+      })
+      return
+    }
+
     // Get own teamId, because we only allow the user to fetch members of their own team
     const user = await prisma.user.findUnique({
-      where: { id: session?.user.sub },
+      where: { id: session.user.sub },
       select: {
         teams: true,
       },

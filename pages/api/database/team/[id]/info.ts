@@ -1,9 +1,15 @@
-// Get all team members
-
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import { Team, TeamRole } from '@prisma/client'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
+import Stripe from 'stripe'
+
+const STRIPE_SECRET = process.env.STRIPE_SECRET ?? ''
+
+const stripe = new Stripe(STRIPE_SECRET, {
+  apiVersion: '2023-10-16',
+  typescript: true,
+})
 
 export const handle = withApiAuthRequired(
   async (req: NextApiRequest, res: NextApiResponse) => {
@@ -16,23 +22,64 @@ export const handle = withApiAuthRequired(
     if (!session) {
       res.status(401).json({
         ok: false,
-        message: 'You need to be authenticated to perform this action',
+        message: 'Not authenticated',
       })
       return
     }
 
-    const team = await prisma.team.findFirst({
-      where: { id: teamId, users: { some: { id: session?.user.sub } } },
+    let team = await prisma.team.findFirst({
+      where: { id: teamId, users: { some: { id: session.user.sub } } },
       include: {
         users: true,
-        roles: true,
+        roles: {
+          include: {
+            user: true,
+          },
+        },
         websites: true,
+        subscription: true,
       },
     })
 
     if (!team) {
       res.status(404).json({ ok: false, message: 'Team not found' })
       return
+    }
+
+    // Backwards compatibility
+    if (!team.stripeCustomerId) {
+      // Get the owner of the team
+      const owner = team.roles.find((role) => role.role === 'OWNER')
+
+      if (!owner) {
+        res.status(404).json({
+          ok: false,
+          message: 'Owner not found when creating stripe customer',
+        })
+        return
+      }
+      const stripeCustomer = await stripe.customers.create({
+        name: req.body.name,
+        email: owner.user.email,
+      })
+      team = await prisma.team.update({
+        where: {
+          id: team.id,
+        },
+        data: {
+          stripeCustomerId: stripeCustomer.id,
+        },
+        include: {
+          users: true,
+          roles: {
+            include: {
+              user: true,
+            },
+          },
+          websites: true,
+          subscription: true,
+        },
+      })
     }
 
     if (method === 'GET') {

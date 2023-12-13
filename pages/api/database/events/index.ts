@@ -33,7 +33,7 @@ const handleGET = async (
   const includePersons = req.query.includePersons === 'true'
   try {
     if (!req.query.websiteId) {
-      res.status(400).json({ error: 'Missing websiteId' })
+      res.status(400).json({ ok: false, message: 'Missing websiteId' })
       return
     }
     const events = await prisma.event.findMany({
@@ -75,8 +75,10 @@ const handleGET = async (
           },
     })
     res.status(200).json(events)
-  } catch (error) {
-    res.status(500).json({ error })
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ ok: false, message: error.message ?? error.name ?? error })
   }
 }
 

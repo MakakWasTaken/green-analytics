@@ -14,21 +14,36 @@ model User {
   name      String?
   picture   String?
   // A user can be part of multiple teams
-  teams     Team[]     @relation("TeamUser")
+  teams     Team[]
   roles     TeamRole[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
 
 model Team {
-  id        String       @id @default(uuid())
-  name      String
-  users     User[]       @relation("TeamUser")
-  websites  Website[]
-  roles     TeamRole[]
-  invites   TeamInvite[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id               String            @id @default(uuid())
+  name             String
+  users            User[]
+  websites         Website[]
+  roles            TeamRole[]
+  invites          TeamInvite[]
+  stripeCustomerId String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  subscription     TeamSubscription?
+}
+
+model TeamSubscription {
+  id String @id @default(cuid())
+
+  planId           String
+  planProductId    String
+  status           String // Active, Inactive, Canceled, etc.
+  billingCycle     String // Monthly, Yearly, etc.
+  stripeCustomerId String // Stripe customer ID
+  // Add other necessary fields
+  team             Team   @relation(fields: [teamId], references: [id])
+  teamId           String @unique
 }
 
 // Define the TeamRole model, which represents the many-to-many relationship
@@ -70,8 +85,8 @@ model Website {
 
   scans Scan[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   @@index([teamId])
 }
@@ -140,9 +155,6 @@ model Property {
   personId  String?
   website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   websiteId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@unique([personId, key]) // Ensure that each person can only have one property per key
   @@index([websiteId])

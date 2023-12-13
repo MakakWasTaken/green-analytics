@@ -33,11 +33,11 @@ export const getPredictedCarbonIntensity = async (
     const data = response.data.rows[0]?.[0]
 
     return { global: data }
-  } else {
-    const allCountries = Array.isArray(countries)
-      ? countries
-      : countries.split(',')
-    const query = `
+  }
+  const allCountries = Array.isArray(countries)
+    ? countries
+    : countries.split(',')
+  const query = `
   SELECT
     country_code,
     year,
@@ -53,64 +53,62 @@ export const getPredictedCarbonIntensity = async (
     latest_year DESC
   `.replace(/[\r\n]/g, '')
 
-    const response = await axios.get(
-      'https://ember-data-api-scg3n.ondigitalocean.app/ember.json',
-      {
-        params: {
-          sql: query,
-        },
+  const response = await axios.get(
+    'https://ember-data-api-scg3n.ondigitalocean.app/ember.json',
+    {
+      params: {
+        sql: query,
       },
-    )
+    },
+  )
 
-    // Format the data located in response.data.rows and seperate it by country, then get the prediction for each country
-    const countrySeperated: {
-      [key: string]: {
-        date: Date
-        value: number
-        [key: string]: Date | string | number
-      }[]
-    } = {}
-    for (const row of response.data.rows) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [rowCountry, year, value, latestYear, coalDeadline, cleanDeadline] =
-        row
+  // Format the data located in response.data.rows and seperate it by country, then get the prediction for each country
+  const countrySeperated: {
+    [key: string]: {
+      date: Date
+      value: number
+      [key: string]: Date | string | number
+    }[]
+  } = {}
+  for (const row of response.data.rows) {
+    const [rowCountry, year, value, latestYear, coalDeadline, cleanDeadline] =
+      row
 
-      countrySeperated[rowCountry] = countrySeperated[rowCountry] || []
-      countrySeperated[rowCountry].push({
-        date: new Date(year, 0, 1),
-        value,
+    countrySeperated[rowCountry] = countrySeperated[rowCountry] || []
+    countrySeperated[rowCountry].push({
+      date: new Date(year, 0, 1),
+      value,
+      latestYear,
+      coalDeadline,
+      cleanDeadline,
+    })
+  }
+
+  const finalEmissionData: {
+    [key: string]: {
+      prediction: number
+      latestYear: string | number | Date
+      coalDeadline: string | number | Date
+      cleanDeadline: string | number | Date
+    }
+  } = {}
+  for (const countryKey in countrySeperated) {
+    const data = countrySeperated[countryKey]
+
+    const prediction = linearRegressionThroughLastPoint(data, month, year)
+
+    const { latestYear, coalDeadline, cleanDeadline } =
+      countrySeperated[countryKey][0]
+
+    if (prediction !== null) {
+      finalEmissionData[countryKey] = {
+        prediction,
         latestYear,
         coalDeadline,
         cleanDeadline,
-      })
-    }
-
-    const finalEmissionData: {
-      [key: string]: {
-        prediction: number
-        latestYear: string | number | Date
-        coalDeadline: string | number | Date
-        cleanDeadline: string | number | Date
-      }
-    } = {}
-    for (const countryKey in countrySeperated) {
-      const data = countrySeperated[countryKey]
-
-      const prediction = linearRegressionThroughLastPoint(data, month, year)
-
-      const { latestYear, coalDeadline, cleanDeadline } =
-        countrySeperated[countryKey][0]
-
-      if (prediction !== null) {
-        finalEmissionData[countryKey] = {
-          prediction,
-          latestYear,
-          coalDeadline,
-          cleanDeadline,
-        }
       }
     }
-
-    return finalEmissionData
   }
+
+  return finalEmissionData
 }

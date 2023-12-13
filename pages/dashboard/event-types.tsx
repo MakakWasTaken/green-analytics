@@ -15,18 +15,30 @@ import {
 import { Person } from 'green-analytics-js'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useContext, useEffect, useState } from 'react'
+import { KeyboardEvent, useContext, useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 const EventTypes = () => {
   const { selectedWebsite, loadingTeams } = useContext(HeaderContext)
   const router = useRouter()
+  const [highlighted, setHighlighted] = useState(0)
 
   const { data } = useSWR<Event['type'][]>(
     selectedWebsite
       ? `/database/events/types?websiteId=${selectedWebsite.id}`
       : null,
   )
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTableRowElement>) => {
+    console.log(e.code, e.key)
+    if (e.code === '40') {
+      // Down arrow
+      setHighlighted((prev) => Math.max(0, prev - 1))
+    } else if (e.code === '38') {
+      // Up arrow
+      setHighlighted((prev) => Math.max(0, prev - 1))
+    }
+  }
 
   return (
     <Box sx={{ margin: 8 }}>
@@ -56,11 +68,18 @@ const EventTypes = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {data?.map((type) => (
+                      {data?.map((type, index) => (
                         <tr
+                          style={{
+                            border:
+                              index === highlighted
+                                ? '2px solid black'
+                                : undefined,
+                          }}
                           onClick={() =>
                             router.push(`/dashboard/event/type/${type}`)
                           }
+                          onKeyDown={handleKeyDown}
                           key={type}
                         >
                           <td>{type}</td>

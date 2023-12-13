@@ -79,8 +79,8 @@ GADocument.getInitialProps = async (ctx: DocumentContext) => {
     originalRenderPage({
       enhanceApp:
         (
-          App: React.ComponentType<React.ComponentProps<AppType> & GAAppProps>,
-        ) =>
+        App: React.ComponentType<React.ComponentProps<AppType> & GAAppProps>,
+      ) =>
         (props) =>
           <App emotionCache={cache} {...props} />,
     })
@@ -93,7 +93,7 @@ GADocument.getInitialProps = async (ctx: DocumentContext) => {
     <style
       data-emotion={`${style.key} ${style.ids.join(' ')}`}
       key={style.key}
-      // biome-ignore lint: It prevents Emotion to render invalid HTML.
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: Recommended method by mui
       dangerouslySetInnerHTML={{ __html: style.css }}
     />
   ))

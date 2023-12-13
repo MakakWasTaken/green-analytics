@@ -5,7 +5,7 @@ import { FC } from 'react'
 import GridBox, { GridBoxProps } from '../Grid/GridBox'
 
 defaults.font.family = poppins.style.fontFamily
-defaults.font.weight = '500'
+defaults.font.weight = 500
 
 ChartJS.register(ArcElement)
 

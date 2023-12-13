@@ -1,5 +1,6 @@
 import { useUser } from '@auth0/nextjs-auth0/client'
-import { Team, TeamRole, User, Website } from '@prisma/client'
+import { Team, TeamRole, TeamSubscription, User, Website } from '@prisma/client'
+import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { FC, useEffect, useState } from 'react'
 import useSWR, { KeyedMutator } from 'swr'
@@ -11,6 +12,7 @@ type ContextState = {
         users: User[]
         roles: TeamRole[]
         websites: Website[]
+        subscription?: TeamSubscription
       })
     | null
     | undefined
@@ -39,15 +41,15 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
     data: allTeams,
     mutate: reloadTeams,
     isLoading: loadingTeams,
-  } = useSWR<Team[]>(user ? '/database/team/getAll' : null)
+  } = useSWR<Team[]>(user ? '/database/team' : null)
   const [internalSelectedTeam, setSelectedTeam] = useState<Team | null>(null)
   const [selectedWebsite, setSelectedWebsite] = useState<Website | null>(null)
   const { data: selectedTeam } = useSWR<
-    // eslint-disable-next-line func-call-spacing
     | (Team & {
         users: User[]
         roles: TeamRole[]
         websites: Website[]
+        subscription?: TeamSubscription
       })
     | null
   >(
@@ -55,6 +57,8 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
       ? `/database/team/${internalSelectedTeam.id}/info`
       : null,
   )
+
+  const queryTeamId = useSearchParams().get('teamid')
 
   useEffect(() => {
     if (internalSelectedTeam) {
@@ -74,20 +78,31 @@ export const HeaderProvider: FC<React.PropsWithChildren> = ({ children }) => {
    */
   useEffect(() => {
     if (allTeams && allTeams.length > 0) {
-      const previouslySelectedTeamId = localStorage.getItem('selectedTeamId')
-      if (previouslySelectedTeamId) {
+      // If the id is provided in the teamid query param use that instead.
+      if (queryTeamId) {
         const previouslySelectedTeam = allTeams.find(
-          (team) => team.id === previouslySelectedTeamId,
+          (team) => team.id === queryTeamId,
         )
         if (previouslySelectedTeam) {
           setSelectedTeam(previouslySelectedTeam)
           return
         }
+      } else {
+        const previouslySelectedTeamId = localStorage.getItem('selectedTeamId')
+        if (previouslySelectedTeamId) {
+          const previouslySelectedTeam = allTeams.find(
+            (team) => team.id === previouslySelectedTeamId,
+          )
+          if (previouslySelectedTeam) {
+            setSelectedTeam(previouslySelectedTeam)
+            return
+          }
+        }
       }
       localStorage.setItem('selectedTeamId', allTeams[0].id)
       setSelectedTeam(allTeams[0] || null)
     }
-  }, [allTeams])
+  }, [allTeams, queryTeamId])
 
   /**
    * Used to get the previous website id from local storage (Persist the selected website)

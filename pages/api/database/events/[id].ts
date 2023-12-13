@@ -1,6 +1,5 @@
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
 import prisma from '@src/lib/prisma'
-import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(
@@ -32,11 +31,11 @@ const handleGET = async (
 ) => {
   try {
     if (!req.query.id) {
-      res.status(400).json({ error: 'Missing id' })
+      res.status(400).json({ ok: false, message: 'Missing id' })
       return
     }
     if (!req.query.websiteId) {
-      res.status(400).json({ error: 'Missing websiteId' })
+      res.status(400).json({ ok: false, message: 'Missing websiteId' })
       return
     }
     const events = await prisma.event.findFirst({
@@ -55,8 +54,10 @@ const handleGET = async (
       },
     })
     res.status(200).json(events)
-  } catch (error) {
-    res.status(500).json({ error })
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ ok: false, message: error.message ?? error.name ?? error })
   }
 }
 

@@ -2,14 +2,13 @@ import { Edit, Help } from '@mui/icons-material'
 import {
   Box,
   Grid,
-  GridProps,
   IconButton,
   Sheet,
   Tooltip,
   Typography,
 } from '@mui/material'
 import { DashboardCell } from '@prisma/client'
-import { FC, PropsWithChildren, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 
 export interface CellGridBoxProps {
   cell: DashboardCell
@@ -26,6 +25,7 @@ const CellGridBox: FC<CellGridBoxProps> = ({ cell, setEditCell }) => {
     [cell.content],
   )
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tmp
   const view = useMemo(() => {
     const tmpView: JSX.Element | null = null
 
