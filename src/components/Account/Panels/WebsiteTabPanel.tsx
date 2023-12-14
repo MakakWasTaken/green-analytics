@@ -4,7 +4,8 @@ import SimpleGrid, {
   SimpleGridRef,
 } from '@components/SimpleGrid'
 import { HeaderContext } from '@contexts/HeaderContext'
-import { ArrowForward, ArrowRight, Code, Refresh } from '@mui/icons-material'
+import { GAResponse } from '@models/GAResponse'
+import { ArrowForward, Code, Refresh } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -78,12 +79,9 @@ const WebsiteTabPanel = () => {
         'Are you sure you want to delete this item? This cannot be undone.',
       )
     ) {
-      toast.promise(api.delete(`/database/website/${id}`), {
-        loading: 'Deleting website...',
-        error: (err) => err.message || err,
-        success: (response) =>
-          response.data.message || 'Successfully deleted website',
-      })
+      const response = await api.delete(`/database/website/${id}`)
+
+      return response.data
     }
   }
 
@@ -178,6 +176,47 @@ const WebsiteTabPanel = () => {
         },
       },
     )
+  }
+
+  const handleAdd = async (newRow: Website) => {
+    // For this grid we only allow editing the URL
+    newRow.url = fixURL(newRow.url)
+
+    const response = await api.post<GAResponse<Website>>('/database/website', {
+      name: newRow.name,
+      url: newRow.url,
+      teamId: selectedTeam?.id,
+    })
+
+    setData((prev) =>
+      prev ? [...prev, response.data.data] : [response.data.data],
+    )
+
+    return response.data
+  }
+
+  const handleEdit = async (newRow: Website) => {
+    // For this grid we only allow editing the URL
+    newRow.url = fixURL(newRow.url)
+
+    const response = await api.put<GAResponse<Website>>(
+      `/database/website/${newRow.id}`,
+      {
+        name: newRow.name,
+        url: newRow.url,
+        teamId: selectedTeam?.id,
+      },
+    )
+
+    setData((prev) =>
+      prev
+        ? prev.map((item) =>
+            item.id === response.data.data.id ? response.data.data : item,
+          )
+        : [response.data.data],
+    )
+
+    return response.data
   }
 
   return (
@@ -320,60 +359,11 @@ setPerson({
               : undefined
           }
           onRowAdd={
-            userRole === 'ADMIN' || userRole === 'OWNER'
-              ? async (newRow: Website) => {
-                  // For this grid we only allow editing the URL
-                  newRow.url = fixURL(newRow.url)
-
-                  toast.promise(
-                    api.post<Website>('/database/website', {
-                      name: newRow.name,
-                      url: newRow.url,
-                      teamId: selectedTeam?.id,
-                    }),
-                    {
-                      loading: 'Adding website..',
-                      error: (err) => err.message || err,
-                      success: (response) => {
-                        setData((prev) =>
-                          prev ? [...prev, response.data] : [response.data],
-                        )
-                        return 'Website added'
-                      },
-                    },
-                  )
-                }
-              : undefined
+            userRole === 'ADMIN' || userRole === 'OWNER' ? handleAdd : undefined
           }
           onRowEdit={
             userRole === 'ADMIN' || userRole === 'OWNER'
-              ? async (newRow: Website) => {
-                  // For this grid we only allow editing the URL
-                  newRow.url = fixURL(newRow.url)
-                  toast.promise(
-                    api.put<Website>(`/database/website/${newRow.id}`, {
-                      name: newRow.name,
-                      url: newRow.url,
-                      teamId: selectedTeam?.id,
-                    }),
-                    {
-                      loading: 'Updating website..',
-                      error: (err) => err.message || err,
-                      success: (response) => {
-                        const data = response.data
-                        setData((prev) =>
-                          prev
-                            ? prev.map((item) =>
-                                item.id === data.id ? data : item,
-                              )
-                            : [data],
-                        )
-
-                        return 'Website updated'
-                      },
-                    },
-                  )
-                }
+              ? handleEdit
               : undefined
           }
           additionalActions={

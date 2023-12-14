@@ -122,7 +122,7 @@ const handleDELETE = async (
     },
   })
 
-  res.json(response)
+  res.json({ ok: true, message: 'Succesfully deleted member', data: response })
 }
 
 export default handle

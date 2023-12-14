@@ -18,13 +18,17 @@ import { convertExpiresToSeconds } from './utils'
  * @param cookies The array should be an array of the type of cookie that is being looked up.
  * @returns The most popular or null if not found
  */
-const getMostUsedType = (cookies: Cookie[]): CookieType | null => {
+const getMostUsed = (cookies: Cookie[], property: keyof Cookie): any | null => {
   const counts: { [type: string]: number } = {}
   for (const cookie of cookies) {
-    if (!counts[cookie.type]) {
-      counts[cookie.type] = 0
+    const item = cookie[property]
+    if (typeof item !== 'string') {
+      throw new Error(`The ${property} of the cookie needs to be a string`)
     }
-    counts[cookie.type] += 1
+    if (!counts[item]) {
+      counts[item] = 0
+    }
+    counts[item] += 1
   }
 
   // Get the values with the highest value
@@ -47,42 +51,6 @@ const getMostUsedType = (cookies: Cookie[]): CookieType | null => {
     return null
   }
   return max.name as CookieType
-}
-
-/**
- * Used to find the most used party in a list of cookies.
- * @param cookies The array should be an array of the type of cookie that is being looked up.
- * @returns The most popular or null if not found
- */
-const getMostUsedParty = (cookies: Cookie[]): CookieParty | null => {
-  const counts: { [type: string]: number } = {}
-  for (const cookie of cookies) {
-    if (!counts[cookie.party]) {
-      counts[cookie.party] = 0
-    }
-    counts[cookie.party] += 1
-  }
-
-  // Get the values with the highest value
-  const max = Object.keys(counts).reduce(
-    (prev, key) => {
-      const cur = counts[key]
-      if (prev.value < cur) {
-        // If this value is over the previous, change the object to this one.
-        return {
-          name: key,
-          value: cur,
-        }
-      }
-      return prev
-    },
-    { name: '', value: 0 } as { name: string; value: number },
-  )
-
-  if (max.name === '') {
-    return null
-  }
-  return max.name as CookieParty
 }
 
 export const scanWebsite = async (website: Website) => {
@@ -138,9 +106,7 @@ export const scanWebsite = async (website: Website) => {
       name: {
         in: xray.cookies.map((cookie) => cookie.name),
       },
-      domain: {
-        in: xray.cookies.map((cookie) => cookie.domain),
-      },
+      status: CookieStatus.MANUAL,
     },
   })
 
@@ -160,8 +126,6 @@ export const scanWebsite = async (website: Website) => {
     }),
   ])
 
-  console.log(xray.cookies.map((cookie) => cookie.domain))
-
   // We do not want to override cookies that are already manually defined.
   const filteredCookies = xray.cookies.filter(
     (cookie) =>
@@ -170,9 +134,8 @@ export const scanWebsite = async (website: Website) => {
           // Same website
           sameCookie.websiteId === website.id &&
           // Same name
-          sameCookie.name === cookie.name &&
-          // Manual cookies only
-          sameCookie.status === CookieStatus.MANUAL,
+          sameCookie.name === cookie.name,
+        // Implicit manual cookies only
       ),
   )
 
@@ -187,17 +150,15 @@ export const scanWebsite = async (website: Website) => {
         createMany: {
           data: filteredCookies.map((cookie) => {
             const sameTypeCookies = sameCookies.filter(
-              (sameCookie) =>
-                sameCookie.name === cookie.name &&
-                sameCookie.domain === cookie.domain,
+              (sameCookie) => sameCookie.name === cookie.name,
             )
 
             return {
               ...cookie,
               value: undefined,
               status: CookieStatus.AUTO,
-              type: getMostUsedType(sameTypeCookies) ?? CookieType.NONE,
-              party: getMostUsedParty(sameTypeCookies) ?? CookieParty.THIRD,
+              type: getMostUsed(sameTypeCookies, 'type') ?? CookieType.NONE,
+              party: getMostUsed(sameTypeCookies, 'party') ?? CookieParty.THIRD,
               expires: convertExpiresToSeconds(cookie.expires), // Will convert epoch seconds to actual seconds of expiry.
             }
           }),

@@ -29,7 +29,7 @@ export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
         where: { id: userId },
       })
 
-      res.json(user)
+      res.json({ ok: true, message: 'Succesfully deleted user', data: user })
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }

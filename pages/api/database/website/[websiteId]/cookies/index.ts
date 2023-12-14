@@ -1,7 +1,6 @@
 import { Session, getSession, withApiAuthRequired } from '@auth0/nextjs-auth0'
+import { Cookie, CookieParty, CookieStatus, CookieType } from '@prisma/client'
 import prisma from '@src/lib/prisma'
-import { scanWebsite } from '@src/utils/websiteScanner'
-import { DateTime } from 'luxon'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = withApiAuthRequired(
@@ -50,26 +49,21 @@ const handleGET = async (
   res: NextApiResponse,
   session: Session,
 ) => {
-  const scans = await prisma.scan.findMany({
+  const cookies = await prisma.cookie.findMany({
     where: {
       website: {
         id: req.query.websiteId as string,
         team: {
-          roles: {
+          users: {
             some: {
-              userId: session.user.sub,
+              id: session.user.sub,
             },
           },
         },
       },
-      createdAt: req.query.start
-        ? {
-            gte: DateTime.fromISO(req.query.start as string).toJSDate(),
-          }
-        : undefined,
     },
   })
-  res.status(200).json(scans)
+  res.status(200).json(cookies)
 }
 
 const handlePOST = async (
@@ -79,18 +73,19 @@ const handlePOST = async (
 ) => {
   // Get the website
 
-  // This action requires the user to be admin or owner (The action requires a lot of server power, so we don't want users to abuse it)
+  const newBody = req.body as Cookie
 
-  const website = await prisma.website.findFirst({
+  // Check that the user has the correct permission for this website.
+  const website = await prisma.teamRole.findFirst({
     where: {
-      id: req.query.websiteId as string,
+      role: {
+        in: ['ADMIN', 'OWNER'],
+      },
+      userId: session.user.sub,
       team: {
-        roles: {
+        users: {
           some: {
-            userId: session.user.sub,
-            role: {
-              in: ['ADMIN', 'OWNER'],
-            },
+            id: session.user.sub,
           },
         },
       },
@@ -98,16 +93,31 @@ const handlePOST = async (
   })
 
   if (!website) {
-    res.status(404).json({
+    res.status(403).json({
       ok: false,
-      message: 'Website not found',
+      message: 'Permission denied',
     })
     return
   }
 
-  await scanWebsite(website)
+  const cookie = await prisma.cookie.create({
+    data: {
+      domain: newBody.domain,
+      name: newBody.name,
 
-  res.json({ ok: true, message: 'Scanning complete' })
+      type: newBody.type ?? CookieType.NONE,
+      party: newBody.party ?? CookieParty.THIRD,
+      secure: newBody.secure ?? false,
+      path: newBody.path ?? '/',
+      sameSite: newBody.sameSite ?? 'Lax',
+      httpOnly: newBody.httpOnly ?? false,
+      expires: newBody.expires ?? 0,
+      status: CookieStatus.MANUAL,
+      websiteId: req.query.websiteId as string,
+    },
+  })
+
+  res.json({ ok: true, message: 'Succesfully created cookie', data: cookie })
 }
 
 export default handle
