@@ -61,3 +61,13 @@ export const titleToMarkdownId = (str: string) => {
     .replaceAll(' ', '-')
     .replaceAll(/[^\w-]/g, '')
 }
+
+export const convertExpiresToSeconds = (expires: number): number => {
+  const currentTimestamp = Math.floor(Date.now() / 1000)
+  let secondsRemaining = expires - currentTimestamp
+
+  // Ensure secondsRemaining is divisible by 60
+  secondsRemaining = Math.max(0, Math.ceil(secondsRemaining / 60) * 60)
+
+  return secondsRemaining
+}

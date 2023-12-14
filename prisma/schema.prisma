@@ -84,9 +84,10 @@ model Website {
 
   scans Scan[]
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  Dashboard Dashboard[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  dashboards Dashboard[]
+  cookies    Cookie[]
 
   @@index([teamId])
 }
@@ -191,4 +192,47 @@ model DashboardCell {
   updatedAt DateTime @updatedAt
 
   @@index([dashboardId])
+}
+
+// Cookie policy
+model Cookie {
+  id       Int     @id @default(autoincrement())
+  name     String
+  domain   String
+  path     String
+  expires  Int
+  httpOnly Boolean
+  secure   Boolean
+  sameSite String
+
+  // If you want to store created and updated timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  websiteId String
+
+  type   CookieType
+  status CookieStatus
+  party  CookieParty
+
+  @@index([websiteId])
+}
+
+enum CookieParty {
+  FIRST
+  THIRD
+}
+
+enum CookieType {
+  NONE
+  ESSENTIAL
+  PERFORMANCE
+  FUNCTIONALITY
+  MARKETING
+}
+
+enum CookieStatus {
+  MANUAL
+  AUTO
 }
