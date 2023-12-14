@@ -1,7 +1,6 @@
 import axios from 'axios'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import useSWR from 'swr'
 
 const useEditConfig = () => {
   const [config, setConfig] = useState<any>()
@@ -11,7 +10,7 @@ const useEditConfig = () => {
     try {
       setLoading(true)
 
-      const response = await axios.get('/editCellConfiguration.json')
+      const response = await axios.get('/editCellConfiguration.jsonc')
 
       setConfig(response.data)
     } catch (err: any) {

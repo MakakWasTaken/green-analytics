@@ -1,23 +1,17 @@
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0/client'
 import CellGridBox from '@components/Dashboard/Grid/CellGridBox'
+import CreateDashboardViewModal from '@components/Dashboard/Modals/CreateDashboardViewModal'
+import { MutateDashboardCellModal } from '@components/Dashboard/Modals/MutateCellConfigurationModal/MutateCellConfigurationModal'
 import NavigationMenu from '@components/Dashboard/NavigationMenu'
 import TeamHeader from '@components/TeamHeader'
 import { HeaderContext } from '@contexts/HeaderContext'
-import { DialogContent, DialogTitle } from '@mui/joy'
 import {
   Box,
   Button,
   CircularProgress,
-  FormControl,
-  FormLabel,
   Grid,
-  Input,
-  Modal,
-  ModalClose,
-  ModalDialog,
   Option,
   Select,
-  Stack,
   Typography,
 } from '@mui/material'
 import { Dashboard, DashboardCell } from '@prisma/client'
@@ -40,7 +34,9 @@ const DashboardPage = withPageAuthRequired(
     const [selectedDashboardId, setSelectedDashboardId] = useState<
       string | null
     >(null)
-    const [editCell, setEditCell] = useState<DashboardCell>()
+    const [editCell, setEditCell] = useState<
+      Omit<DashboardCell, 'id'> & { id?: string }
+    >()
 
     // Create Dashboard
     const [createDashboardName, setCreateDashboardName] = useState('')
@@ -184,15 +180,78 @@ const DashboardPage = withPageAuthRequired(
 
       // Main view
       return (
-        <Grid
-          container
-          spacing={2}
-          sx={{ margin: { xs: 0, md: 4 }, flexGrow: 1 }}
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'flex-end',
+            flexDirection: 'column',
+          }}
         >
-          {selectedDashboard?.cells.map((cell) => (
-            <CellGridBox key={cell.id} setEditCell={setEditCell} cell={cell} />
-          ))}
-        </Grid>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-end',
+            }}
+          >
+            {selectedDashboard && (
+              <Button
+                sx={{ mr: 2 }}
+                onClick={() => {
+                  setEditCell({
+                    content: {},
+                    dashboardId: selectedDashboard.id,
+                    updatedAt: new Date(),
+                    createdAt: new Date(),
+                  })
+                }}
+              >
+                Create new cell
+              </Button>
+            )}
+            <Select
+              placeholder="Select Dashboard"
+              onChange={(_e, newValue) => setSelectedDashboardId(newValue)}
+              value={selectedDashboardId}
+              disabled={
+                myRole !== 'ADMIN' &&
+                myRole !== 'OWNER' &&
+                dashboards?.length === 0
+              }
+            >
+              {dashboards?.map((dashboard) => (
+                <Option key={dashboard.id} value={dashboard.id}>
+                  {dashboard.name}
+                </Option>
+              ))}
+              {myRole === 'ADMIN' ||
+                (myRole === 'OWNER' && (
+                  <Option
+                    key="create-new-dashboard"
+                    value="create-dashboard"
+                    onClick={() => {
+                      setCreateDashboardOpen(true)
+                    }}
+                  >
+                    Create Dashboard
+                  </Option>
+                ))}
+            </Select>
+          </Box>
+          <Grid
+            container
+            spacing={2}
+            sx={{ width: '100%', margin: { xs: 0, md: 4 }, flexGrow: 1 }}
+          >
+            {selectedDashboard?.cells.map((cell) => (
+              <CellGridBox
+                key={cell.id}
+                setEditCell={setEditCell}
+                cell={cell}
+              />
+            ))}
+          </Grid>
+        </Box>
       )
     }, [
       myRole,
@@ -204,107 +263,26 @@ const DashboardPage = withPageAuthRequired(
       selectedDashboard,
     ])
 
-    const handleCreateDashboardSubmit = () => {
-      if (!selectedWebsite) {
-        toast.error('No team selected')
-        return
-      }
-      // Validate
-      if (!createDashboardName) {
-        toast.error('You need to define a name for the dashboard')
-        return
-      }
-
-      // Submit
-      toast.promise(
-        api.post<Dashboard>(
-          `database/dashboard?selectedWebsite=${selectedWebsite.id}`,
-          {
-            name: createDashboardName,
-          } as Partial<Dashboard>,
-        ),
-        {
-          loading: 'Creating dashboard..',
-          error: (err) => err.message ?? err,
-          success: (response) => {
-            setDashboards((prev) =>
-              prev ? [...prev, response.data] : [response.data],
-            )
-
-            // If we just created it, select it.
-            setSelectedDashboardId(response.data.id)
-
-            // Reset state
-            setCreateDashboardName('')
-            setCreateDashboardOpen(false)
-
-            return 'Succesfully created dashboard '
-          },
-        },
-      )
-    }
-
     return (
       <Box sx={{ margin: 8 }}>
         <NextSeo title="Dashboard" />
         <TeamHeader selectWebsite />
         <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Modal open={createDashboardOpen}>
-            <ModalDialog>
-              <ModalClose />
-              <DialogTitle>Create Dashboard</DialogTitle>
-              <DialogContent>
-                <Stack spacing={2}>
-                  <FormControl>
-                    <FormLabel>Name</FormLabel>
-                    <Input
-                      autoFocus
-                      value={createDashboardName}
-                      onChange={(e) => setCreateDashboardName(e.target.value)}
-                    />
-                  </FormControl>
-                  <Button onClick={handleCreateDashboardSubmit}>Submit</Button>
-                </Stack>
-              </DialogContent>
-            </ModalDialog>
-          </Modal>
-          <Select
-            placeholder="Select Dashboard"
-            onChange={(_e, newValue) => setSelectedDashboardId(newValue)}
-            value={selectedDashboardId}
-            disabled={
-              myRole !== 'ADMIN' &&
-              myRole !== 'OWNER' &&
-              dashboards?.length === 0
-            }
-          >
-            {dashboards?.map((dashboard) => (
-              <Option key={dashboard.id} value={dashboard.id}>
-                {dashboard.name}
-              </Option>
-            ))}
-            {myRole === 'ADMIN' ||
-              (myRole === 'OWNER' && (
-                <Option
-                  key="create-new-dashboard"
-                  value="create-dashboard"
-                  onClick={() => {
-                    setCreateDashboardOpen(true)
-                  }}
-                >
-                  Create Dashboard
-                </Option>
-              ))}
-          </Select>
-        </Box>
-        <Box
           sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}
         >
+          <CreateDashboardViewModal
+            open={createDashboardOpen}
+            setOpen={setCreateDashboardOpen}
+            refreshViews={setDashboards}
+            key="create-dashboard"
+          />
+          <MutateDashboardCellModal
+            cellConfig={editCell}
+            configurationId={editCell?.id}
+            handleClose={() => setEditCell(undefined)}
+            selectedView={selectedDashboard}
+            updateView={setDashboards}
+          />
           <NavigationMenu />
           {view}
         </Box>

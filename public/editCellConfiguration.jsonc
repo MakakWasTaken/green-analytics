@@ -5,6 +5,28 @@
   "description": "The configuration schema for dashboards cell configurations",
   "type": "object",
   "$defs": {
+    "sourceTypes": {
+      "title": "Source of information",
+      "description": "The source of the data that is going to be used in this cell.",
+      "type": "string",
+      "enum": [
+        "database/events",
+        "database/persons",
+        "database/properties"
+      ]
+    },
+    "database/events": {
+      // Will be filled in by loader
+      "enum": []
+    },
+    "database/persons": {
+      // Will be filled in by loader
+      "enum": []
+    },
+    "database/properties": {
+      // Will be filled in by loader
+      "enum": []
+    },
     "operators": {
       "enum": [
         "startsWith",
@@ -23,8 +45,13 @@
     }
   },
   "properties": {
-    "label": {
-      "title": "Label",
+    "title": {
+      "title": "Title",
+      "description": "The label that will be shown in the header of the cell.",
+      "type": "string"
+    },
+    "subtitle": {
+      "title": "Title",
       "description": "The label that will be shown in the header of the cell.",
       "type": "string"
     },
@@ -34,22 +61,15 @@
       "type": "object",
       "properties": {
         "source": {
-          "title": "Source of information",
-          "description": "The source of the data that is going to be used in this cell.",
-          "type": "string",
-          "enum": [
-            "database/reading",
-            "database/document"
-          ]
+          "$ref": "#/$defs/sourceTypes"
         },
         "method": {
           "title": "HTTP Method",
           "description": "The HTTP method used for requested data in this component. The default is post.",
-          "default": "post",
+          "default": "get",
           "type": "string",
           "enum": [
-            "get",
-            "post"
+            "get"
           ]
         },
         "filters": {
@@ -87,7 +107,7 @@
           "if": {
             "properties": {
               "source": {
-                "const": "database/reading"
+                "const": "database/events"
               }
             }
           },
@@ -99,7 +119,7 @@
                 "items": {
                   "properties": {
                     "column": {
-                      "$ref": "#/$defs/readingColumns"
+                      "$ref": "#/$defs/database/events"
                     }
                   }
                 }
@@ -111,7 +131,7 @@
           "if": {
             "properties": {
               "source": {
-                "const": "database/document"
+                "const": "database/persons"
               }
             }
           },
@@ -123,7 +143,31 @@
                 "items": {
                   "properties": {
                     "column": {
-                      "$ref": "#/$defs/documentColumns"
+                      "$ref": "#/$defs/database/persons"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "const": "database/properties"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "filters": {
+                "title": "Filters",
+                "description": "The filters that will be used to get the data from the source",
+                "items": {
+                  "properties": {
+                    "column": {
+                      "$ref": "#/$defs/database/properties"
                     }
                   }
                 }
@@ -143,8 +187,7 @@
       "enum": [
         "string",
         "number",
-        "chart",
-        "datagrid"
+        "chart"
       ]
     },
     "layout": {
@@ -340,156 +383,6 @@
             }
           }
         },
-        "required": [
-          "configuration"
-        ]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "cellType": {
-            "const": "datagrid"
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "configuration": {
-            "title": "Configuration",
-            "description": "The configuration for the datagrid.",
-            "type": "object",
-            "properties": {
-              "columns": {
-                "title": "Columns",
-                "description": "The columns that are going to be in the datagrid.",
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "field": {
-                      "title": "Field",
-                      "description": "What field to render in the table. Must exist in the db response.",
-                      "type": "string"
-                    },
-                    "width": {
-                      "title": "Width",
-                      "description": "The width of the column in pixels",
-                      "type": "number"
-                    },
-                    "formatString": {
-                      "title": "Format String",
-                      "description": "Use @ to insert the value",
-                      "type": "string",
-                      "pattern": ".*@.*"
-                    },
-                    "headerName": {
-                      "title": "Header Name",
-                      "description": "An optional header name. The Field value will be used if this is not provided.",
-                      "type": "string"
-                    },
-                    "type": {
-                      "title": "Type",
-                      "description": "The type of data contained in this cell.",
-                      "default": "string",
-                      "enum": [
-                        "string",
-                        "number",
-                        "boolean",
-                        "date",
-                        "dateTime",
-                        "meteringpoint",
-                        "plant"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "field"
-                  ]
-                },
-                "minItems": 1
-              }
-            },
-            "required": [
-              "columns"
-            ]
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "data": {
-                  "properties": {
-                    "source": {
-                      "const": "database/reading"
-                    }
-                  }
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "configuration": {
-                  "title": "Configuration",
-                  "description": "Configuration for the current cell. The content of this is dependent on the cellType",
-                  "properties": {
-                    "columns": {
-                      "title": "Columns",
-                      "description": "The columns that will be shown in the datagrid.",
-                      "items": {
-                        "properties": {
-                          "field": {
-                            "title": "Field",
-                            "description": "One of the columns in the Reading table.",
-                            "$ref": "#/$defs/readingColumns"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "data": {
-                  "properties": {
-                    "source": {
-                      "const": "database/document"
-                    }
-                  }
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "configuration": {
-                  "title": "Configuration",
-                  "description": "Configuration for the current cell. The content of this is dependent on the cellType",
-                  "properties": {
-                    "columns": {
-                      "title": "Columns",
-                      "description": "The columns that will be shown in the datagrid.",
-                      "items": {
-                        "properties": {
-                          "field": {
-                            "title": "Field",
-                            "description": "Can either be a column or it can be a path using dot-notation in the information. If it is information, prefix it by using DocumentInformation. An example could be DocumentInformation.accepted.",
-                            "type": "string",
-                            "pattern": "[A-z0-9\\-.]"
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ],
         "required": [
           "configuration"
         ]

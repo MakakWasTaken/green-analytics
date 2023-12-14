@@ -5,7 +5,6 @@ import {
   Modal,
   ModalClose,
   ModalDialog,
-  TextField,
   Typography,
 } from '@mui/material'
 import { api } from '@utils/network'
@@ -32,11 +31,11 @@ const CreateDashboardViewModal: FC<CreateDashboardViewModalProps> = ({
 
   const handleSubmit = async () => {
     toast.promise(
-      api.post('database/dashboard/views', {
+      api.post('database/dashboard', {
         name: dashboardViewName,
       }),
       {
-        loading: 'Creating dashboard view..',
+        loading: 'Creating dashboard..',
         error: (err) => err.message || err,
         success: (response) => {
           handleClose()

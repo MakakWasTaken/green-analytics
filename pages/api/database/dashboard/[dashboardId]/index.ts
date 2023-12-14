@@ -69,7 +69,13 @@ const handleGET = async (
     },
   })
 
-  res.json(response)
+  res.json({
+    ...response,
+    cells: response?.cells?.map((cell) => ({
+      ...cell,
+      content: cell.content ? JSON.parse(cell.content.toString()) : undefined,
+    })),
+  })
 }
 
 export default handler
