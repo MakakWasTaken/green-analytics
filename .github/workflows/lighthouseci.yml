@@ -6,10 +6,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-      - run: yarn && yarn global add -g @lhci/cli
+      - run: yarn
       - run: yarn build
-      - run: npx lhci collect
-      - run: npx lhci upload
+      - run: yarn dlx lhci collect
+      - run: yarn dlx lhci upload
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
       - uses: actions/upload-artifact@v3
