@@ -68,7 +68,7 @@ const handlePOST = async (
     },
   })
 
-  res.json(team)
+  res.json({ ok: true, message: 'Succesfully created team', data: team })
 }
 
 const handleGET = async (

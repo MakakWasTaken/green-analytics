@@ -117,7 +117,11 @@ const handlePUT = async (
     },
   })
 
-  res.json(updatedTeam)
+  res.json({
+    ok: true,
+    message: 'Succesfully updated team',
+    data: updatedTeam,
+  })
 }
 
 export default handle

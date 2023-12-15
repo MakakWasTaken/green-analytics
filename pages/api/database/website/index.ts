@@ -65,7 +65,11 @@ export const handle = withApiAuthRequired(
 
       await scanWebsite(website)
 
-      res.json(website)
+      res.json({
+        ok: true,
+        message: 'Succesfully added website',
+        data: website,
+      })
     } else {
       res.status(405).json({ ok: false, message: 'Method Not Allowed' })
     }

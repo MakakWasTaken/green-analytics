@@ -1,3 +1,4 @@
+import { Cookie } from '@prisma/client'
 import axios from 'axios'
 
 const harAPI = axios.create({
@@ -8,7 +9,22 @@ harAPI.interceptors.response.use(undefined, (err) => {
   return Promise.reject(err.response?.data?.error || err.message || err)
 })
 
-export const getXray = async (url: string) => {
+interface XrayURL {
+  contentSize: number
+  transferSize: number
+  countryCode?: string // Not loaded in this file, but will be used when scanning
+  ip: string
+}
+
+export const getXray = async (
+  url: string,
+): Promise<
+  | {
+      urls: { [url: string]: XrayURL }
+      cookies: Omit<Cookie, 'id' | 'createdAt' | 'updated' | 'websiteId'>[]
+    }
+  | undefined
+> => {
   const response = await harAPI.get('/api', {
     params: {
       url,
@@ -21,14 +37,9 @@ export const getXray = async (url: string) => {
   // The domains are not in the correct format. We need to extract the domains from the requests and we need to extract the transfer size from the domains
   const data = response.data
   const entries = data.log.entries
+  const cookies = data.cookies
 
-  const urls: {
-    [key: string]: {
-      contentSize: number
-      transferSize: number
-      ip: string
-    }
-  } = {}
+  const urls: { [url: string]: XrayURL } = {}
 
   for (const entry of entries) {
     const urlRegex = /^(\w+?:\/\/[^?]+).*/g
@@ -55,5 +66,5 @@ export const getXray = async (url: string) => {
     }
   }
 
-  return urls
+  return { cookies, urls }
 }

@@ -44,6 +44,7 @@ export const GAApp = (props: GAAppProps) => {
           },
         ]}
         titleTemplate="%s | Green Analytics"
+        defaultTitle="Green Analytics"
       />
       <UserProvider>
         <HeaderProvider>
