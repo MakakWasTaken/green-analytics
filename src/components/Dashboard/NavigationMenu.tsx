@@ -23,6 +23,10 @@ const pages: Page[] = [
     title: 'Scan',
     href: '/dashboard/scan',
   },
+  {
+    title: 'Cookies',
+    href: '/dashboard/cookies',
+  },
 ]
 
 const NavigationMenu = () => {

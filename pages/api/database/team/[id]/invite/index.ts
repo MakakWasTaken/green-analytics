@@ -188,7 +188,7 @@ Green-Analytics`,
     }),
   )
 
-  res.json(response)
+  res.json({ ok: true, message: 'Succesfully invited member', data: response })
 }
 
 export default handle

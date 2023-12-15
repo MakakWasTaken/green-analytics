@@ -61,7 +61,7 @@ const handleDELETE = async (
     },
   })
 
-  res.json(response)
+  res.json({ ok: true, message: 'Succesfully deleted invite', data: response })
 }
 
 export default handle

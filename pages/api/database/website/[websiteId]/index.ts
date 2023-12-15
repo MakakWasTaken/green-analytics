@@ -124,7 +124,11 @@ export const handle = withApiAuthRequired(
         },
       })
 
-      res.json(result)
+      res.json({
+        ok: true,
+        message: 'Succesfully updated website',
+        data: result,
+      })
     } else {
       res.status(405).json({ ok: false, message: 'Method not allowed' })
     }
