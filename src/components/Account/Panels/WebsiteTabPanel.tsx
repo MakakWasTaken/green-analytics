@@ -119,8 +119,8 @@ const WebsiteTabPanel = () => {
       tmpColumns.push({
         field: 'rescan',
         headerName: 'Rescan',
-        renderCell: (_value, id) => (
-          <Button onClick={rescanWebsite(id)}>
+        renderCell: (_value, params) => (
+          <Button onClick={rescanWebsite(params.id)}>
             <Refresh />
           </Button>
         ),

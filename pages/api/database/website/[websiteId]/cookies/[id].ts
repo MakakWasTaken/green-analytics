@@ -92,7 +92,6 @@ export const handlePUT = async (
       ...(req.body as Cookie),
       status: CookieStatus.MANUAL,
       createdAt: undefined,
-      updatedAt: undefined,
       id: undefined,
       websiteId: undefined,
     },
