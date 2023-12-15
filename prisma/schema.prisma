@@ -196,14 +196,15 @@ model DashboardCell {
 
 // Cookie policy
 model Cookie {
-  id       Int     @id @default(autoincrement())
-  name     String
-  domain   String
-  path     String
-  expires  Int
-  httpOnly Boolean
-  secure   Boolean
-  sameSite String
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String  @default("")
+  domain      String
+  path        String
+  expires     Int
+  httpOnly    Boolean
+  secure      Boolean
+  sameSite    String
 
   createdAt DateTime @default(now())
 
