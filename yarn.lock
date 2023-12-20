@@ -3743,12 +3743,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"green-analytics-js@https://github.com/MakakWasTaken/green-analytics-js#develop":
-  version: 1.1.1
-  resolution: "green-analytics-js@https://github.com/MakakWasTaken/green-analytics-js.git#commit=33d9203903d28f88a4a93c5ea48772c78b2a5792"
+"green-analytics-js@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "green-analytics-js@npm:1.1.2"
   dependencies:
     strip-js: "npm:^1.2.0"
-  checksum: 96543efc2cf5b925d814b7c84a09f846effc11302ff1c0573520b45a5d16dbde611f45df2590dca6eeca5d4c8d4b46f8de1ff549179604293893163ac5d10300
+  checksum: 9684a56a3e762351c9507d71755e060dc3d4ba88af6df46a35fd3808685e383358ab1dc531bf78fef95055ac9c86144ee18dd78f401c0e863dd71106efab185e
   languageName: node
   linkType: hard
 
@@ -3793,7 +3793,7 @@ __metadata:
     cross-env: "npm:^7.0.3"
     doc999tor-fast-geoip: "npm:^1.1.180"
     google-auth-library: "npm:^9.4.1"
-    green-analytics-js: "https://github.com/MakakWasTaken/green-analytics-js#develop"
+    green-analytics-js: "npm:^1.1.2"
     highlight.js: "npm:^11.9.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:^15.2.0"

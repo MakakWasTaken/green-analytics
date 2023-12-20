@@ -1,5 +1,5 @@
 import { Delete, Edit } from '@mui/icons-material'
-import { Option, Select } from '@mui/joy'
+import { Checkbox, Option, Select } from '@mui/joy'
 import {
   Button,
   FormControl,
@@ -38,7 +38,8 @@ export interface DefaultSimpleGridColumnDefinition<T = any> {
   field: string
   headerName?: string
   hidden?: boolean
-  editable?: boolean
+  valueGetter?: (row: T) => any
+  editable?: boolean | ((row: T) => boolean)
   type?: HTMLInputTypeAttribute
   renderCell?: (value: any, params: RenderCellParams<T>) => JSX.Element
 }
@@ -95,9 +96,15 @@ const ColumnEditInput: FC<ColumnEditInputProps> = ({
   setUpdateObject,
   index,
 }: ColumnEditInputProps) => {
-  if (column.hidden || !column.editable) {
+  // If the column is not editable (either false or the function validates to false)
+  if (
+    !column.editable ||
+    (typeof column.editable === 'function' && !column.editable(updateObject))
+  ) {
     return null
   }
+
+  const value = (updateObject as any)[column.field]
 
   if (column.type === 'singleSelect') {
     const singleSelectColumn = column as SingleSelectSimpleGridColumnDefinition
@@ -105,7 +112,7 @@ const ColumnEditInput: FC<ColumnEditInputProps> = ({
     return (
       <Select
         id={column.field}
-        value={(updateObject as any)[column.field]}
+        value={value}
         onChange={(_e, newValue) => {
           setUpdateObject({
             ...updateObject,
@@ -123,13 +130,52 @@ const ColumnEditInput: FC<ColumnEditInputProps> = ({
       </Select>
     )
   }
+  if (column.type === 'checkbox') {
+    return (
+      <Checkbox
+        sx={{ mt: 2 }}
+        label={column.headerName || column.field}
+        id={column.field}
+        checked={value}
+        onChange={(e) => {
+          setUpdateObject({
+            ...updateObject,
+            [column.field]: e.target.checked,
+          })
+        }}
+      />
+    )
+  }
+  if (column.type === 'url') {
+    // If the type is URL, validate that the value is correct
+    const url_regex =
+      /(?:https?:\/\/)?(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/g
+    return (
+      <FormControl key={`${column.field}-control`} sx={{ mt: 2 }}>
+        <FormLabel>{column.headerName || column.field}</FormLabel>
+        <Input
+          id={column.field}
+          value={value}
+          error={value !== '' && !url_regex.test(value)}
+          onChange={(e) => {
+            setUpdateObject({
+              ...updateObject,
+              [column.field]: e.target.value,
+            })
+          }}
+          type={column.type}
+          autoFocus={index === 0}
+        />
+      </FormControl>
+    )
+  }
 
   return (
     <FormControl key={`${column.field}-control`} sx={{ mt: 2 }}>
       <FormLabel>{column.headerName || column.field}</FormLabel>
       <Input
         id={column.field}
-        value={(updateObject as any)[column.field]}
+        value={value}
         onChange={(e) => {
           setUpdateObject({
             ...updateObject,
@@ -344,8 +390,13 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                     return !column.hidden ? (
                       <td key={column.field}>
                         {column.renderCell
-                          ? column.renderCell(row?.[column.field], {id: row[idField], row, column})
-                          : defaultRenderCell(row[column.field], {id: row[idField], row, column})}
+                          ? column.renderCell(
+                            column.valueGetter
+                              ? column.valueGetter(row)
+                              : row?.[column.field], {id: row[idField], row, column})
+                          : defaultRenderCell(column.valueGetter
+                            ? column.valueGetter(row)
+                            : row[column.field], {id: row[idField], row, column})}
                       </td>
                     ) : null
                   })}
@@ -367,7 +418,18 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                                 padding: 1,
                                 color: (theme) => theme.palette.text.primary,
                               }}
-                              onClick={() => setUpdateObject(row)}
+                              onClick={() => {
+                                // Calculate start value
+                                const startValue = row
+                                for (const column of columns) {
+                                  if (column.valueGetter) {
+                                    startValue[column.field] = column.valueGetter(row)
+                                  }
+                                }
+                                setUpdateObject(
+                                startValue
+                                  )
+                              }}
                             >
                               <Edit />
                             </Button>
