@@ -72,6 +72,7 @@ const UserPage = withPageAuthRequired(
           <Image
             width={80}
             height={80}
+            priority
             style={{
               borderRadius: '50vh',
             }}
@@ -150,7 +151,7 @@ const UserPage = withPageAuthRequired(
     )
   },
   {
-    returnTo: '/account',
+    returnTo: '/settings',
   },
 )
 

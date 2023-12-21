@@ -84,6 +84,8 @@ model Website {
 
   scans Scan[]
 
+  settings Json?
+
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   dashboards Dashboard[]

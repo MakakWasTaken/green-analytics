@@ -60,14 +60,11 @@ const nextConfig = {
   reactStrictMode: false,
   pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
 
-  transpilePackages: ['@mui/system', '@mui/material', '@mui/icons-material'],
+  transpilePackages: ['@mui/system', '@mui/material'],
   modularizeImports: {
     '@mui/material/!(styles)/?*': {
       transform: '@mui/material/{{path}}/{{member}}',
       skipDefaultConversion: true,
-    },
-    '@mui/icons-material/?(((\\w*)?/?)*)': {
-      transform: '@mui/icons-material/{{ matches.[1] }}/{{member}}',
     },
   },
   headers: async () => [
