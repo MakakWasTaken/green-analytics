@@ -90,6 +90,8 @@ const handleGET = async (res: NextApiResponse, token: string) => {
       type: cookie.type,
       lastUpdated: cookie.createdAt,
     })),
+    cookiePolicyUrl:
+      parsedSettings.cookiePolicyUrl ?? `https://${website.url}/cookies`,
     enabled: parsedSettings.cookiePolicyEnabled ?? false,
   })
 }
