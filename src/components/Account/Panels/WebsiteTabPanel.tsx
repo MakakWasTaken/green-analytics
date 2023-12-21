@@ -104,6 +104,24 @@ const WebsiteTabPanel = () => {
       { field: 'name', headerName: 'Name', editable: true },
       { field: 'url', headerName: 'URL', type: 'url', editable: true },
       {
+        field: 'cookiePolicyEnabled',
+        hidden: true,
+        valueGetter: (row) => row.settings?.cookiePolicyEnabled,
+        headerName: 'Cookie Policy',
+        type: 'checkbox',
+        editable: true,
+      },
+      {
+        field: 'cookiePolicyUrl',
+        hidden: true,
+        valueGetter: (row) => row.settings?.cookiePolicyUrl,
+        headerName: 'Cookie Policy URL',
+        type: 'url',
+        editable: (row) =>
+          (row.cookiePolicyEnabled ?? row.settings?.cookiePolicyEnabled) ===
+          true,
+      },
+      {
         field: 'token',
         headerName: 'Setup',
         renderCell: (value: string) => (
@@ -195,7 +213,12 @@ const WebsiteTabPanel = () => {
     return response.data
   }
 
-  const handleEdit = async (newRow: Website) => {
+  const handleEdit = async (
+    newRow: Website & {
+      cookiePolicyEnabled?: boolean
+      cookiePolicyUrl?: string
+    },
+  ) => {
     // For this grid we only allow editing the URL
     newRow.url = fixURL(newRow.url)
 
@@ -204,6 +227,8 @@ const WebsiteTabPanel = () => {
       {
         name: newRow.name,
         url: newRow.url,
+        cookiePolicyEnabled: newRow.cookiePolicyEnabled,
+        cookiePolicyUrl: newRow.cookiePolicyUrl,
         teamId: selectedTeam?.id,
       },
     )
