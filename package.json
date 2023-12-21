@@ -5,21 +5,13 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "postbuild": "next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/bundle.js ./public/green-analytics.js",
+    "build": "node ./scripts/wiki-toc.mjs && next build && next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/bundle.js ./public/green-analytics.js",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "biome format --write --no-errors-on-unmatched . && biome lint --apply --no-errors-on-unmatched .",
-    "lint:staged": "lint-staged",
     "prisma:update": "prisma format && prisma db push",
-    "postinstall": "prisma generate",
     "prepare": "husky install",
-    "typescript:check": "tsc --noEmit",
-    "prebuild": "node ./scripts/wiki-toc.mjs"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "biome lint --apply --no-errors-on-unmatched",
-    "*.{js,jsx,ts,tsx|json}": "biome format --write --no-errors-on-unmatched"
+    "typescript:check": "tsc --noEmit"
   },
   "sideEffects": false,
   "resolutions": {
