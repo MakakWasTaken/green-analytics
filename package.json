@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "node ./scripts/wiki-toc.mjs && next build && next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/bundle.js ./public/green-analytics.js",
+    "build": "prisma generate && node ./scripts/wiki-toc.mjs && next build && next-sitemap && npx shx cp -r ./node_modules/green-analytics-js/build/bundle.js ./public/green-analytics.js",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "biome format --write --no-errors-on-unmatched . && biome lint --apply --no-errors-on-unmatched .",
