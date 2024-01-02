@@ -47,7 +47,10 @@ const apiHeaders = [
     key: 'Access-Control-Allow-Origin',
     value: '*',
   },
-  { key: 'Access-Control-Allow-Methods', value: 'GET, POST, DELETE, PUT, OPTIONS' },
+  {
+    key: 'Access-Control-Allow-Methods',
+    value: 'GET, POST, DELETE, PUT, OPTIONS',
+  },
   {
     key: 'Access-Control-Allow-Headers',
     value:
