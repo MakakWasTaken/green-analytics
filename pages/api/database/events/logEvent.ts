@@ -3,7 +3,6 @@ import prisma from '@src/lib/prisma'
 import { scanWebsite } from '@utils/websiteScanner'
 import geoip from 'doc999tor-fast-geoip'
 import { NextApiRequest, NextApiResponse } from 'next'
-import NextCors from 'nextjs-cors'
 
 const handleURLs = async (website: Website & { scans: Scan[] }) => {
   // When receiving a list of urls we check if the script is already added and if it was updated within the past 2 weeks
@@ -27,12 +26,6 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 }
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
-  await NextCors(req, res, {
-    // Options
-    methods: ['POST'],
-    origin: '*',
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  })
   try {
     const method = req.method
     const ip =
