@@ -3587,12 +3587,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"green-analytics-js@npm:^1.1.6":
-  version: 1.1.6
-  resolution: "green-analytics-js@npm:1.1.6"
+"green-analytics-js@npm:^1.1.8":
+  version: 1.1.8
+  resolution: "green-analytics-js@npm:1.1.8"
   dependencies:
     sanitize-html: "npm:^2.11.0"
-  checksum: baf3672711a8e854808670ebcd0c272a5b2727d0989a4aa9091d2f4e3d2b761e3332487efadb71d0ccc056233d2b36f9dffcdfc26d6ab6cfdb1d5998e50c6ffc
+  checksum: ea5507ce7f1d22a95c7b77b984216c084af0e8af00a1afd055f7aeb4b6b18ca78ecdb7b01d0ac8efef68089b0afa31ad9be7112d71c934aced8938a1ec8b3dce
   languageName: node
   linkType: hard
 
@@ -3637,7 +3637,7 @@ __metadata:
     cross-env: "npm:^7.0.3"
     doc999tor-fast-geoip: "npm:^1.1.180"
     google-auth-library: "npm:^9.4.1"
-    green-analytics-js: "npm:^1.1.6"
+    green-analytics-js: "npm:^1.1.8"
     highlight.js: "npm:^11.9.0"
     husky: "npm:^8.0.3"
     lint-staged: "npm:^15.2.0"
