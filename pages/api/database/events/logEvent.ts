@@ -27,6 +27,9 @@ const handleURLs = async (website: Website & { scans: Scan[] }) => {
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    if (req.method === 'OPTIONS') {
+      return res.status(200).send('ok')
+    }
     const method = req.method
     const ip =
       (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress

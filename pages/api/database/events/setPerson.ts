@@ -2,6 +2,10 @@ import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send('ok')
+  }
+
   const token = req.headers.api_token as string | undefined
 
   if (!token) {

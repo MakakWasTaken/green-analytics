@@ -2,6 +2,9 @@ import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === 'OPTIONS') {
+    return res.status(200).send('ok')
+  }
   // This endpoint is public, so we just get the cookie settings for the provided token
 
   const token = req.headers.api_token as string | undefined
@@ -10,7 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  try {
+  try { 
     if (req.method === 'GET') {
       await handleGET(res, token)
     } else {
