@@ -13,7 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return
   }
 
-  try { 
+  try {
     if (req.method === 'GET') {
       await handleGET(res, token)
     } else {
