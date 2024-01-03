@@ -23,6 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       })
     }
   } catch (err: any) {
+    console.error(err)
     res.status(500).json({
       ok: false,
       message: err.message ?? err,
@@ -68,18 +69,15 @@ const handleGET = async (res: NextApiResponse, token: string) => {
 
   if (!website.settings) {
     res.json({
-      cookies: cookies.map((cookie) => ({
-        name: cookie.name,
-        type: cookie.type,
-        lastUpdated: cookie.createdAt,
-      })),
+      cookies: [],
       enabled: false,
     })
     return
   }
 
+  try {
+    
   const parsedSettings = JSON.parse(website.settings as any as string)
-
   res.json({
     cookies: cookies.map((cookie) => ({
       name: cookie.name,
@@ -90,6 +88,9 @@ const handleGET = async (res: NextApiResponse, token: string) => {
       parsedSettings.cookiePolicyUrl ?? `https://${website.url}/cookies`,
     enabled: parsedSettings.cookiePolicyEnabled ?? false,
   })
+  } catch (err: any) {
+    throw new Error(`${err.message}: ${website.settings}`)
+  }
 }
 
 export default handler
