@@ -62,7 +62,7 @@
     "convert": "^4.14.0",
     "doc999tor-fast-geoip": "^1.1.180",
     "google-auth-library": "^9.4.1",
-    "green-analytics-js": "^1.1.8",
+    "green-analytics-js": "^1.1.9",
     "highlight.js": "^11.9.0",
     "luxon": "^3.4.4",
     "micro": "^10.0.1",
@@ -102,7 +102,7 @@
     "cross-env": "^7.0.3",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
-    "prisma": "^5.7.0",
+    "prisma": "^5.7.1",
     "typescript": "^5.3.3"
   },
   "packageManager": "yarn@4.0.2"
