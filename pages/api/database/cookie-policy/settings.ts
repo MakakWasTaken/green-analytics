@@ -76,18 +76,17 @@ const handleGET = async (res: NextApiResponse, token: string) => {
   }
 
   try {
-    
-  const parsedSettings = JSON.parse(website.settings as any as string)
-  res.json({
-    cookies: cookies.map((cookie) => ({
-      name: cookie.name,
-      type: cookie.type,
-      lastUpdated: cookie.createdAt,
-    })),
-    cookiePolicyUrl:
-      parsedSettings.cookiePolicyUrl ?? `https://${website.url}/cookies`,
-    enabled: parsedSettings.cookiePolicyEnabled ?? false,
-  })
+    const parsedSettings = JSON.parse(website.settings as any as string)
+    res.json({
+      cookies: cookies.map((cookie) => ({
+        name: cookie.name,
+        type: cookie.type,
+        lastUpdated: cookie.createdAt,
+      })),
+      cookiePolicyUrl:
+        parsedSettings.cookiePolicyUrl ?? `https://${website.url}/cookies`,
+      enabled: parsedSettings.cookiePolicyEnabled ?? false,
+    })
   } catch (err: any) {
     throw new Error(`${err.message}: ${website.settings}`)
   }
