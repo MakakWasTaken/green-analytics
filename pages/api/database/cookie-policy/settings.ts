@@ -1,3 +1,4 @@
+import { JsonObject } from '@prisma/client/runtime/library'
 import prisma from '@src/lib/prisma'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -76,7 +77,7 @@ const handleGET = async (res: NextApiResponse, token: string) => {
   }
 
   try {
-    const parsedSettings = JSON.parse(website.settings as any as string)
+    const parsedSettings = website.settings as JsonObject
     res.json({
       cookies: cookies.map((cookie) => ({
         name: cookie.name,
