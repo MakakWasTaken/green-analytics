@@ -3,7 +3,7 @@ import NavigationMenu from '@components/Dashboard/NavigationMenu'
 import TeamHeader from '@components/TeamHeader'
 import { HeaderContext } from '@contexts/HeaderContext'
 import { Box, Card, CardContent, Grid, Table, Typography } from '@mui/material'
-import { Event, Person, Property } from '@prisma/client'
+import { Event, Property } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -15,7 +15,7 @@ const EventPage = withPageAuthRequired(() => {
   const router = useRouter()
   const { id } = router.query
 
-  const { data } = useSWR<Event>(
+  const { data } = useSWR<Event & { properties: Property[] }>(
     selectedWebsite && id
       ? `/database/events/${id}?websiteId=${selectedWebsite.id}`
       : null,
@@ -68,6 +68,31 @@ const EventPage = withPageAuthRequired(() => {
                         )}
                       </td>
                     </tr>
+                  </tbody>
+                </Table>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Event Properties */}
+          <Grid xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography level="h2">Properties</Typography>
+
+                <Table>
+                  <thead>
+                    <tr>
+                      <td>Key</td>
+                      <td>Value</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data?.properties.map((property) => (
+                      <tr>
+                        <td>{property.key}</td>
+                        <td>{property.value}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </CardContent>

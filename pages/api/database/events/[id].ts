@@ -52,6 +52,9 @@ const handleGET = async (
         },
         id: req.query.id as string,
       },
+      include: {
+        properties: true,
+      },
     })
     res.status(200).json(events)
   } catch (error: any) {
