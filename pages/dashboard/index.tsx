@@ -37,15 +37,21 @@ const Dashboard = withPageAuthRequired(
       { id: string; personId: string; person: Person; createdAt: Date }[]
     >(
       selectedWebsite
-        ? `/database/events?websiteId=${selectedWebsite.id}&type=pageview&includePersons=true&start=` +
-          DateTime.now().minus({ months: 1 }).toISODate()
+        ? `/database/events?websiteId=${
+            selectedWebsite.id
+          }&type=pageview&includePersons=true&start=${DateTime.now()
+            .minus({ months: 1 })
+            .toISODate()}`
         : null,
     )
 
     const { data: previousMonthProperties } = useSWR<Property[]>(
       selectedWebsite
-        ? `/database/properties?websiteId=${selectedWebsite.id}&type=browser,mobile,path&start=` +
-          DateTime.now().minus({ months: 1 }).toISODate()
+        ? `/database/properties?websiteId=${
+            selectedWebsite.id
+          }&type=browser,mobile,path&start=${DateTime.now()
+            .minus({ months: 1 })
+            .toISODate()}`
         : null,
     )
 

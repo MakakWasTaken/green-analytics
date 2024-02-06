@@ -79,10 +79,9 @@ GADocument.getInitialProps = async (ctx: DocumentContext) => {
     originalRenderPage({
       enhanceApp:
         (
-        App: React.ComponentType<React.ComponentProps<AppType> & GAAppProps>,
-      ) =>
-        (props) =>
-          <App emotionCache={cache} {...props} />,
+          App: React.ComponentType<React.ComponentProps<AppType> & GAAppProps>,
+        ) =>
+        (props) => <App emotionCache={cache} {...props} />,
     })
 
   const initialProps = await Document.getInitialProps(ctx)

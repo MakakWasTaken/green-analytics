@@ -207,7 +207,7 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
     },
     ref,
   ) => {
-    const [updateObject, setUpdateObject] = useState<null | typeof rows[0]>(
+    const [updateObject, setUpdateObject] = useState<null | (typeof rows)[0]>(
       null,
     )
 
@@ -222,28 +222,28 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
         toast.promise(onRowDelete(id), {
           loading: 'Deleting..',
           error: (err) => err.message ?? err,
-          success: (response) =>  response?.message ?? 'Succesfully deleted row',
+          success: (response) => response?.message ?? 'Succesfully deleted row',
           finally: () => {
             setDeleting(undefined)
-          }
+          },
         })
       }
     }
 
-    const handleRowEdit = async (row: typeof rows[0]) => {
+    const handleRowEdit = async (row: (typeof rows)[0]) => {
       if (onRowEdit) {
         setUpdating(true)
         toast.promise(onRowEdit(row), {
           loading: 'Updating..',
           error: (err) => err.message ?? err,
-          success: (response) =>  {  
+          success: (response) => {
             setUpdateObject(null)
 
             return response?.message ?? 'Succesfully updated row'
           },
           finally: () => {
             setUpdating(false)
-          }
+          },
         })
       } else {
         setUpdateObject(null)
@@ -251,20 +251,20 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
       }
     }
 
-    const handleRowAdd = async (row: typeof rows[0]) => {
+    const handleRowAdd = async (row: (typeof rows)[0]) => {
       if (onRowAdd) {
         setUpdating(true)
         toast.promise(onRowAdd(row), {
           loading: 'Creating..',
           error: (err) => err.message ?? err,
-          success: (response) =>  {  
+          success: (response) => {
             setUpdateObject(null)
 
             return response?.message ?? 'Succesfully created row'
           },
           finally: () => {
             setUpdating(false)
-          }
+          },
         })
       } else {
         setUpdateObject(null)
@@ -294,10 +294,13 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
       [columns, idField],
     )
 
-    const defaultRenderCell :FC= (value: any, params: RenderCellParams) => {
+    const defaultRenderCell: FC = (value: any, params: RenderCellParams) => {
       if (params.column.type === 'singleSelect') {
-        const singleSelectColumn = params.column as SingleSelectSimpleGridColumnDefinition
-        const valueOption = singleSelectColumn.valueOptions.find((valueOption) => valueOption.value === value) 
+        const singleSelectColumn =
+          params.column as SingleSelectSimpleGridColumnDefinition
+        const valueOption = singleSelectColumn.valueOptions.find(
+          (valueOption) => valueOption.value === value,
+        )
         if (valueOption) {
           // Render the valueOption's label instead of the value
           return <Typography>{valueOption.label}</Typography>
@@ -319,7 +322,15 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
               <Typography>Edit Row</Typography>
               {updateObject && (
                 <>
-                  {columns.map((column, index) => <ColumnEditInput key={column.field} index={index} updateObject={updateObject} setUpdateObject={setUpdateObject} column={column}/>)}
+                  {columns.map((column, index) => (
+                    <ColumnEditInput
+                      key={column.field}
+                      index={index}
+                      updateObject={updateObject}
+                      setUpdateObject={setUpdateObject}
+                      column={column}
+                    />
+                  ))}
                   <Button
                     loading={updating}
                     sx={{ marginTop: 2 }}
@@ -343,9 +354,11 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
             </ModalDialog>
           </Modal>
         )}
-        <Sheet sx={{
-          width: '100%',
-        }}>
+        <Sheet
+          sx={{
+            width: '100%',
+          }}
+        >
           <Table
             sx={{
               width: '100%',
@@ -391,12 +404,17 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                       <td key={column.field}>
                         {column.renderCell
                           ? column.renderCell(
-                            column.valueGetter
-                              ? column.valueGetter(row)
-                              : row?.[column.field], {id: row[idField], row, column})
-                          : defaultRenderCell(column.valueGetter
-                            ? column.valueGetter(row)
-                            : row[column.field], {id: row[idField], row, column})}
+                              column.valueGetter
+                                ? column.valueGetter(row)
+                                : row?.[column.field],
+                              { id: row[idField], row, column },
+                            )
+                          : defaultRenderCell(
+                              column.valueGetter
+                                ? column.valueGetter(row)
+                                : row[column.field],
+                              { id: row[idField], row, column },
+                            )}
                       </td>
                     ) : null
                   })}
@@ -423,12 +441,11 @@ const SimpleGrid = forwardRef<SimpleGridRef, SimpleGridProps>(
                                 const startValue = row
                                 for (const column of columns) {
                                   if (column.valueGetter) {
-                                    startValue[column.field] = column.valueGetter(row)
+                                    startValue[column.field] =
+                                      column.valueGetter(row)
                                   }
                                 }
-                                setUpdateObject(
-                                startValue
-                                  )
+                                setUpdateObject(startValue)
                               }}
                             >
                               <Edit />

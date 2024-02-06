@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const buf = await buffer(req)
   const sig = req.headers['stripe-signature'] as string | string[]
 
-  let event
+  let event: any
 
   try {
     event = stripe.webhooks.constructEvent(buf, sig, STRIPE_WEBHOOK_SECRET)

@@ -39,14 +39,17 @@ const handleGET = async (_req: NextApiRequest, res: NextApiResponse) => {
         : plan.product,
   }))
 
-  const groupedByInterval = response.reduce((prev, cur) => {
-    if (!prev[cur.interval]) {
-      prev[cur.interval] = []
-    }
-    prev[cur.interval].push(cur)
+  const groupedByInterval = response.reduce(
+    (prev, cur) => {
+      if (!prev[cur.interval]) {
+        prev[cur.interval] = []
+      }
+      prev[cur.interval].push(cur)
 
-    return prev
-  }, {} as { [key: string]: Stripe.Plan[] })
+      return prev
+    },
+    {} as { [key: string]: Stripe.Plan[] },
+  )
 
   res.json(groupedByInterval)
 }

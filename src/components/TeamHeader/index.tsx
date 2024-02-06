@@ -80,7 +80,6 @@ const TeamHeader: FC<TeamHeaderProps> = ({ selectWebsite }) => {
         >
           <ModalClose />
           <Typography level="h4">Create Team</Typography>
-
           <AccountInput
             label="Team Name"
             value={createTeamName}
