@@ -12,7 +12,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
   const { user } = useUser()
 
   useEffect(() => {
-    initGA('b3cdaa7c-ca1b-4641-b01f-dace971b7850')
+    initGA('c0544bf3-65b8-47ad-b75f-b8189980715c')
   }, [])
 
   useEffect(() => {
