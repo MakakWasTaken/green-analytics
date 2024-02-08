@@ -59,6 +59,9 @@ const handleGET = async (
           ? Number.parseInt(req.query.page as string) * 20
           : 0,
         take: 20,
+        orderBy: {
+          createdAt: 'desc',
+        },
       }),
       prisma.event.count({
         where: {

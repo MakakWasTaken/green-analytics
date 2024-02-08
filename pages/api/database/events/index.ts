@@ -73,6 +73,9 @@ const handleGET = async (
             personId: true,
             createdAt: true,
           },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
     res.status(200).json(events)
   } catch (error: any) {
