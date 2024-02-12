@@ -63,11 +63,28 @@ const handlePOST = async (
   }
 
   // If the invite exists, add the user to the team and vice-versa.
-  await prisma.user.update({
+  await prisma.user.upsert({
     where: {
       id: session.user.sub,
     },
-    data: {
+    create: {
+      id: session.user.sub,
+      name: session.user.name,
+      email: session.user.email,
+      picture: session.user.picture,
+      teams: {
+        connect: {
+          id: invite.teamId,
+        },
+      },
+      roles: {
+        create: {
+          role: 'MEMBER',
+          teamId: invite.teamId,
+        },
+      },
+    },
+    update: {
       teams: {
         connect: {
           id: invite.teamId,
