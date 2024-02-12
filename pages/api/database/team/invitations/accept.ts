@@ -4,18 +4,23 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { v4 } from 'uuid'
 
 export const handle = async (req: NextApiRequest, res: NextApiResponse) => {
-  const method = req.method
+  try {
+    const session = await getSession(req, res)
+    if (!session) {
+      res.status(401).json({ ok: false, message: 'You are not signed in' })
+      return
+    }
 
-  const session = await getSession(req, res)
-  if (!session) {
-    res.status(401).json({ ok: false, message: 'You are not signed in' })
-    return
-  }
-
-  if (method === 'POST') {
-    await handlePOST(req, res, session)
-  } else {
-    res.status(405).json({ ok: false, message: 'Method Not Allowed' })
+    if (req.method === 'POST') {
+      await handlePOST(req, res, session)
+    } else {
+      res.status(405).json({ ok: false, message: 'Method Not Allowed' })
+    }
+  } catch (err: any) {
+    res.status(500).json({
+      ok: false,
+      message: err.message ?? err,
+    })
   }
 }
 
