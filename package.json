@@ -55,7 +55,7 @@
     "@next/bundle-analyzer": "^14.1.0",
     "@next/mdx": "^14.1.0",
     "@prisma/client": "^5.9.1",
-    "@stripe/react-stripe-js": "^2.4.0",
+    "@stripe/react-stripe-js": "^2.5.0",
     "@stripe/stripe-js": "^2.4.0",
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
