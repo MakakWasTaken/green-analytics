@@ -208,12 +208,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:^18.6.0":
-  version: 18.6.0
-  resolution: "@commitlint/config-conventional@npm:18.6.0"
+"@commitlint/config-conventional@npm:^18.6.1":
+  version: 18.6.1
+  resolution: "@commitlint/config-conventional@npm:18.6.1"
   dependencies:
+    "@commitlint/types": "npm:^18.6.1"
     conventional-changelog-conventionalcommits: "npm:^7.0.2"
-  checksum: 656ad2d64468da3087f46abeaf09574de7b2a649eac14f4710d06cbd3d6a6085aacb0c498a8b2ac86ca66503774344fa3b2cb2070d66eac5a3c0c5adc91e132e
+  checksum: 137add5aea482a265489c8129761625948ac2d3d7b008af98ed9e55eb6390adb5cb3c153c0f27ccbbafc2d2ef7b06241d2b12c32b1b1096dc39568df4f36ace5
   languageName: node
   linkType: hard
 
@@ -378,6 +379,15 @@ __metadata:
   dependencies:
     chalk: "npm:^4.1.0"
   checksum: 89ae35a4e08b97963a654c574f2904f91bea31d50d919da9eaac94f0afde4bb7bc349e7f70d6f1513eb951c1d36dabed00bd80053b189df3c1800e9d5144211b
+  languageName: node
+  linkType: hard
+
+"@commitlint/types@npm:^18.6.1":
+  version: 18.6.1
+  resolution: "@commitlint/types@npm:18.6.1"
+  dependencies:
+    chalk: "npm:^4.1.0"
+  checksum: 5728f5cb62bcaad5158dd8982ab5d44c1ea1aee9ac251026cd91b9a4795bb912505c904f75cbd3ae0d1bb7b4dd1e5d84990b76093230018166af8e111b658685
   languageName: node
   linkType: hard
 
@@ -3683,7 +3693,7 @@ __metadata:
     "@auth0/nextjs-auth0": "npm:^3.5.0"
     "@biomejs/biome": "npm:1.5.2"
     "@commitlint/cli": "npm:^18.6.0"
-    "@commitlint/config-conventional": "npm:^18.6.0"
+    "@commitlint/config-conventional": "npm:^18.6.1"
     "@emotion/cache": "npm:^11.11.0"
     "@emotion/react": "npm:^11.11.3"
     "@emotion/server": "npm:^11.11.0"
