@@ -80,6 +80,17 @@ const nextConfig = {
       source: '/api/:path*',
       headers: apiHeaders,
     },
+    {
+      source: '/green-analytics.js',
+      locale: false,
+      headers: [
+        {
+          // Cache green-analytics for 24 hours to prevent redownloading constantly
+          key: 'Cache-Control',
+          value: 'public, max-age=86400',
+        },
+      ],
+    },
   ],
 
   compiler: {
@@ -87,6 +98,7 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
+    minimumCacheTTL: 3600,
     remotePatterns: [
       {
         hostname: 'flagcdn.com',
