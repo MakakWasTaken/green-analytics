@@ -60,7 +60,7 @@
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
     "convert": "^4.14.1",
-    "doc999tor-fast-geoip": "^1.1.196",
+    "doc999tor-fast-geoip": "^1.1.201",
     "google-auth-library": "^9.6.3",
     "green-analytics-js": "^1.1.14",
     "highlight.js": "^11.9.0",
