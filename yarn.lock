@@ -4174,9 +4174,9 @@ __metadata:
   linkType: hard
 
 "ip@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "ip@npm:2.0.0"
-  checksum: 8d186cc5585f57372847ae29b6eba258c68862055e18a75cc4933327232cb5c107f89800ce29715d542eef2c254fbb68b382e780a7414f9ee7caf60b7a473958
+  version: 2.0.1
+  resolution: "ip@npm:2.0.1"
+  checksum: cab8eb3e88d0abe23e4724829621ec4c4c5cb41a7f936a2e626c947128c1be16ed543448d42af7cca95379f9892bfcacc1ccd8d09bc7e8bea0e86d492ce33616
   languageName: node
   linkType: hard
 
@@ -4451,9 +4451,9 @@ __metadata:
   linkType: hard
 
 "jose@npm:^4.15.1, jose@npm:^4.9.2":
-  version: 4.15.4
-  resolution: "jose@npm:4.15.4"
-  checksum: ce8b29f84d6172a566b12b599dafa82f3bef0f16278bb76d562490ac1516fcc14017b05a39d20ffad25ed504f4996d4af4c9d3e0273d95b2d5559bf6d1112bc0
+  version: 4.15.5
+  resolution: "jose@npm:4.15.5"
+  checksum: 9f208492f55ae9c547fd407c36f67ec3385051b5ca390e24f5449740f17359640b3f96fabfd38bc132cc4292b964c31b921bf356253373b1bd3eb6df799b7433
   languageName: node
   linkType: hard
 
@@ -6681,8 +6681,8 @@ __metadata:
   linkType: hard
 
 "sanitize-html@npm:^2.11.0":
-  version: 2.11.0
-  resolution: "sanitize-html@npm:2.11.0"
+  version: 2.12.1
+  resolution: "sanitize-html@npm:2.12.1"
   dependencies:
     deepmerge: "npm:^4.2.2"
     escape-string-regexp: "npm:^4.0.0"
@@ -6690,7 +6690,7 @@ __metadata:
     is-plain-object: "npm:^5.0.0"
     parse-srcset: "npm:^1.0.2"
     postcss: "npm:^8.3.11"
-  checksum: 863dcce83c4631fcb5519fd0739ed9e93adcce8dd89e5a738823c309c68686048b0f4e30e07bae0de67ea72b567ee9c908af756ba22fcfcb8fd1fa2c69ca3e0d
+  checksum: 0169e77845a237d0a0b74d316a861aa13dccfcc55dd5d33d49a37abc77cb60a55d02644094daae3c88f1d1a348ee5ded5ddf20073002535cdaa24291e653d34d
   languageName: node
   linkType: hard
 
