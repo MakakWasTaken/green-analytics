@@ -1716,10 +1716,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@stripe/stripe-js@npm:3.0.3"
-  checksum: 7b84e7cf078ae3286698fb7528a38194c59394e7cf73ddba2b8ac84522cca09583ccc5c13da127572d2ca33666e0719ed273de87d8d0da4d6afbec81abc7b595
+"@stripe/stripe-js@npm:^3.0.10":
+  version: 3.0.10
+  resolution: "@stripe/stripe-js@npm:3.0.10"
+  checksum: a5f6a77810af4a3b4c93f4849ebd9e30dfc82fcbf585804b0417d51dc86d0742d2673e74881233d1754feba4075c7d8a42e29d928575f7fbf063cf46c6933cc3
   languageName: node
   linkType: hard
 
@@ -3707,7 +3707,7 @@ __metadata:
     "@next/mdx": "npm:^14.1.0"
     "@prisma/client": "npm:^5.9.1"
     "@stripe/react-stripe-js": "npm:^2.5.0"
-    "@stripe/stripe-js": "npm:^3.0.3"
+    "@stripe/stripe-js": "npm:^3.0.10"
     "@types/luxon": "npm:^3.4.2"
     "@types/mdx": "npm:^2.0.11"
     "@types/node": "npm:^20.11.19"
